@@ -1,9 +1,11 @@
 #pragma once
 #include "GameNode.h"
+#include "MainMenu.h"
 
 class MainGame : public GameNode
 {
 private:
+	MainMenu* _mainMenu;
 
 	GameNode* _currentScene;
 public:

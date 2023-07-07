@@ -86,7 +86,7 @@ ID2D1HwndRenderTarget*		_ID2DRenderTarget = nullptr;
 #define WINSTART_X				400
 #define WINSTART_Y				100
 #define WINSIZE_X				1280
-#define WINSIZE_Y				800
+#define WINSIZE_Y				720
 
 // WS_CAPTION: 타이틀 바를 가지기 위한 옵션
 // WS_SYSMENU: 제목 표시줄에 컨트롤 메뉴 상자 창

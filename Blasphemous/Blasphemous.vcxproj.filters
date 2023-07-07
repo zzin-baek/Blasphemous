@@ -52,6 +52,8 @@
     <ClInclude Include="Stdafx.h">
       <Filter>2D FrameWork\PCH</Filter>
     </ClInclude>
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="FontManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -74,5 +76,7 @@
     <ClCompile Include="Stdafx.cpp">
       <Filter>2D FrameWork\PCH</Filter>
     </ClCompile>
+    <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="FontManager.cpp" />
   </ItemGroup>
 </Project>
