@@ -231,7 +231,7 @@ void ImageManager::frameRender(string strKey, HDC hdc, int destX, int destY, int
 	if (img) img->frameRender(hdc, destX, destY, currentFrameX, currentFrameY);
 }
 
-void ImageManager::frameRender(string strKey, HDC hdc, int destX, int destY, int currentFrameX, int destWidth, int currentFrameY, int destHeight)
+void ImageManager::frameRender(string strKey, HDC hdc, int destX, int destY, int destWidth, int destHeight, int currentFrameX, int currentFrameY)
 {
 	GImage* img = findImage(strKey);
 

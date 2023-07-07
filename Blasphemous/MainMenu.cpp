@@ -4,13 +4,13 @@
 HRESULT MainMenu::init(void)
 {
     IMAGEMANAGER->addFrameImage("메인메뉴_배경", "Resources/Image/MainMenu/crisanta-bg.bmp",
-        3200, 1080, 5, 3);
+        3200, 1080 , 5, 3, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("메인메뉴_크리산타", "Resources/Image/MainMenu/crisanta-main-menu-anim.bmp",
-        4480, 720, 7, 2, true, RGB(255, 0, 255));
+        4480 , 720 , 7, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("메인메뉴_꽃잎", "Resources/Image/MainMenu/crisanta-fg-petals.bmp",
-        3200, 360, 5, 1, true, RGB(255, 0, 255));
+        3200, 360, 5, 1, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("메인메뉴_꽃잎2", "Resources/Image/MainMenu/crisanta-petals.bmp",
-        7040, 1440, 11, 4, true, RGB(255, 0, 255));
+        7040 , 1440 , 11, 4, true, MAGENTA);
 
     cnt = idx = 0;
     idx_bg = idx_crisanta = idx_petal = idx_petal_fg = 0;
@@ -77,8 +77,8 @@ void MainMenu::update(void)
 
 void MainMenu::render(void)
 {
-    IMAGEMANAGER->frameRender("메인메뉴_배경", getMemDC(), 0, 0, bg.x, bg.y);
-    IMAGEMANAGER->frameRender("메인메뉴_크리산타", getMemDC(), 0, 0, crisanta.x, crisanta.y);
-    IMAGEMANAGER->frameRender("메인메뉴_꽃잎", getMemDC(), 0, 0, petal.x, petal.y);
-    IMAGEMANAGER->frameRender("메인메뉴_꽃잎2", getMemDC(), 0, 0, petal_fg.x, petal_fg.y);
+    IMAGEMANAGER->frameRender("메인메뉴_배경", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, bg.x, bg.y);
+    IMAGEMANAGER->frameRender("메인메뉴_크리산타", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, crisanta.x, crisanta.y);
+    IMAGEMANAGER->frameRender("메인메뉴_꽃잎", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, petal.x, petal.y);
+    IMAGEMANAGER->frameRender("메인메뉴_꽃잎2", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, petal_fg.x, petal_fg.y);
 }

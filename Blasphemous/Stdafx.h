@@ -28,7 +28,7 @@
 #include <bitset>
 
 #define		PI			3.141592653f
-
+#define		MAGENTA		RGB(255, 0, 255)
 
 using namespace std;
 
