@@ -90,4 +90,6 @@ void MainMenu::render(void)
     IMAGEMANAGER->frameRender("¸ÞÀÎ¸Þ´º_Å©¸®»êÅ¸", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, crisanta.x, crisanta.y);
     IMAGEMANAGER->frameRender("¸ÞÀÎ¸Þ´º_²ÉÀÙ", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, petal.x, petal.y);
     IMAGEMANAGER->frameRender("¸ÞÀÎ¸Þ´º_²ÉÀÙ2", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, petal_fg.x, petal_fg.y);
+
+    FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 200, WINSIZE_Y - 250, "NeoµÕ±Ù¸ð Pro", 35, 1, "¼ø·Ê", strlen("¼ø·Ê"), RGB(255, 255, 255));
 }

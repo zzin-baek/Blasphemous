@@ -56,6 +56,8 @@
     <ClInclude Include="FontManager.h">
       <Filter>2D FrameWork\FrameWorkManager</Filter>
     </ClInclude>
+    <ClInclude Include="BaseMap.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -82,5 +84,7 @@
     <ClCompile Include="FontManager.cpp">
       <Filter>2D FrameWork\FrameWorkManager</Filter>
     </ClCompile>
+    <ClCompile Include="BaseMap.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
 </Project>
