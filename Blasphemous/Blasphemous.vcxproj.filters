@@ -53,7 +53,9 @@
       <Filter>2D FrameWork\PCH</Filter>
     </ClInclude>
     <ClInclude Include="MainMenu.h" />
-    <ClInclude Include="FontManager.h" />
+    <ClInclude Include="FontManager.h">
+      <Filter>2D FrameWork\FrameWorkManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -77,6 +79,8 @@
       <Filter>2D FrameWork\PCH</Filter>
     </ClCompile>
     <ClCompile Include="MainMenu.cpp" />
-    <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="FontManager.cpp">
+      <Filter>2D FrameWork\FrameWorkManager</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

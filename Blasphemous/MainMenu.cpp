@@ -16,6 +16,7 @@ HRESULT MainMenu::init(void)
         2048, 512, 8, 4, true, MAGENTA);
 
     cnt = idx = 0;
+    minus = 1;
     idx_bg = idx_crisanta = idx_petal = idx_petal_fg = 0;
     bg, crisanta, petal, petal_fg = { 0, 0 };
 
@@ -33,23 +34,27 @@ void MainMenu::update(void)
     if (cnt % 20 == 0)
     {
         idx_bg++;
-        idx_crisanta++;
+        idx_crisanta += 1 * minus;
         idx_petal++;
         idx_petal_fg++;
 
-        if (idx_bg > 15)
+        if (idx_bg > 14)
         {
             idx_bg = 0;
         }
-        if (idx_crisanta > 14)
+        if (idx_crisanta > 12)
         {
-            idx_crisanta = 0;
+            minus = -1;
         }
-        if (idx_petal > 5)
+        else if (idx_crisanta < 1)
+        {
+            minus = 1;
+        }
+        if (idx_petal > 4)
         {
             idx_petal = 0;
         }
-        if (idx_petal_fg > 44)
+        if (idx_petal_fg > 43)
         {
             idx_petal_fg = 0;
         }
@@ -77,7 +82,6 @@ void MainMenu::update(void)
         IMAGEMANAGER->findImage("¸ÞÀÎ¸Þ´º_²ÉÀÙ2")->setFrameX(petal_fg.x);
         IMAGEMANAGER->findImage("¸ÞÀÎ¸Þ´º_²ÉÀÙ2")->setFrameY(petal_fg.y);
     }
-
 }
 
 void MainMenu::render(void)
