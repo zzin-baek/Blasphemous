@@ -12,6 +12,9 @@ HRESULT MainMenu::init(void)
     IMAGEMANAGER->addFrameImage("¸ÞÀÎ¸Þ´º_²ÉÀÙ2", "Resources/Image/MainMenu/crisanta-petals.bmp",
         7040 , 1440 , 11, 4, true, MAGENTA);
 
+    IMAGEMANAGER->addFrameImage("´åÁö", "Resources/Image/Penitent/penitent_dodge_attack.bmp",
+        2048, 512, 8, 4, true, MAGENTA);
+
     cnt = idx = 0;
     idx_bg = idx_crisanta = idx_petal = idx_petal_fg = 0;
     bg, crisanta, petal, petal_fg = { 0, 0 };
@@ -27,12 +30,13 @@ void MainMenu::update(void)
 {
     cnt++;
 
-    if (cnt % 15 == 0)
+    if (cnt % 20 == 0)
     {
         idx_bg++;
         idx_crisanta++;
         idx_petal++;
         idx_petal_fg++;
+
         if (idx_bg > 15)
         {
             idx_bg = 0;
@@ -73,6 +77,7 @@ void MainMenu::update(void)
         IMAGEMANAGER->findImage("¸ÞÀÎ¸Þ´º_²ÉÀÙ2")->setFrameX(petal_fg.x);
         IMAGEMANAGER->findImage("¸ÞÀÎ¸Þ´º_²ÉÀÙ2")->setFrameY(petal_fg.y);
     }
+
 }
 
 void MainMenu::render(void)
