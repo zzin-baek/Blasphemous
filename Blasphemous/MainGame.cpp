@@ -9,7 +9,7 @@ HRESULT MainGame::init(void)
 	_mainMenu->init();
 
 	_currentScene = _mainMenu;
-	assert(_currentScene != nullptr, "MainGame 초기화 부분에서 노드 파트 오류 발생");
+	assert(_currentScene != nullptr);
 
 	return S_OK;
 }

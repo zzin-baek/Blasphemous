@@ -31,7 +31,7 @@ void MainMenu::update(void)
 {
     cnt++;
 
-    if (cnt % 20 == 0)
+    if (cnt % 25 == 0)
     {
         idx_bg++;
         idx_crisanta += 1 * minus;
@@ -46,7 +46,7 @@ void MainMenu::update(void)
         {
             minus = -1;
         }
-        else if (idx_crisanta < 1)
+        else if (idx_crisanta == 0)
         {
             minus = 1;
         }

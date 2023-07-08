@@ -49,12 +49,3 @@ inline void EllipseMakeCenter(HDC hdc, int x, int y, int width, int height)
 {
 	Ellipse(hdc, x - width / 2, y - height / 2, x + width / 2, y + height / 2);
 }
-
-inline void drawCircle(HDC hdc, int x, int y, int r, int angleS, int angleE)
-{
-	for (int i = angleS; i < angleE; i++)
-	{
-		MoveToEx(hdc, x + r * cos((i - 1) * PI / 180), y - r * sin((i - 1) * PI / 180), NULL);
-		LineTo(hdc, x + r * cos(i * PI / 180), y - r * sin(i * PI / 180));
-	}
-}
