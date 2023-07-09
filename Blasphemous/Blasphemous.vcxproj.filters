@@ -58,6 +58,8 @@
     </ClInclude>
     <ClInclude Include="BaseMap.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="BossMap.h" />
+    <ClInclude Include="BattleField.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -86,5 +88,7 @@
     </ClCompile>
     <ClCompile Include="BaseMap.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="BossMap.cpp" />
+    <ClCompile Include="BattleField.cpp" />
   </ItemGroup>
 </Project>

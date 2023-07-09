@@ -144,6 +144,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BaseMap.h" />
+    <ClInclude Include="BattleField.h" />
+    <ClInclude Include="BossMap.h" />
     <ClInclude Include="CommonMacroFucntion.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GameNode.h" />
@@ -160,6 +162,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseMap.cpp" />
+    <ClCompile Include="BattleField.cpp" />
+    <ClCompile Include="BossMap.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameNode.cpp" />
     <ClCompile Include="GImage.cpp" />
