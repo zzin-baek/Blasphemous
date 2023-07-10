@@ -375,6 +375,7 @@ void GImage::render(HDC hdc, int destX, int destY, int sourX, int sourY, int sou
     }
 }
 
+// 이미지 클리핑: 확대
 void GImage::render(HDC hdc, int destX, int destY, int destWidth, int destHeight, int sourX, int sourY, int sourWidth, int sourHeight)
 {
     if (_isTrans)

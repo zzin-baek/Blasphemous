@@ -69,7 +69,7 @@ ID2D1HwndRenderTarget*		_ID2DRenderTarget = nullptr;
 #define SOUNDMANAGER		SoundManager::getSingleton()
 
 // 타이틀
-#define WINNAME					(LPTSTR)(TEXT("WindowsAPI"))
+#define WINNAME					(LPTSTR)(TEXT("Blasphemous"))
 
 //! 전체화면
 //#define FULLSCREEN		

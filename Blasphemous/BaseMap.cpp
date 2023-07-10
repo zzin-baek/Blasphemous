@@ -21,25 +21,60 @@ void BaseMap::release(void)
 
 void BaseMap::update(void)
 {
-    if (KEYMANAGER->isStayKeyDown('A'))
+    _pl->playerAction();
+    /*if (KEYMANAGER->isStayKeyDown('A'))
     {
         _pl->setLeft(true);
-        _pl->setAction("RUNNING");
+        _pl->setState(WALK, true);
+        if (!_pl->getState()[JUMP])
+            _pl->setAction("RUNNING");
         _pl->setPosX(_pl->getPosX() - 5.0f);
     }
     if (KEYMANAGER->isStayKeyDown('D'))
     {
         _pl->setLeft(false);
-        _pl->setAction("RUNNING");
+        _pl->setState(WALK, true);
+        if (!_pl->getState()[JUMP])
+            _pl->setAction("RUNNING");
         _pl->setPosX(_pl->getPosX() + 5.0f);
+    }
+    if (KEYMANAGER->isStayKeyDown('S'))
+    {
+        _pl->setState(CROUCH, true);
+        if (_pl->isIdle())
+            _pl->setAction("CROUCH_DOWN");
     }
     if (KEYMANAGER->isOnceKeyUp('A') || KEYMANAGER->isOnceKeyUp('D'))
     {
+        _pl->resetState();
         _pl->setAction("IDLE");
+    }
+
+    if (KEYMANAGER->isOnceKeyUp('S'))
+    {
+        _pl->setAction("CROUCH_UP");
     }
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE))
     {
-
+        if (_pl->getState()[WALK] || _pl->getState()[DODGE])
+        {
+            _pl->setState(JUMP, true);
+            _pl->setAction("JUMP_FORWARD");
+        }
+        else if (_pl->isIdle())
+        {
+            _pl->setState(JUMP, true);
+            _pl->setAction("JUMP");
+        }
+    }
+    if (KEYMANAGER->isOnceKeyDown(VK_SHIFT))
+    {
+        _pl->setState(DODGE, true);
+        _pl->setAction("DODGE");
+    }
+    if (KEYMANAGER->isOnceKeyDown('K'))
+    {
+        
     }
 
     _cnt++;
@@ -67,10 +102,18 @@ void BaseMap::update(void)
             }
         }
     }
+    */
+
 }
 
 void BaseMap::render(void)
 {
     _bf->render(getMemDC());
     _pl->renderPlayer(getMemDC());
+
+    cout << "walk " << _pl->getState()[WALK] << endl;
+    cout << "jump " << _pl->getState()[JUMP] << endl;
+    cout << "crouch " << _pl->getState()[CROUCH] << endl;
+    cout << "dodge " << _pl->getState()[DODGE] << endl;
+    cout << _pl->getLeft() << endl;
 }

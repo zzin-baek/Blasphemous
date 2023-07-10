@@ -9,7 +9,6 @@ private:
 public:
 	HRESULT init(void);
 
-	void movePlayer();
 	void render(HDC hdc);
 
 	void setX(int x) { _startPos.x = x; }
