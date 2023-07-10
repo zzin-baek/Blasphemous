@@ -22,6 +22,37 @@ void BaseMap::release(void)
 void BaseMap::update(void)
 {
     _pl->playerAction();
+    _pl->playerMove();
+    if (!_pl->getGround())
+        _pl->setPosY(_pl->getPosY() + 5.0f);
+
+    if (_pl->getRect().right > WINSIZE_X / 2 && _bf->getX() + 680 < 1280)
+    {
+        //_bf->setX(_bf->getX() + (_pl->getRect().right - WINSIZE_X / 2));
+        _bf->setX(_bf->getX() + 3.0f);
+        _pl->setPosX(_pl->getPosX() - 5.0f);
+
+        for (int i = 0; i < _bf->getBoxSize(); i++)
+        {
+            _bf->setBox(i, -6, 0);
+        }
+    }
+
+
+    RECT _rt;
+    for (int i = 0; i < _bf->getBoxSize(); i++)
+    {
+        if (IntersectRect(&_rt, &_bf->getBox(i), &_pl->getRect()))
+        {
+            if (_bf->getBox(i).top < _pl->getRect().bottom)
+            {
+                float d = _pl->getRect().bottom - _bf->getBox(i).top;
+                _pl->setPosY(_pl->getPosY() - d);
+                //_pl->setGround(true);
+            }
+        }
+    }
+
     /*if (KEYMANAGER->isStayKeyDown('A'))
     {
         _pl->setLeft(true);
@@ -115,5 +146,5 @@ void BaseMap::render(void)
     cout << "jump " << _pl->getState()[JUMP] << endl;
     cout << "crouch " << _pl->getState()[CROUCH] << endl;
     cout << "dodge " << _pl->getState()[DODGE] << endl;
-    cout << _pl->getLeft() << endl;
+    cout << _pl->getGround() << endl;
 }

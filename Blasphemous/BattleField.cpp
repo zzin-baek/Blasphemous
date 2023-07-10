@@ -16,15 +16,8 @@ HRESULT BattleField::init(void)
     
     _startPos = { 0, 70 };
 
-    for (int i = 0; i < 10; i++)
-    {
-        _box[i] = RectMake(0 + 60 * i, 480, 60, 60);
-    }
-    for (int i = 0; i < 10; i++)
-    {
-        _box[i + 10] = RectMake(600 + 60 * i, 630, 60, 60);
-    }
-
+    _box[0] = RectMake(0, 525, 650, 60);
+    _box[1] = RectMake(650, 650, 700, 60);
     return S_OK;
 }
 
@@ -37,11 +30,21 @@ void BattleField::render(HDC hdc)
     
     IMAGEMANAGER->render("church-field", hdc, 0, 0, WINSIZE_X, WINSIZE_Y, _startPos.x, _startPos.y, 680, 380);
 
-    if (KEYMANAGER->isToggleKey('Z'))
+    if (KEYMANAGER->isToggleKey(VK_CONTROL))
     {
-        for (int i = 0; i < 20; i++)
+        HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+        HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, myBrush);
+        HPEN myPen = (HPEN)CreatePen(PS_SOLID, 2, RGB(255, 255, 255));
+        HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
+        
+        for (int i = 0; i < 2; i++)
         {
             DrawRectMake(hdc, _box[i]);
         }
+        
+        SelectObject(hdc, oldBrush);
+        DeleteObject(myBrush);
+        SelectObject(hdc, oldPen);
+        DeleteObject(myPen);
     }
 }

@@ -29,10 +29,12 @@ HRESULT Player::init(void)
     IMAGEMANAGER->addFrameImage("COMBO_ATTACK", "Resources/Image/Penitent/penitent_three_hits_combo.bmp",
         6132 * 2, 154 * 2, 28, 2, true, MAGENTA);
 
-    _plPos_x = WINSIZE_X / 2;
-    _plPos_y = WINSIZE_Y / 2 + 50;
+    _plPos_x = WINSIZE_X / 2 - 300;
+    _plPos_y = WINSIZE_Y / 2;
     _cnt = _idx_x = _idx_y = 0;
-    _isLeft = false;
+    _isLeft = _isGround = false;
+    _centerX = _centerY = 0.0f;
+    _tempX = _tempY = 0.0f;
 
     for (int i = 0; i < MAX_STATE; i++)
     {
@@ -46,6 +48,13 @@ HRESULT Player::init(void)
 
 void Player::playerAction(void)
 {
+    _centerX = _plPos_x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2;
+    _centerY = _plPos_y + IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2;
+
+    _player = RectMakeCenter(_centerX, _centerY,
+        IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
+        IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
+
     if (KEYMANAGER->isStayKeyDown('A'))
     {
         _isLeft = true;
@@ -82,6 +91,7 @@ void Player::playerAction(void)
     }
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE))
     {
+        _tempY = _plPos_y;
         if (_plState[WALK] || _plState[DODGE])
         {
             setState(JUMP, true);
@@ -95,6 +105,7 @@ void Player::playerAction(void)
     }
     if (KEYMANAGER->isOnceKeyDown(VK_SHIFT))
     {
+        _tempX = _plPos_x;
         setState(DODGE, true);
         setAction("DODGE");
     }
@@ -113,7 +124,7 @@ void Player::playerAction(void)
             _idx_x--;
             if (_idx_x < 0)
             {
-                _idx_x = IMAGEMANAGER->findImage(_strAction)->getMaxFrameX();
+                _idx_x = getMaxFrameX();
             }
             IMAGEMANAGER->findImage(_strAction)->setFrameX(_idx_x);
         }
@@ -125,11 +136,45 @@ void Player::playerAction(void)
         if (_cnt % 5 == 0)
         {
             _idx_x++;
-            if (_idx_x > IMAGEMANAGER->findImage(_strAction)->getMaxFrameX())
+            if (_idx_x > getMaxFrameX())
             {
                 _idx_x = 0;
             }
             IMAGEMANAGER->findImage(_strAction)->setFrameX(_idx_x);
+        }
+    }
+}
+
+void Player::playerMove(void)
+{
+    if (_plState[JUMP])
+    {
+        _plPos_y -= 10.0f;
+        if (_plPos_y < _tempY - 180)
+        {
+            _plState.reset();
+            setAction("IDLE");
+        }
+    }
+    if (_plState[DODGE])
+    {
+        if (_isLeft)
+        {
+            _plPos_x -= 5.0f;
+            if (_plPos_x < _tempX - 200)
+            {
+                _plState.reset();
+                setAction("IDLE");
+            }
+        }
+        else
+        {
+            _plPos_x += 5.0f;
+            if (_plPos_x > _tempX + 200)
+            {
+                _plState.reset();
+                setAction("IDLE");
+            }
         }
     }
 }
@@ -142,4 +187,21 @@ Player::~Player()
 void Player::renderPlayer(HDC hdc)
 {
     IMAGEMANAGER->frameRender(_strAction, hdc, _plPos_x, _plPos_y, _idx_x, _idx_y);
+
+    if (KEYMANAGER->isToggleKey(VK_CONTROL))
+    {
+        HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+        HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, myBrush);
+        HPEN myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+        HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
+
+        DrawRectMake(hdc, _player);
+        _stprintf_s(_loc, "x: %.2f y: %.2f", _plPos_x, _plPos_y);
+        TextOut(hdc, _plPos_x, _plPos_y, _loc, strlen(_loc));
+
+        SelectObject(hdc, oldBrush);
+        DeleteObject(myBrush);
+        SelectObject(hdc, oldPen);
+        DeleteObject(myPen);
+    }
 }
