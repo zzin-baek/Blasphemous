@@ -26,7 +26,7 @@ void BaseMap::update(void)
     if (!_pl->getGround())
         _pl->setPosY(_pl->getPosY() + 5.0f);
 
-    if (_pl->getRect().right > WINSIZE_X / 2 && _bf->getX() + 680 < 1280)
+    if (_pl->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 680 < 1280)
     {
         //_bf->setX(_bf->getX() + (_pl->getRect().right - WINSIZE_X / 2));
         _bf->setX(_bf->getX() + 3.0f);
@@ -37,14 +37,24 @@ void BaseMap::update(void)
             _bf->setBox(i, -6.3f, 0);
         }
     }
-    /*if (_pl->getRect().top < WINSIZE_Y / 2 && (_bf->getY() > 0))
+    if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 && _bf->getX() > 0)
+    {
+        _bf->setX(_bf->getX() - 3.0f);
+        _pl->setPosX(_pl->getPosX() + 4.0f);
+
+        for (int i = 0; i < _bf->getBoxSize(); i++)
+        {
+            _bf->setBox(i, 6.3f, 0);
+        }
+    }
+    if (_pl->getRect().top < WINSIZE_Y / 2 && (_bf->getY() > 0))
     {
         _bf->setY(_bf->getY() - 1.0f);
         for (int i = 0; i < _bf->getBoxSize(); i++)
         {
-            _bf->setBox(i, 0, 6);
+            _bf->setBox(i, 0, 2.0);
         }
-    }*/
+    }
     if (_pl->getRect().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 380 < 600))
     {
         _bf->setY(_bf->getY() + 1.0f);

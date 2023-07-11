@@ -23,10 +23,14 @@ HRESULT Player::init(void)
         1020 * 2, 262 * 2, 10, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("ATTACK", "Resources/Image/Penitent/penitent_attack_combo.bmp",
         1364 * 2, 144 * 2, 11, 2, true, MAGENTA);
-    IMAGEMANAGER->addFrameImage("ATTACK_JUMP", "Resources/Image/Penitent/penitent_jumping_attack_noslash.bmp",
-        850 * 2, 188 * 2, 10, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("ATTACK_JUMP", "Resources/Image/Penitent/penitent_jumping_attack.bmp",
+        1290 * 2, 188 * 2, 10, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("ATTACK_DODGE", "Resources/Image/Penitent/penitent_dodge_attack.bmp",
+        2048 * 2, 512 * 2, 8, 4, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("COMBO_ATTACK", "Resources/Image/Penitent/penitent_three_hits_combo.bmp",
         6132 * 2, 154 * 2, 28, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("PARRY", "Resources/Image/Penitent/penitent_parry_failed.bmp",
+        740 * 2, 144 * 2, 10, 2, true, MAGENTA);
 
     _plPos_x = WINSIZE_X / 2 - 300;
     _plPos_y = WINSIZE_Y / 2;
@@ -86,23 +90,33 @@ void Player::playerAction(void)
         setAction("IDLE");
     }
 
-    if (KEYMANAGER->isOnceKeyUp('S'))
+    if (KEYMANAGER->isOnceKeyUp('S') && isEmpty())
     {
         setState(CROUCH, false);
-        setAction("IDLE");
+        setAction("CROUCH_UP");
         _actionList.push_back("CROUCH_UP");
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("CROUCH_UP")->getMaxFrameX();
         else
             _idx_x = 0;
     }
-    if (KEYMANAGER->isOnceKeyDown(VK_SPACE))
+    if (KEYMANAGER->isOnceKeyDown('J'))
+    {
+        setState(PARRY, true);
+        _actionList.push_back("PARRY");
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("PARRY")->getMaxFrameX();
+        else
+            _idx_x = 0;
+    }
+    if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP])
     {
         _tempY = _plPos_y;
         if (_plState[WALK])
         {
             setState(JUMP, true);
             setAction("JUMP_FORWARD");
+            _actionList.push_back("JUMP_FORWARD");
             if (_isLeft)
                 _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX();
             else
@@ -135,15 +149,44 @@ void Player::playerAction(void)
         _tempX = _plPos_x;
         setState(DODGE, true);
         _actionList.push_back("DODGE");
-        //setAction("DODGE");
+        setAction("DODGE");
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("DODGE")->getMaxFrameX();
         else
             _idx_x = 0;
     }
-    if (KEYMANAGER->isOnceKeyDown('K'))
+    if (KEYMANAGER->isOnceKeyDown('K') && !_plState[ATTACK])
     {
-        setAction("ATTACK");
+        if (_plState[JUMP])
+        {
+            setState(ATTACK, true);
+            setAction("ATTACK_JUMP");
+            _actionList.push_back("ATTACK_JUMP");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("ATTACK_JUMP")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+        else if (_plState[DODGE])
+        {
+            setState(ATTACK, true);
+            setAction("ATTACK_DODGE");
+            _actionList.push_back("ATTACK_DODGE");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("ATTACK_DODGE")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+        else
+        {
+            setState(ATTACK, true);
+            setAction("ATTACK");
+            _actionList.push_back("ATTACK");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("ATTACK")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
     }
 
    _cnt++;
@@ -188,7 +231,7 @@ void Player::playerAction(void)
        {
            _idx_y = 1;
            IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
-           if (_cnt % 2 == 0)
+           if (_cnt % 5 == 0)
            {
                _idx_x--;
                if (_idx_x < 0)
@@ -197,7 +240,10 @@ void Player::playerAction(void)
                    if (!_actionList.empty())
                        _idx_x = IMAGEMANAGER->findImage(_actionList.front().c_str())->getMaxFrameX();
                    else
+                   {
                        _plState.reset();
+                       setAction("IDLE");
+                   }
                }
                if (!_actionList.empty())
                     IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_idx_x);
@@ -207,7 +253,7 @@ void Player::playerAction(void)
        {
            _idx_y = 0;
            IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
-           if (_cnt % 2 == 0)
+           if (_cnt % 5 == 0)
            {
                _idx_x++;
                if (_idx_x > IMAGEMANAGER->findImage(_actionList.front())->getMaxFrameX())
@@ -216,7 +262,10 @@ void Player::playerAction(void)
                    if (!_actionList.empty())
                         _idx_x = 0;
                    else
+                   {
                        _plState.reset();
+                       setAction("IDLE");
+                   }
                }
                if (!_actionList.empty())
                     IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_idx_x);
@@ -229,13 +278,25 @@ void Player::playerMove(void)
 {
     if (_plState[JUMP])
     {
-        if (strcmp(_strAction, "JUMP_FORWARD") == 0 && _idx_x < 6)
-            _plPos_y -= 10.0f;
-        else if(_plPos_y < _tempY - 180)
+        if (_isLeft)
         {
-            _plState.reset();
-            setAction("IDLE");
+            if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x > getMaxFrameX() - 6)
+                _plPos_y -= 10.0f;
+            else if (!strcmp(_strAction, "JUMP"))
+            {
+
+            }
         }
+        else
+        {
+            if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 6)
+                _plPos_y -= 10.0f;
+        }
+        //else if(_plPos_y < _tempY - 180)
+        //{
+        //    _plState.reset();
+        //    setAction("IDLE");
+        //}
         /*if (_plPos_y < _tempY - 180)
         {
             _plState.reset();

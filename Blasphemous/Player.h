@@ -1,16 +1,17 @@
 #pragma once
 
 #define MAX_STATE 8
-#define MAX_QUEUE 10
 
 // bitset: 기본, 걷기, 점프, 앉기, 매달리기
 enum eState
 {
 	WALK = 0,
 	JUMP,
+	ATTACK,
 	CROUCH,
 	DODGE,
-	HANGON
+	HANGON,
+	PARRY
 };
 // bool _isGround: 바닥인지 공중인지
 
@@ -22,14 +23,13 @@ private:
 	deque<string> _actionList;
 	
 	RECT _player;
-	float _plPos_x, _plPos_y;
-	float _centerX, _centerY;
+	float _plPos_x, _plPos_y, _centerX, _centerY;
 	bool _isLeft, _isGround, _isFixed;
 	int _cnt, _idx_x, _idx_y;
+
 	float _tempX, _tempY;
 
-	char _loc[128];
-	char _action[128];
+	char _loc[128], _action[128];
 
 public:
 	HRESULT init(void);
@@ -47,14 +47,18 @@ public:
 	inline bool getGround() { return _isGround; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
+	inline bool getLeft() { return _isLeft; }
 
 	inline int getMaxFrameX() { return IMAGEMANAGER->findImage(_strAction)->getMaxFrameX(); }
 
 	// 상태 getset
 	bitset<MAX_STATE> getState() { return _plState; }
 	void setState(int num, bool state) { _plState.set(num, state); }
+	bool isEmpty() { return _actionList.empty(); }
 
 	inline RECT getRect() { return _player; }
+	inline float getCenterX() { return _centerX; }
+	inline float getCenterY() { return _centerY; }
 
 	Player() {}
 	~Player();
