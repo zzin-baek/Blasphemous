@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <cassert>
 #include <bitset>
+#include <deque>
 
 #define		PI			3.141592653f
 #define		MAGENTA		RGB(255, 0, 255)

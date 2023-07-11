@@ -12,13 +12,14 @@ HRESULT MainMenu::init(void)
     IMAGEMANAGER->addFrameImage("¸ÞÀÎ¸Þ´º_²ÉÀÙ2", "Resources/Image/MainMenu/crisanta-petals.bmp",
         7040 , 1440 , 11, 4, true, MAGENTA);
 
-    IMAGEMANAGER->addFrameImage("´åÁö", "Resources/Image/Penitent/penitent_dodge_attack.bmp",
-        2048, 512, 8, 4, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("¾Ö±âÃµ»ç", "Resources/Image/MainMenu/cherub.bmp",
+        280 * 3 / 2, 210 * 3 / 2, 4, 3, true, MAGENTA);
 
     cnt = idx = 0;
     minus = 1;
     idx_bg = idx_crisanta = idx_petal = idx_petal_fg = 0;
-    bg, crisanta, petal, petal_fg = { 0, 0 };
+    idx_angel = 0;
+    bg = crisanta = petal = petal_fg = angel = { 0, 0 };
 
     return S_OK;
 }
@@ -30,8 +31,7 @@ void MainMenu::release(void)
 void MainMenu::update(void)
 {
     cnt++;
-
-    if (cnt % 25 == 0)
+    if (cnt % 22 == 0)
     {
         idx_bg++;
         idx_crisanta += 1 * minus;
@@ -82,6 +82,21 @@ void MainMenu::update(void)
         IMAGEMANAGER->findImage("¸ÞÀÎ¸Þ´º_²ÉÀÙ2")->setFrameX(petal_fg.x);
         IMAGEMANAGER->findImage("¸ÞÀÎ¸Þ´º_²ÉÀÙ2")->setFrameY(petal_fg.y);
     }
+
+    if (cnt % 5 == 0)
+    {
+        idx_angel++;
+        if (idx_angel > 10)
+        {
+            idx_angel = 0;
+        }
+
+        angel.x = idx_angel % 4;
+        angel.y = idx_angel / 4;
+
+        IMAGEMANAGER->findImage("¾Ö±âÃµ»ç")->setFrameX(angel.x);
+        IMAGEMANAGER->findImage("¾Ö±âÃµ»ç")->setFrameY(angel.y);
+    }
 }
 
 void MainMenu::render(void)
@@ -91,5 +106,14 @@ void MainMenu::render(void)
     IMAGEMANAGER->frameRender("¸ÞÀÎ¸Þ´º_²ÉÀÙ", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, petal.x, petal.y);
     IMAGEMANAGER->frameRender("¸ÞÀÎ¸Þ´º_²ÉÀÙ2", getMemDC(), 0, 0, WINSIZE_X, WINSIZE_Y, petal_fg.x, petal_fg.y);
 
-    FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 200, WINSIZE_Y - 250, "NeoµÕ±Ù¸ð Pro", 35, 1, "¼ø·Ê", strlen("¼ø·Ê"), RGB(255, 255, 255));
+    // Å×µÎ¸®
+    for (int i = 0; i < 3; i++)
+    {
+        FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 200, WINSIZE_Y - 250 + i, "NeoµÕ±Ù¸ð Pro", 32, 2, "¼ø·Ê", strlen("¼ø·Ê"), RGB(0, 0, 0));
+        FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 230, WINSIZE_Y - 210 + i, "NeoµÕ±Ù¸ð Pro", 32, 2, "³ª°¡±â", strlen("³ª°¡±â"), RGB(0, 0, 0));
+    }
+    // ¼ø·Ê, ³ª°¡±â
+    FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 200, WINSIZE_Y - 250, "NeoµÕ±Ù¸ð Pro", 32, 2, "¼ø·Ê", strlen("¼ø·Ê"), RGB(255, 255, 0));
+    FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 230, WINSIZE_Y - 210, "NeoµÕ±Ù¸ð Pro", 32, 2, "³ª°¡±â", strlen("³ª°¡±â"), RGB(255, 255, 255));
+    IMAGEMANAGER->frameRender("¾Ö±âÃµ»ç", getMemDC(), WINSIZE_X - 120, WINSIZE_Y - 280, angel.x, angel.y);
 }

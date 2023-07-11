@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Acolyte.h" />
     <ClInclude Include="BaseMap.h" />
     <ClInclude Include="BattleField.h" />
     <ClInclude Include="BossMap.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Acolyte.cpp" />
     <ClCompile Include="BaseMap.cpp" />
     <ClCompile Include="BattleField.cpp" />
     <ClCompile Include="BossMap.cpp" />

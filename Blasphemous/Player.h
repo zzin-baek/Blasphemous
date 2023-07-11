@@ -1,9 +1,10 @@
 #pragma once
 
 #define MAX_STATE 8
+#define MAX_QUEUE 10
 
 // bitset: 기본, 걷기, 점프, 앉기, 매달리기
-typedef enum eState
+enum eState
 {
 	WALK = 0,
 	JUMP,
@@ -18,15 +19,17 @@ class Player
 private:
 	char _strAction[128];
 	bitset<MAX_STATE> _plState;
+	deque<string> _actionList;
 	
 	RECT _player;
 	float _plPos_x, _plPos_y;
 	float _centerX, _centerY;
-	bool _isLeft, _isGround;
+	bool _isLeft, _isGround, _isFixed;
 	int _cnt, _idx_x, _idx_y;
 	float _tempX, _tempY;
 
 	char _loc[128];
+	char _action[128];
 
 public:
 	HRESULT init(void);

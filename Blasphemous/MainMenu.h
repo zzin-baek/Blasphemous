@@ -6,7 +6,8 @@ class MainMenu : public GameNode
 private:
 	int cnt, idx, minus;
 	int idx_bg, idx_petal, idx_crisanta, idx_petal_fg;
-	POINT bg, crisanta, petal, petal_fg;
+	int idx_angel;
+	POINT bg, crisanta, petal, petal_fg, angel;
 
 public:
 	HRESULT init(void);

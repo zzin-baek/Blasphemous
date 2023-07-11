@@ -34,7 +34,23 @@ void BaseMap::update(void)
 
         for (int i = 0; i < _bf->getBoxSize(); i++)
         {
-            _bf->setBox(i, -6, 0);
+            _bf->setBox(i, -6.3f, 0);
+        }
+    }
+    /*if (_pl->getRect().top < WINSIZE_Y / 2 && (_bf->getY() > 0))
+    {
+        _bf->setY(_bf->getY() - 1.0f);
+        for (int i = 0; i < _bf->getBoxSize(); i++)
+        {
+            _bf->setBox(i, 0, 6);
+        }
+    }*/
+    if (_pl->getRect().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 380 < 600))
+    {
+        _bf->setY(_bf->getY() + 1.0f);
+        for (int i = 0; i < _bf->getBoxSize(); i++)
+        {
+            _bf->setBox(i, 0, -2.0);
         }
     }
 

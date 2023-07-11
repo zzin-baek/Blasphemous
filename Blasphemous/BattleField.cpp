@@ -14,10 +14,13 @@ HRESULT BattleField::init(void)
     IMAGEMANAGER->addImage("church-field", "Resources/Image/BackGround/churches-field-map.bmp",
         1280, 600, true, MAGENTA);
     
-    _startPos = { 0, 70 };
+    _startPos_x = 0.0f;
+    _startPos_y = 70.0f;
 
     _box[0] = RectMake(0, 525, 650, 60);
     _box[1] = RectMake(650, 650, 700, 60);
+    _box[2] = RectMake(1350, 785, 1200, 60);
+    _box[3] = RectMake(1180, 250, 280, 20);
     return S_OK;
 }
 
@@ -28,7 +31,7 @@ void BattleField::render(HDC hdc)
     IMAGEMANAGER->render("churches-field-bg3", hdc, 0, 0);
     IMAGEMANAGER->render("churches-field-bg2", hdc, 0, 0);
     
-    IMAGEMANAGER->render("church-field", hdc, 0, 0, WINSIZE_X, WINSIZE_Y, _startPos.x, _startPos.y, 680, 380);
+    IMAGEMANAGER->render("church-field", hdc, 0, 0, WINSIZE_X, WINSIZE_Y, _startPos_x, _startPos_y, 680, 380);
 
     if (KEYMANAGER->isToggleKey(VK_CONTROL))
     {
@@ -37,7 +40,7 @@ void BattleField::render(HDC hdc)
         HPEN myPen = (HPEN)CreatePen(PS_SOLID, 2, RGB(255, 255, 255));
         HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
         
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < getBoxSize(); i++)
         {
             DrawRectMake(hdc, _box[i]);
         }

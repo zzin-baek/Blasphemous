@@ -23,7 +23,10 @@
       <UniqueIdentifier>{38668fcf-e892-49a8-b564-dc2c4793fcb8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scene1">
-      <UniqueIdentifier>{f16f43c3-cca7-4b6d-9001-3b04e8b20ac7}</UniqueIdentifier>
+      <UniqueIdentifier>{babd6a8c-c96d-4e30-b9be-0a7d273534e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainMenu">
+      <UniqueIdentifier>{d2ca9674-3c64-4513-9766-c303ef94aef7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,19 +58,22 @@
     <ClInclude Include="Stdafx.h">
       <Filter>2D FrameWork\PCH</Filter>
     </ClInclude>
-    <ClInclude Include="MainMenu.h" />
     <ClInclude Include="FontManager.h">
       <Filter>2D FrameWork\FrameWorkManager</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h" />
     <ClInclude Include="BossMap.h" />
+    <ClInclude Include="Acolyte.h">
+      <Filter>Scene1</Filter>
+    </ClInclude>
     <ClInclude Include="BaseMap.h">
       <Filter>Scene1</Filter>
     </ClInclude>
     <ClInclude Include="BattleField.h">
       <Filter>Scene1</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Scene1</Filter>
+    <ClInclude Include="MainMenu.h">
+      <Filter>MainMenu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -91,19 +97,22 @@
     <ClCompile Include="Stdafx.cpp">
       <Filter>2D FrameWork\PCH</Filter>
     </ClCompile>
-    <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="FontManager.cpp">
       <Filter>2D FrameWork\FrameWorkManager</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="BossMap.cpp" />
+    <ClCompile Include="Acolyte.cpp">
+      <Filter>Scene1</Filter>
+    </ClCompile>
     <ClCompile Include="BaseMap.cpp">
       <Filter>Scene1</Filter>
     </ClCompile>
     <ClCompile Include="BattleField.cpp">
       <Filter>Scene1</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Scene1</Filter>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>MainMenu</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

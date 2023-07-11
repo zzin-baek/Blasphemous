@@ -21,7 +21,6 @@ HRESULT Player::init(void)
         1872 * 2, 166 * 2, 18, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("CLIMB", "Resources/Image/Penitent/penitent_climbledge_reviewed.bmp",
         1020 * 2, 262 * 2, 10, 2, true, MAGENTA);
-
     IMAGEMANAGER->addFrameImage("ATTACK", "Resources/Image/Penitent/penitent_attack_combo.bmp",
         1364 * 2, 144 * 2, 11, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("ATTACK_JUMP", "Resources/Image/Penitent/penitent_jumping_attack_noslash.bmp",
@@ -31,8 +30,10 @@ HRESULT Player::init(void)
 
     _plPos_x = WINSIZE_X / 2 - 300;
     _plPos_y = WINSIZE_Y / 2;
+
     _cnt = _idx_x = _idx_y = 0;
-    _isLeft = _isGround = false;
+    _isLeft = _isGround = _isFixed = false;
+
     _centerX = _centerY = 0.0f;
     _tempX = _tempY = 0.0f;
 
@@ -55,7 +56,7 @@ void Player::playerAction(void)
         IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
         IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
 
-    if (KEYMANAGER->isStayKeyDown('A'))
+    if (KEYMANAGER->isStayKeyDown('A') && !_isFixed)
     {
         _isLeft = true;
         setState(WALK, true);
@@ -64,7 +65,7 @@ void Player::playerAction(void)
         if (_plPos_x > 0)
             _plPos_x -= 5.0f;
     }
-    if (KEYMANAGER->isStayKeyDown('D') && _plPos_x < WINSIZE_X)
+    if (KEYMANAGER->isStayKeyDown('D') && !_isFixed)
     {
         _isLeft = false;
         setState(WALK, true);
@@ -76,7 +77,7 @@ void Player::playerAction(void)
     if (KEYMANAGER->isStayKeyDown('S'))
     {
         setState(CROUCH, true);
-        if (_plState.none())
+        if (!_plState.none())
             setAction("CROUCH_DOWN");
     }
     if (KEYMANAGER->isOnceKeyUp('A') || KEYMANAGER->isOnceKeyUp('D'))
@@ -87,94 +88,169 @@ void Player::playerAction(void)
 
     if (KEYMANAGER->isOnceKeyUp('S'))
     {
-        setAction("CROUCH_UP");
+        setState(CROUCH, false);
+        setAction("IDLE");
+        _actionList.push_back("CROUCH_UP");
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("CROUCH_UP")->getMaxFrameX();
+        else
+            _idx_x = 0;
     }
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE))
     {
         _tempY = _plPos_y;
-        if (_plState[WALK] || _plState[DODGE])
+        if (_plState[WALK])
         {
             setState(JUMP, true);
             setAction("JUMP_FORWARD");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+        else if (_plState[DODGE])
+        {
+            setAction("JUMP_FORWARD");
+            setState(DODGE, false);
+            setState(JUMP, true);
+            _actionList.pop_front();
+            _actionList.push_back("JUMP_FORWARD");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX();
+            else
+                _idx_x = 0;
         }
         else if (_plState.none())
         {
             setState(JUMP, true);
             setAction("JUMP");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("JUMP")->getMaxFrameX();
+            else
+                _idx_x = 0;
         }
     }
     if (KEYMANAGER->isOnceKeyDown(VK_SHIFT))
     {
         _tempX = _plPos_x;
         setState(DODGE, true);
-        setAction("DODGE");
+        _actionList.push_back("DODGE");
+        //setAction("DODGE");
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("DODGE")->getMaxFrameX();
+        else
+            _idx_x = 0;
     }
     if (KEYMANAGER->isOnceKeyDown('K'))
     {
-        setAction("COMBO_ATTACK");
+        setAction("ATTACK");
     }
 
    _cnt++;
-    if (_isLeft)
-    {
-        _idx_y = 1;
-        IMAGEMANAGER->findImage(_strAction)->setFrameY(_idx_y);
-        if (_cnt % 5 == 0)
-        {            
-            _idx_x--;
-            if (_idx_x < 0)
-            {
-                _idx_x = getMaxFrameX();
-            }
-            IMAGEMANAGER->findImage(_strAction)->setFrameX(_idx_x);
-        }
-    }
-    else
-    {
-        _idx_y = 0;
-        IMAGEMANAGER->findImage(_strAction)->setFrameY(_idx_y);
-        if (_cnt % 5 == 0)
-        {
-            _idx_x++;
-            if (_idx_x > getMaxFrameX())
-            {
-                _idx_x = 0;
-            }
-            IMAGEMANAGER->findImage(_strAction)->setFrameX(_idx_x);
-        }
-    }
+   if (_actionList.empty())
+   {
+       if (_isLeft)
+       {
+           _idx_y = 1;
+           IMAGEMANAGER->findImage(_strAction)->setFrameY(_idx_y);
+           if (_cnt % 5 == 0)
+           {
+               _idx_x--;
+               if (_idx_x < 0)
+               {
+                   if (strcmp(_strAction, "CROUCH_DOWN") == 0)
+                       _idx_x = 0;
+                   else _idx_x = getMaxFrameX();
+               }
+               IMAGEMANAGER->findImage(_strAction)->setFrameX(_idx_x);
+           }
+       }
+       else
+       {
+           _idx_y = 0;
+           IMAGEMANAGER->findImage(_strAction)->setFrameY(_idx_y);
+           if (_cnt % 5 == 0)
+           {
+               _idx_x++;
+               if (_idx_x > getMaxFrameX())
+               {
+                   if (strcmp(_strAction, "CROUCH_DOWN") == 0)
+                       _idx_x = getMaxFrameX();
+                   else _idx_x = 0;
+               }
+               IMAGEMANAGER->findImage(_strAction)->setFrameX(_idx_x);
+           }
+       }
+   }
+   else
+   {
+       if (_isLeft)
+       {
+           _idx_y = 1;
+           IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
+           if (_cnt % 2 == 0)
+           {
+               _idx_x--;
+               if (_idx_x < 0)
+               {
+                   _actionList.pop_front();
+                   if (!_actionList.empty())
+                       _idx_x = IMAGEMANAGER->findImage(_actionList.front().c_str())->getMaxFrameX();
+                   else
+                       _plState.reset();
+               }
+               if (!_actionList.empty())
+                    IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_idx_x);
+           }
+       }
+       else
+       {
+           _idx_y = 0;
+           IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
+           if (_cnt % 2 == 0)
+           {
+               _idx_x++;
+               if (_idx_x > IMAGEMANAGER->findImage(_actionList.front())->getMaxFrameX())
+               {
+                   _actionList.pop_front();
+                   if (!_actionList.empty())
+                        _idx_x = 0;
+                   else
+                       _plState.reset();
+               }
+               if (!_actionList.empty())
+                    IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_idx_x);
+           }
+       }
+   }
 }
 
 void Player::playerMove(void)
 {
     if (_plState[JUMP])
     {
-        _plPos_y -= 10.0f;
-        if (_plPos_y < _tempY - 180)
+        if (strcmp(_strAction, "JUMP_FORWARD") == 0 && _idx_x < 6)
+            _plPos_y -= 10.0f;
+        else if(_plPos_y < _tempY - 180)
         {
             _plState.reset();
             setAction("IDLE");
         }
+        /*if (_plPos_y < _tempY - 180)
+        {
+            _plState.reset();
+            setAction("IDLE");
+        }*/
     }
     if (_plState[DODGE])
     {
         if (_isLeft)
         {
-            _plPos_x -= 5.0f;
-            if (_plPos_x < _tempX - 200)
-            {
-                _plState.reset();
-                setAction("IDLE");
-            }
+            _plPos_x -= 8.0f;
         }
         else
         {
-            _plPos_x += 5.0f;
-            if (_plPos_x > _tempX + 200)
-            {
-                _plState.reset();
-                setAction("IDLE");
-            }
+            _plPos_x += 8.0f;
         }
     }
 }
@@ -186,8 +262,10 @@ Player::~Player()
 
 void Player::renderPlayer(HDC hdc)
 {
-    IMAGEMANAGER->frameRender(_strAction, hdc, _plPos_x, _plPos_y, _idx_x, _idx_y);
-
+    if(_actionList.empty())
+        IMAGEMANAGER->frameRender(_strAction, hdc, _plPos_x, _plPos_y, _idx_x, _idx_y);
+    else
+        IMAGEMANAGER->frameRender(_actionList.front().c_str(), hdc, _plPos_x, _plPos_y, _idx_x, _idx_y);
     if (KEYMANAGER->isToggleKey(VK_CONTROL))
     {
         HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
@@ -198,10 +276,12 @@ void Player::renderPlayer(HDC hdc)
         DrawRectMake(hdc, _player);
         _stprintf_s(_loc, "x: %.2f y: %.2f", _plPos_x, _plPos_y);
         TextOut(hdc, _plPos_x, _plPos_y, _loc, strlen(_loc));
+        TextOut(hdc, _plPos_x, _plPos_y + 20, _strAction, strlen(_strAction));
 
         SelectObject(hdc, oldBrush);
         DeleteObject(myBrush);
         SelectObject(hdc, oldPen);
         DeleteObject(myPen);
     }
+    //cout << _actionList.size() << endl;
 }
