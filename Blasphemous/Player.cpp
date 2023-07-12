@@ -33,7 +33,7 @@ HRESULT Player::init(void)
         740 * 2, 144 * 2, 10, 2, true, MAGENTA);
 
     _plPos_x = WINSIZE_X / 2 - 300;
-    _plPos_y = WINSIZE_Y / 2;
+    _plPos_y = WINSIZE_Y / 2 - 100;
 
     _cnt = _idx_x = _idx_y = 0;
     _isLeft = _isGround = _isFixed = false;
@@ -59,6 +59,10 @@ void Player::playerAction(void)
     _player = RectMakeCenter(_centerX, _centerY,
         IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
         IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
+
+    collision[0] = RectMakeCenter(_player.left, _centerY, 10, 10);
+    collision[1] = RectMakeCenter(_player.right, _centerY, 10, 10);
+    collision[2] = RectMakeCenter(_centerX, _player.bottom, 10, 10);
 
     if (KEYMANAGER->isStayKeyDown('A') && !_isFixed)
     {
@@ -329,6 +333,8 @@ void Player::renderPlayer(HDC hdc)
         IMAGEMANAGER->frameRender(_actionList.front().c_str(), hdc, _plPos_x, _plPos_y, _idx_x, _idx_y);
     if (KEYMANAGER->isToggleKey(VK_CONTROL))
     {
+        collisionRect(hdc);
+
         HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
         HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, myBrush);
         HPEN myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
@@ -345,4 +351,12 @@ void Player::renderPlayer(HDC hdc)
         DeleteObject(myPen);
     }
     //cout << _actionList.size() << endl;
+}
+
+void Player::collisionRect(HDC hdc)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        DrawRectMake(hdc, collision[i]);
+    }
 }

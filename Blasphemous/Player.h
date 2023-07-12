@@ -22,7 +22,7 @@ private:
 	bitset<MAX_STATE> _plState;
 	deque<string> _actionList;
 	
-	RECT _player;
+	RECT _player, collision[3];
 	float _plPos_x, _plPos_y, _centerX, _centerY;
 	bool _isLeft, _isGround, _isFixed;
 	int _cnt, _idx_x, _idx_y;
@@ -36,6 +36,7 @@ public:
 	void playerAction(void);
 	void playerMove(void);
 	void renderPlayer(HDC hdc);
+	void collisionRect(HDC hdc);
 
 	inline void setPosX(float x) { _plPos_x = x; }
 	inline void setPosY(float y) { _plPos_y = y; }
@@ -57,6 +58,7 @@ public:
 	bool isEmpty() { return _actionList.empty(); }
 
 	inline RECT getRect() { return _player; }
+	inline RECT getCollision(int num) { return collision[num]; }
 	inline float getCenterX() { return _centerX; }
 	inline float getCenterY() { return _centerY; }
 

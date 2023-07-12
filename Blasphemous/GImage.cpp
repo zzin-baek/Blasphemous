@@ -515,6 +515,104 @@ void GImage::alphaRender(HDC hdc, int destX, int destY, BYTE alpha)
 
 void GImage::alphaRender(HDC hdc, int destX, int destY, int sourX, int sourY, int sourWidth, int sourHeight, BYTE alpha)
 {
+    if (!_blendImage) initForAlphaBlend();
+
+    _blendFunc.SourceConstantAlpha = alpha;
+
+    if (_isTrans)
+    {
+        // 1. 출력해야 될 DC에 그려져 있는 내용을 블렌드 이미지에 그린다.
+        BitBlt
+        (
+            _blendImage->hMemDC,
+            0, 0,
+            _imageInfo->width,
+            _imageInfo->height,
+            hdc,
+            destX, destY,
+            SRCCOPY
+        );
+        // 2. 원본 이미지의 배경을 없앤 후 블렌드 이미지에 그린다. 
+        GdiTransparentBlt
+        (
+            _blendImage->hMemDC,
+            0, 0,
+            sourWidth, sourHeight,
+            _imageInfo->hMemDC,
+            sourX, sourY,
+            sourWidth, sourHeight,
+            _transColor
+        );
+        // 3. 블렌드 이미지를 화면에 그린다. 
+        AlphaBlend
+        (
+            hdc,
+            destX, destY,
+            sourWidth, sourHeight,
+            _blendImage->hMemDC,
+            sourX, sourY,
+            sourWidth, sourHeight,
+            _blendFunc
+        );
+
+    }
+    else
+    {
+        AlphaBlend(hdc, destX, destY, _imageInfo->width, _imageInfo->height,
+            _imageInfo->hMemDC, sourX, sourY, sourWidth, sourHeight, _blendFunc);
+
+    }
+}
+
+void GImage::alphaRender(HDC hdc, int destX, int destY, int destWidth, int destHeight, int sourX, int sourY, int sourWidth, int sourHeight, BYTE alpha)
+{
+    if (!_blendImage) initForAlphaBlend();
+
+    _blendFunc.SourceConstantAlpha = alpha;
+
+    if (_isTrans)
+    {
+        // 1. 출력해야 될 DC에 그려져 있는 내용을 블렌드 이미지에 그린다.
+        BitBlt
+        (
+            _blendImage->hMemDC,
+            0, 0,
+            _imageInfo->width,
+            _imageInfo->height,
+            hdc,
+            destX, destY,
+            SRCCOPY
+        );
+        // 2. 원본 이미지의 배경을 없앤 후 블렌드 이미지에 그린다. 
+        GdiTransparentBlt
+        (
+            _blendImage->hMemDC,
+            0, 0,
+            destWidth, destHeight,
+            _imageInfo->hMemDC,
+            sourX, sourY,
+            sourWidth, sourHeight,
+            _transColor
+        );
+        // 3. 블렌드 이미지를 화면에 그린다. 
+        AlphaBlend
+        (
+            hdc,
+            destX, destY,
+            destWidth, destHeight,
+            _blendImage->hMemDC,
+            sourX, sourY,
+            sourWidth, sourHeight,
+            _blendFunc
+        );
+
+    }
+    else
+    {
+        AlphaBlend(hdc, destX, destY, destWidth, destHeight,
+            _imageInfo->hMemDC, sourX, sourY, sourWidth, sourHeight, _blendFunc);
+
+    }
 }
 
 void GImage::frameRender(HDC hdc, int destX, int destY)

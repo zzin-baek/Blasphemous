@@ -217,6 +217,13 @@ void ImageManager::alphaRender(string strKey, HDC hdc, int destX, int destY, int
 	if (img) img->alphaRender(hdc, destX, destY, sourX, sourY, sourWidth, sourHeight, alpha);
 }
 
+void ImageManager::alphaRender(string strKey, HDC hdc, int destX, int destY, int destWidth, int destHeight, int sourX, int sourY, int sourWidth, int sourHeight, BYTE alpha)
+{
+	GImage* img = findImage(strKey);
+
+	if (img) img->alphaRender(hdc, destX, destY, destWidth, destHeight, sourX, sourY, sourWidth, sourHeight, alpha);
+}
+
 void ImageManager::frameRender(string strKey, HDC hdc, int destX, int destY)
 {
 	GImage* img = findImage(strKey);

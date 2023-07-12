@@ -13,7 +13,8 @@ HRESULT BattleField::init(void)
         1016, WINSIZE_Y, true, MAGENTA);
     IMAGEMANAGER->addImage("church-field", "Resources/Image/BackGround/churches-field-map.bmp",
         1280, 600, true, MAGENTA);
-    
+    IMAGEMANAGER->addImage("bg_collision", "Resources/Image/BackGround/churches-field-map_colision.bmp",
+        1280, 600, true, RGB(255, 255, 255));
     _startPos_x = 0.0f;
     _startPos_y = 70.0f;
 
@@ -35,7 +36,9 @@ void BattleField::render(HDC hdc)
 
     if (KEYMANAGER->isToggleKey(VK_CONTROL))
     {
-        HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+        //ÇÈ¼¿Ãæµ¹¿ë
+        IMAGEMANAGER->render("bg_collision", hdc, 0, 0, WINSIZE_X, WINSIZE_Y, _startPos_x, _startPos_y, 680, 380);
+        /*HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
         HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, myBrush);
         HPEN myPen = (HPEN)CreatePen(PS_SOLID, 2, RGB(255, 255, 255));
         HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
@@ -48,6 +51,6 @@ void BattleField::render(HDC hdc)
         SelectObject(hdc, oldBrush);
         DeleteObject(myBrush);
         SelectObject(hdc, oldPen);
-        DeleteObject(myPen);
+        DeleteObject(myPen);*/
     }
 }

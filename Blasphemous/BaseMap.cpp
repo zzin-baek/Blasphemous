@@ -28,7 +28,6 @@ void BaseMap::update(void)
 
     if (_pl->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 680 < 1280)
     {
-        //_bf->setX(_bf->getX() + (_pl->getRect().right - WINSIZE_X / 2));
         _bf->setX(_bf->getX() + 3.0f);
         _pl->setPosX(_pl->getPosX() - 5.0f);
 
@@ -47,7 +46,7 @@ void BaseMap::update(void)
             _bf->setBox(i, 6.3f, 0);
         }
     }
-    if (_pl->getRect().top < WINSIZE_Y / 2 && (_bf->getY() > 0))
+   if (_pl->getRect().top < WINSIZE_Y / 2 && (_bf->getY() > 0))
     {
         _bf->setY(_bf->getY() - 1.0f);
         for (int i = 0; i < _bf->getBoxSize(); i++)
@@ -64,103 +63,22 @@ void BaseMap::update(void)
         }
     }
 
+    for (int i = _pl->getRect().left; i <= _pl->getRect().right; i++)
+    {
+        COLORREF color = GetPixel(getMemDC(), i, _pl->getRect().bottom);
 
-    RECT _rt;
-    for (int i = 0; i < _bf->getBoxSize(); i++)
-    {
-        if (IntersectRect(&_rt, &_bf->getBox(i), &_pl->getRect()))
-        {
-            if (_bf->getBox(i).top < _pl->getRect().bottom)
-            {
-                float d = _pl->getRect().bottom - _bf->getBox(i).top;
-                _pl->setPosY(_pl->getPosY() - d);
-                //_pl->setGround(true);
-            }
-        }
-    }
+        int r = GetRValue(color);
+        int g = GetGValue(color);
+        int b = GetBValue(color);
 
-    /*if (KEYMANAGER->isStayKeyDown('A'))
-    {
-        _pl->setLeft(true);
-        _pl->setState(WALK, true);
-        if (!_pl->getState()[JUMP])
-            _pl->setAction("RUNNING");
-        _pl->setPosX(_pl->getPosX() - 5.0f);
-    }
-    if (KEYMANAGER->isStayKeyDown('D'))
-    {
-        _pl->setLeft(false);
-        _pl->setState(WALK, true);
-        if (!_pl->getState()[JUMP])
-            _pl->setAction("RUNNING");
-        _pl->setPosX(_pl->getPosX() + 5.0f);
-    }
-    if (KEYMANAGER->isStayKeyDown('S'))
-    {
-        _pl->setState(CROUCH, true);
-        if (_pl->isIdle())
-            _pl->setAction("CROUCH_DOWN");
-    }
-    if (KEYMANAGER->isOnceKeyUp('A') || KEYMANAGER->isOnceKeyUp('D'))
-    {
-        _pl->resetState();
-        _pl->setAction("IDLE");
-    }
-
-    if (KEYMANAGER->isOnceKeyUp('S'))
-    {
-        _pl->setAction("CROUCH_UP");
-    }
-    if (KEYMANAGER->isOnceKeyDown(VK_SPACE))
-    {
-        if (_pl->getState()[WALK] || _pl->getState()[DODGE])
+        if ((r == 255 && g == 0 && b == 255))
         {
-            _pl->setState(JUMP, true);
-            _pl->setAction("JUMP_FORWARD");
+            //_pl->setPosY(_pl->getPosY() - 5.0f);
+            _pl->setGround(true);
+            break;
         }
-        else if (_pl->isIdle())
-        {
-            _pl->setState(JUMP, true);
-            _pl->setAction("JUMP");
-        }
+        _pl->setGround(false);
     }
-    if (KEYMANAGER->isOnceKeyDown(VK_SHIFT))
-    {
-        _pl->setState(DODGE, true);
-        _pl->setAction("DODGE");
-    }
-    if (KEYMANAGER->isOnceKeyDown('K'))
-    {
-        
-    }
-
-    _cnt++;
-    if (_pl->getLeft())
-    {
-        _pl->setIdxY(1);
-        if (_cnt % 5 == 0)
-        {
-            _pl->setIdxX(_pl->getIdxX() - 1);
-            if (_pl->getIdxX() < 0)
-            {
-                _pl->setIdxX(_pl->getMaxFrameX());
-            }
-        }
-    }
-    else
-    {
-        _pl->setIdxY(0);
-        if (_cnt % 5 == 0)
-        {
-            _pl->setIdxX(_pl->getIdxX() + 1);
-            if (_pl->getIdxX() > _pl->getMaxFrameX())
-            {
-                _pl->setIdxX(0);
-            }
-        }
-    }
-    */
-
 }
 
 void BaseMap::render(void)
