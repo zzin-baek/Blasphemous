@@ -23,10 +23,11 @@ private:
 	deque<string> _actionList;
 	
 	RECT _player, collision[3];
+	POINT _plPos;
 	float _plPos_x, _plPos_y, _centerX, _centerY;
 	bool _isLeft, _isGround, _isFixed;
 	int _cnt, _idx_x, _idx_y;
-
+	POINT _center;
 	float _tempX, _tempY;
 
 	char _loc[128], _action[128];
@@ -40,9 +41,14 @@ public:
 
 	inline void setPosX(float x) { _plPos_x = x; }
 	inline void setPosY(float y) { _plPos_y = y; }
+	inline void setPosX(int x) { _plPos.x = x; }
+	inline void setPosY(int y) { _plPos.y = y; }
 
 	inline float getPosX() { return _plPos_x; }
 	inline float getPosY() { return _plPos_y; }
+	//inline int getPosX() { return _plPos.x; }
+	//inline int getPosY() { return _plPos.y; }
+
 	
 	inline void setGround(bool state) { _isGround = state; }
 	inline bool getGround() { return _isGround; }
@@ -59,8 +65,8 @@ public:
 
 	inline RECT getRect() { return _player; }
 	inline RECT getCollision(int num) { return collision[num]; }
-	inline float getCenterX() { return _centerX; }
-	inline float getCenterY() { return _centerY; }
+	inline int getCenterX() { return _centerX; }
+	inline int getCenterY() { return _centerY; }
 
 	Player() {}
 	~Player();

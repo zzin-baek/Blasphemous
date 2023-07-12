@@ -35,10 +35,13 @@ HRESULT Player::init(void)
     _plPos_x = WINSIZE_X / 2 - 300;
     _plPos_y = WINSIZE_Y / 2 - 100;
 
+    _plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
+
     _cnt = _idx_x = _idx_y = 0;
     _isLeft = _isGround = _isFixed = false;
 
     _centerX = _centerY = 0.0f;
+    _center = { 0, 0 };
     _tempX = _tempY = 0.0f;
 
     for (int i = 0; i < MAX_STATE; i++)
@@ -56,13 +59,13 @@ void Player::playerAction(void)
     _centerX = _plPos_x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2;
     _centerY = _plPos_y + IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2;
 
+    //_center.x = _plPos.x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2;
+    //_center.y = _plPos.y + IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2;
+
     _player = RectMakeCenter(_centerX, _centerY,
         IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
         IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
 
-    collision[0] = RectMakeCenter(_player.left, _centerY, 10, 10);
-    collision[1] = RectMakeCenter(_player.right, _centerY, 10, 10);
-    collision[2] = RectMakeCenter(_centerX, _player.bottom, 10, 10);
 
     if (KEYMANAGER->isStayKeyDown('A') && !_isFixed)
     {
@@ -71,7 +74,7 @@ void Player::playerAction(void)
         if (!_plState[JUMP])
             setAction("RUNNING");
         if (_plPos_x > 0)
-            _plPos_x -= 5.0f;
+            _plPos_x -= 4.0f;
     }
     if (KEYMANAGER->isStayKeyDown('D') && !_isFixed)
     {
@@ -80,7 +83,7 @@ void Player::playerAction(void)
         if (!_plState[JUMP])
             setAction("RUNNING");
         if (_plPos_x < WINSIZE_X)
-            _plPos_x += 5.0f;
+            _plPos_x += 4.0f;
     }
     if (KEYMANAGER->isStayKeyDown('S'))
     {
@@ -88,6 +91,36 @@ void Player::playerAction(void)
         if (!_plState.none())
             setAction("CROUCH_DOWN");
     }
+    if (KEYMANAGER->isOnceKeyUp('A') || KEYMANAGER->isOnceKeyUp('D'))
+    {
+        _plState.reset();
+        setAction("IDLE");
+    }
+
+    /*if (KEYMANAGER->isStayKeyDown('A') && !_isFixed)
+    {
+        _isLeft = true;
+        setState(WALK, true);
+        if (!_plState[JUMP])
+            setAction("RUNNING");
+        if (_plPos.x > 0)
+            _plPos.x -= 5;
+    }
+    if (KEYMANAGER->isStayKeyDown('D') && !_isFixed)
+    {
+        _isLeft = false;
+        setState(WALK, true);
+        if (!_plState[JUMP])
+            setAction("RUNNING");
+        if (_plPos.x < WINSIZE_X)
+            _plPos.x += 5;
+    }*/
+    /*if (KEYMANAGER->isStayKeyDown('S'))
+    {
+        setState(CROUCH, true);
+        if (!_plState.none())
+            setAction("CROUCH_DOWN");
+    }*/
     if (KEYMANAGER->isOnceKeyUp('A') || KEYMANAGER->isOnceKeyUp('D'))
     {
         _plState.reset();
@@ -148,6 +181,42 @@ void Player::playerAction(void)
                 _idx_x = 0;
         }
     }
+
+    /*if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP])
+    {
+        _tempY = _plPos.y;
+        if (_plState[WALK])
+        {
+            setState(JUMP, true);
+            setAction("JUMP_FORWARD");
+            _actionList.push_back("JUMP_FORWARD");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+        else if (_plState[DODGE])
+        {
+            setAction("JUMP_FORWARD");
+            setState(DODGE, false);
+            setState(JUMP, true);
+            _actionList.pop_front();
+            _actionList.push_back("JUMP_FORWARD");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+        else if (_plState.none())
+        {
+            setState(JUMP, true);
+            setAction("JUMP");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("JUMP")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+    }*/
     if (KEYMANAGER->isOnceKeyDown(VK_SHIFT))
     {
         _tempX = _plPos_x;
@@ -318,6 +387,45 @@ void Player::playerMove(void)
             _plPos_x += 8.0f;
         }
     }
+
+    //if (_plState[JUMP])
+    //{
+    //    if (_isLeft)
+    //    {
+    //        if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x > getMaxFrameX() - 6)
+    //            _plPos.y -= 10;
+    //        else if (!strcmp(_strAction, "JUMP"))
+    //        {
+
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 6)
+    //            _plPos.y -= 10;
+    //    }
+    //    //else if(_plPos_y < _tempY - 180)
+    //    //{
+    //    //    _plState.reset();
+    //    //    setAction("IDLE");
+    //    //}
+    //    /*if (_plPos_y < _tempY - 180)
+    //    {
+    //        _plState.reset();
+    //        setAction("IDLE");
+    //    }*/
+    //}
+    //if (_plState[DODGE])
+    //{
+    //    if (_isLeft)
+    //    {
+    //        _plPos.x -= 8;
+    //    }
+    //    else
+    //    {
+    //        _plPos.x += 8;
+    //    }
+    //}
 }
 
 Player::~Player()
@@ -357,6 +465,6 @@ void Player::collisionRect(HDC hdc)
 {
     for (int i = 0; i < 3; i++)
     {
-        DrawRectMake(hdc, collision[i]);
+        //DrawRectMake(hdc, collision[i]);
     }
 }

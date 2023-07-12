@@ -388,7 +388,7 @@ void GImage::render(HDC hdc, int destX, int destY, int destWidth, int destHeight
             destWidth,              
             destHeight,             
             _imageInfo->hMemDC,     
-            sourX, sourY,           
+            sourX, sourY,       
             sourWidth,              
             sourHeight,             
             _transColor             

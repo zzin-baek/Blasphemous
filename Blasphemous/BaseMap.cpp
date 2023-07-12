@@ -26,46 +26,54 @@ void BaseMap::update(void)
     if (!_pl->getGround())
         _pl->setPosY(_pl->getPosY() + 5.0f);
 
-    if (_pl->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 680 < 1280)
+    if (_pl->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 1280 < 2000)
     {
-        _bf->setX(_bf->getX() + 3.0f);
-        _pl->setPosX(_pl->getPosX() - 5.0f);
+        _bf->setX(_bf->getX() + 4.0f);
+        _pl->setPosX(_pl->getPosX() - 4.0f);
 
-        for (int i = 0; i < _bf->getBoxSize(); i++)
-        {
-            _bf->setBox(i, -6.3f, 0);
-        }
     }
     if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 && _bf->getX() > 0)
     {
-        _bf->setX(_bf->getX() - 3.0f);
+        _bf->setX(_bf->getX() - 4.0f);
         _pl->setPosX(_pl->getPosX() + 4.0f);
+    }
+    if (_pl->getRect().top < WINSIZE_Y / 2 && _bf->getY() > 0)
+    {
+        _pl->setPosY(_pl->getPosY() + 2.0f);
+        _bf->setY(_bf->getY() - 2.0f);
+    }
+    if (_pl->getRect().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 720 < 938))
+    {
+        _pl->setPosY(_pl->getPosY() - 2.0f);
+        _bf->setY(_bf->getY() + 2.0f);
+    }
 
-        for (int i = 0; i < _bf->getBoxSize(); i++)
-        {
-            _bf->setBox(i, 6.3f, 0);
-        }
-    }
-   if (_pl->getRect().top < WINSIZE_Y / 2 && (_bf->getY() > 0))
+    /*if (!_pl->getGround())
+        _pl->setPosY(_pl->getPosY() + 5);
+
+    if (_pl->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 680 < 1280)
     {
-        _bf->setY(_bf->getY() - 1.0f);
-        for (int i = 0; i < _bf->getBoxSize(); i++)
-        {
-            _bf->setBox(i, 0, 2.0);
-        }
+        _bf->setX(_bf->getX() + 3);
+        _pl->setPosX(_pl->getPosX() - 3);
     }
-    if (_pl->getRect().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 380 < 600))
+    if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 && _bf->getX() > 0)
     {
-        _bf->setY(_bf->getY() + 1.0f);
-        for (int i = 0; i < _bf->getBoxSize(); i++)
-        {
-            _bf->setBox(i, 0, -2.0);
-        }
+        _bf->setX(_bf->getX() - 3);
+        _pl->setPosX(_pl->getPosX() + 3);
     }
+    if (_pl->getRect().top < WINSIZE_Y / 2 && _bf->getY() > 0)
+    {
+        _bf->setY(_bf->getY() - 2);
+    }
+    if (_pl->getRect().top > WINSIZE_Y / 2 && (_bf->getY() + 380 < 600))
+    {
+        _bf->setY(_bf->getY() + 2);
+    }*/
 
     for (int i = _pl->getRect().left; i <= _pl->getRect().right; i++)
     {
-        COLORREF color = GetPixel(getMemDC(), i, _pl->getRect().bottom);
+        COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(), 
+            _bf->getX() + i, _bf->getY() + _pl->getRect().bottom);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
