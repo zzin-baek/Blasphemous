@@ -1,6 +1,7 @@
 #pragma once
 #include "GameNode.h"
 #include "Player.h"
+#include "Acolyte.h"
 #include "BattleField.h"
 
 // bitset: 기본, 걷기, 점프, 앉기, 매달리기
@@ -18,6 +19,7 @@ class BaseMap : public GameNode
 {
 private:
 	Player* _pl;
+	Acolyte* _ac;
 	BattleField* _bf;
 
 	int _cnt;

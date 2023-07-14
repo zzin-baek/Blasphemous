@@ -25,14 +25,14 @@ HRESULT BattleField::init(void)
 
 void BattleField::render(HDC hdc)
 {
-    IMAGEMANAGER->render("church-bg", hdc, 0, 0);
-    IMAGEMANAGER->render("churches-field-bg", hdc, 0, 0);
+    IMAGEMANAGER->render("church-bg", hdc, 0, -100);
+    IMAGEMANAGER->render("churches-field-bg", hdc, 0, 100);
     IMAGEMANAGER->render("churches-field-bg3", hdc, 0, 0);
     IMAGEMANAGER->render("churches-field-bg2", hdc, 0, 0);
     
     IMAGEMANAGER->render("church-field", hdc, 0, 0, _startPos_x, _startPos_y, WINSIZE_X, WINSIZE_Y);
 
-    if (KEYMANAGER->isToggleKey(VK_CONTROL))
+    if (KEYMANAGER->isToggleKey(VK_TAB))
     {
         //ÇÈ¼¿Ãæµ¹¿ë
         IMAGEMANAGER->render("bg_collision", hdc, 0, 0, _startPos_x, _startPos_y, WINSIZE_X, WINSIZE_Y);

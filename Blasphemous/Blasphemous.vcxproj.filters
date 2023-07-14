@@ -75,6 +75,9 @@
     <ClInclude Include="MainMenu.h">
       <Filter>MainMenu</Filter>
     </ClInclude>
+    <ClInclude Include="Tutorial.h" />
+    <ClInclude Include="TutorialField.h" />
+    <ClInclude Include="Enemy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -114,5 +117,8 @@
     <ClCompile Include="MainMenu.cpp">
       <Filter>MainMenu</Filter>
     </ClCompile>
+    <ClCompile Include="Tutorial.cpp" />
+    <ClCompile Include="TutorialField.cpp" />
+    <ClCompile Include="Enemy.cpp" />
   </ItemGroup>
 </Project>

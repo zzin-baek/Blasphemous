@@ -11,6 +11,8 @@ HRESULT Player::init(void)
         235 * 2, 162 * 2, 5, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("JUMP_FORWARD", "Resources/Image/Penitent/penitent_jump_forward_anim.bmp",
         1230 * 2, 164 * 2, 15, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("FALLING", "Resources/Image/Penitent/penitent_falling_loop.bmp",
+        177 * 2, 152 * 2, 3, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("DODGE", "Resources/Image/Penitent/penitent_dodge_anim.bmp",
         1261 * 2, 148 * 2, 13, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("CROUCH_DOWN", "Resources/Image/Penitent/penitent_crouch_anim.bmp",
@@ -32,7 +34,7 @@ HRESULT Player::init(void)
     IMAGEMANAGER->addFrameImage("PARRY", "Resources/Image/Penitent/penitent_parry_failed.bmp",
         740 * 2, 144 * 2, 10, 2, true, MAGENTA);
 
-    _plPos_x = WINSIZE_X / 2 - 300;
+    _plPos_x = WINSIZE_X / 2 - 400;
     _plPos_y = WINSIZE_Y / 2 - 100;
 
     _plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
@@ -44,14 +46,29 @@ HRESULT Player::init(void)
     _center = { 0, 0 };
     _tempX = _tempY = 0.0f;
 
+    _hp = 100;
+
     for (int i = 0; i < MAX_STATE; i++)
     {
         setState(i, false);
     }
 
     wsprintf(_strAction, "IDLE");
+    initTiming();
 
     return S_OK;
+}
+
+void Player::initTiming(void)
+{
+    _timing.insert(make_pair("JUMP", 4));
+    _timing.insert(make_pair("JUMP_FORWARD", 4));
+    _timing.insert(make_pair("ATTACK", 4));
+    _timing.insert(make_pair("ATTACK_JUMP", 4));
+    _timing.insert(make_pair("ATTACK_DODGE", 4));
+    _timing.insert(make_pair("DODGE", 2));
+    _timing.insert(make_pair("CROUCH_DOWN", 3));
+    _timing.insert(make_pair("CROUCH_UP", 3));
 }
 
 void Player::playerAction(void)
@@ -66,13 +83,24 @@ void Player::playerAction(void)
         IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
         IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
 
-
     if (KEYMANAGER->isStayKeyDown('A') && !_isFixed)
     {
         _isLeft = true;
         setState(WALK, true);
         if (!_plState[JUMP])
             setAction("RUNNING");
+        if (!strcmp(_strAction, "JUMP"))
+        {
+            if (!isEmpty())
+                _actionList.pop_front();
+            _actionList.push_back("JUMP_FORWARD");
+            setAction("JUMP_FORWARD");
+
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX() - 5;
+            else
+                _idx_x = 6;
+        }
         if (_plPos_x > 0)
             _plPos_x -= 4.0f;
     }
@@ -234,6 +262,8 @@ void Player::playerAction(void)
         {
             setState(ATTACK, true);
             setAction("ATTACK_JUMP");
+            if (!isEmpty())
+                _actionList.pop_front();
             _actionList.push_back("ATTACK_JUMP");
             if (_isLeft)
                 _idx_x = IMAGEMANAGER->findImage("ATTACK_JUMP")->getMaxFrameX();
@@ -304,7 +334,7 @@ void Player::playerAction(void)
        {
            _idx_y = 1;
            IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
-           if (_cnt % 5 == 0)
+           if (_cnt % _timing.find(_actionList.front())->second == 0)
            {
                _idx_x--;
                if (_idx_x < 0)
@@ -326,7 +356,7 @@ void Player::playerAction(void)
        {
            _idx_y = 0;
            IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
-           if (_cnt % 5 == 0)
+           if (_cnt % _timing.find(_actionList.front())->second == 0)
            {
                _idx_x++;
                if (_idx_x > IMAGEMANAGER->findImage(_actionList.front())->getMaxFrameX())
@@ -353,17 +383,34 @@ void Player::playerMove(void)
     {
         if (_isLeft)
         {
-            if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x > getMaxFrameX() - 6)
-                _plPos_y -= 10.0f;
-            else if (!strcmp(_strAction, "JUMP"))
+            if (!strcmp(_strAction, "JUMP_FORWARD"))
             {
-
+                if (_idx_x > getMaxFrameX() - 6)
+                    _plPos_y -= 10.0f;
+                else
+                    setAction("FALLING");
+            }
+            if (!strcmp(_strAction, "JUMP"))
+            {
+                if (_tempY - _plPos_y < 100)
+                    _plPos_y -= 10.0f;
+                else if (_tempY <= _plPos_y)
+                    setAction("IDLE");
+                else
+                    setAction("FALLING");
             }
         }
         else
         {
             if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 6)
                 _plPos_y -= 10.0f;
+            if (!strcmp(_strAction, "JUMP"))
+            {
+                if (_tempY - _plPos_y < 100)
+                    _plPos_y -= 10.0f;
+                else
+                    setAction("FALLING");
+            }
         }
         //else if(_plPos_y < _tempY - 180)
         //{
@@ -380,11 +427,11 @@ void Player::playerMove(void)
     {
         if (_isLeft)
         {
-            _plPos_x -= 8.0f;
+            _plPos_x -= 8.5f;
         }
         else
         {
-            _plPos_x += 8.0f;
+            _plPos_x += 8.5f;
         }
     }
 
@@ -439,15 +486,13 @@ void Player::renderPlayer(HDC hdc)
         IMAGEMANAGER->frameRender(_strAction, hdc, _plPos_x, _plPos_y, _idx_x, _idx_y);
     else
         IMAGEMANAGER->frameRender(_actionList.front().c_str(), hdc, _plPos_x, _plPos_y, _idx_x, _idx_y);
-    if (KEYMANAGER->isToggleKey(VK_CONTROL))
+    if (KEYMANAGER->isToggleKey(VK_TAB))
     {
-        collisionRect(hdc);
-
         HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
         HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, myBrush);
         HPEN myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
         HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
-
+        
         DrawRectMake(hdc, _player);
         _stprintf_s(_loc, "x: %.2f y: %.2f", _plPos_x, _plPos_y);
         TextOut(hdc, _plPos_x, _plPos_y, _loc, strlen(_loc));
@@ -458,13 +503,5 @@ void Player::renderPlayer(HDC hdc)
         SelectObject(hdc, oldPen);
         DeleteObject(myPen);
     }
-    //cout << _actionList.size() << endl;
-}
-
-void Player::collisionRect(HDC hdc)
-{
-    for (int i = 0; i < 3; i++)
-    {
-        //DrawRectMake(hdc, collision[i]);
-    }
+    
 }

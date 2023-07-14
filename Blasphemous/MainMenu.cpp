@@ -15,11 +15,15 @@ HRESULT MainMenu::init(void)
     IMAGEMANAGER->addFrameImage("애기천사", "Resources/Image/MainMenu/cherub.bmp",
         280 * 3 / 2, 210 * 3 / 2, 4, 3, true, MAGENTA);
 
-    cnt = idx = 0;
+    cnt = idx = _menuSelect = _select = 0;
     minus = 1;
     idx_bg = idx_crisanta = idx_petal = idx_petal_fg = 0;
     idx_angel = 0;
     bg = crisanta = petal = petal_fg = angel = { 0, 0 };
+
+    _menu1 = RGB(255, 255, 0);
+    _menu2 = RGB(255, 255, 255);
+    _angelPos = { WINSIZE_X - 145, WINSIZE_Y - 285 };
 
     return S_OK;
 }
@@ -30,6 +34,39 @@ void MainMenu::release(void)
 
 void MainMenu::update(void)
 {
+    if (KEYMANAGER->isOnceKeyDown('W') || KEYMANAGER->isOnceKeyDown(VK_UP))
+    {
+        _menuSelect--;
+    }
+    if (KEYMANAGER->isOnceKeyDown('S') || KEYMANAGER->isOnceKeyDown(VK_DOWN))
+    {
+        _menuSelect++;
+    }
+
+    if (KEYMANAGER->isOnceKeyDown(VK_RETURN))
+    {
+        if (_menuSelect % 2 == 0)
+            _select = 1;
+        else
+            _select = 2;
+    }
+
+    if (_menuSelect % 2 == 0)
+    {
+        _menu1 = RGB(255, 255, 0);
+        _menu2 = RGB(255, 255, 255);
+
+        _angelPos = { WINSIZE_X - 145, WINSIZE_Y - 285 };
+
+    }
+    else
+    {
+        _menu1 = RGB(255, 255, 255);
+        _menu2 = RGB(255, 255, 0);
+
+        _angelPos = { WINSIZE_X - 145, WINSIZE_Y - 245 };
+    }
+
     cnt++;
     if (cnt % 22 == 0)
     {
@@ -113,7 +150,7 @@ void MainMenu::render(void)
         FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 230, WINSIZE_Y - 210 + i, "Neo둥근모 Pro", 32, 2, "나가기", strlen("나가기"), RGB(0, 0, 0));
     }
     // 순례, 나가기
-    FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 200, WINSIZE_Y - 250, "Neo둥근모 Pro", 32, 2, "순례", strlen("순례"), RGB(255, 255, 0));
-    FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 230, WINSIZE_Y - 210, "Neo둥근모 Pro", 32, 2, "나가기", strlen("나가기"), RGB(255, 255, 255));
-    IMAGEMANAGER->frameRender("애기천사", getMemDC(), WINSIZE_X - 120, WINSIZE_Y - 280, angel.x, angel.y);
+    FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 200, WINSIZE_Y - 250, "Neo둥근모 Pro", 32, 2, "순례", strlen("순례"), _menu1);
+    FONTMANAGER->drawText(getMemDC(), WINSIZE_X - 230, WINSIZE_Y - 210, "Neo둥근모 Pro", 32, 2, "나가기", strlen("나가기"), _menu2);
+    IMAGEMANAGER->frameRender("애기천사", getMemDC(), _angelPos.x, _angelPos.y, angel.x, angel.y);
 }

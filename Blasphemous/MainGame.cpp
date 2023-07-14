@@ -11,6 +11,9 @@ HRESULT MainGame::init(void)
 	_baseMap = new BaseMap;
 	_baseMap->init();
 
+	_tutorial = new Tutorial;
+	_tutorial->init();
+
 	_currentScene = _mainMenu;
 	assert(_currentScene != nullptr);
 
@@ -22,16 +25,21 @@ void MainGame::release(void)
 	GameNode::release();
 
 	SAFE_DELETE(_mainMenu);
+	SAFE_DELETE(_tutorial);
 	SAFE_DELETE(_baseMap);
 }
 
 void MainGame::update(void)
 {
 	GameNode::update();
-	if (KEYMANAGER->isOnceKeyDown(VK_RETURN))
-	{
+
+	if (_mainMenu->getSelect() == 1)
+		_currentScene = _tutorial;
+	else if (_mainMenu->getSelect() == 2)
+		PostMessage(_hWnd, WM_DESTROY, 0, 0);
+
+	if (_tutorial->getNext())
 		_currentScene = _baseMap;
-	}
 
 	_currentScene->update();
 }
