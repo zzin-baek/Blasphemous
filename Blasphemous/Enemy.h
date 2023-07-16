@@ -3,7 +3,7 @@
 enum tagEnemy
 {
 	IDLE_ENEMY = 0,
-	ATTACK_EMEMY,
+	ATTACK_ENEMY,
 	HIT_ENEMY
 };
 

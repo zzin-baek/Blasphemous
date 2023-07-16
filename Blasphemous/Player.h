@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_STATE 8
+#define MAX_STATE 9
 
 // bitset: 기본, 걷기, 점프, 앉기, 매달리기
 enum eState
@@ -11,13 +11,19 @@ enum eState
 	CROUCH,
 	DODGE,
 	HANGON,
-	PARRY
+	PARRY,
+	HIT,
+	PORTION
 };
 
 // bool _isGround: 바닥인지 공중인지
 class Player
 {
 private:
+
+	time_t timer;
+	struct tm t;
+
 	char _strAction[128];
 	bitset<MAX_STATE> _plState;
 	deque<string> _actionList;
@@ -31,7 +37,7 @@ private:
 	POINT _center;
 	float _tempX, _tempY;
 
-	int _hp;
+	int _hp, _portion;
 
 	char _loc[128], _action[128];
 
@@ -41,6 +47,7 @@ public:
 	void playerAction(void);
 	void playerMove(void);
 	void renderPlayer(HDC hdc);
+	void renderProfile(HDC hdc);
 
 	inline void setPosX(float x) { _plPos_x = x; }
 	inline void setPosY(float y) { _plPos_y = y; }
@@ -69,6 +76,9 @@ public:
 	inline RECT getRect() { return _player; }
 	inline int getCenterX() { return _centerX; }
 	inline int getCenterY() { return _centerY; }
+
+	void setHP(int hp) { _hp = hp; }
+	int getHP() { return _hp; }
 
 	Player() {}
 	~Player();

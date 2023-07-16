@@ -27,26 +27,46 @@ HRESULT Player::init(void)
         1364 * 2, 144 * 2, 11, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("ATTACK_JUMP", "Resources/Image/Penitent/penitent_jumping_attack.bmp",
         1290 * 2, 188 * 2, 10, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("ATTACK_CROUCH", "Resources/Image/Penitent/penitent_crouch_attack_anim.bmp",
+        1428 * 2, 132 * 2, 12, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("ATTACK_DODGE", "Resources/Image/Penitent/penitent_dodge_attack.bmp",
         2048 * 2, 512 * 2, 8, 4, true, MAGENTA);
-    IMAGEMANAGER->addFrameImage("COMBO_ATTACK", "Resources/Image/Penitent/penitent_three_hits_combo.bmp",
+    IMAGEMANAGER->addFrameImage("ATTACK_COMBO", "Resources/Image/Penitent/penitent_three_hits_combo.bmp",
         6132 * 2, 154 * 2, 28, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("PUSHBACK", "Resources/Image/Penitent/penitent_pushback_anim.bmp",
+        1748 * 2, 152 * 2, 19, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("PARRY", "Resources/Image/Penitent/penitent_parry_failed.bmp",
         740 * 2, 144 * 2, 10, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("PORTION", "Resources/Image/Penitent/penitent_healthposion_anim.bmp",
+        3330 * 2, 280 * 2, 37, 2, true, MAGENTA);
+
+    IMAGEMANAGER->addImage("Profile", "Resources/Image/Sheet/PlayerPortrait_activePrayer.bmp",
+        88 * 2, 58 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("HP", "Resources/Image/Sheet/HealthBar.bmp", 
+        132 * 2, 4 * 2, true, MAGENTA);
+
+    IMAGEMANAGER->addImage("flask_full", "Resources/Image/Sheet/flask_full.bmp",
+        11 * 2, 17 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("flask_empty", "Resources/Image/Sheet/flask_empty.bmp",
+        11 * 2, 17 * 2, true, MAGENTA);
 
     _plPos_x = WINSIZE_X / 2 - 400;
     _plPos_y = WINSIZE_Y / 2 - 100;
 
-    _plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
+    //_plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
 
     _cnt = _idx_x = _idx_y = 0;
     _isLeft = _isGround = _isFixed = false;
 
     _centerX = _centerY = 0.0f;
-    _center = { 0, 0 };
+    //_center = { 0, 0 };
     _tempX = _tempY = 0.0f;
 
-    _hp = 100;
+    timer = time(NULL);
+    localtime_s(&t, &timer);
+
+    _hp = 100; 
+    _portion = 5;
 
     for (int i = 0; i < MAX_STATE; i++)
     {
@@ -61,14 +81,19 @@ HRESULT Player::init(void)
 
 void Player::initTiming(void)
 {
-    _timing.insert(make_pair("JUMP", 4));
-    _timing.insert(make_pair("JUMP_FORWARD", 4));
+    _timing.insert(make_pair("JUMP", 10));
+    _timing.insert(make_pair("JUMP_FORWARD", 6));
     _timing.insert(make_pair("ATTACK", 4));
-    _timing.insert(make_pair("ATTACK_JUMP", 4));
+    _timing.insert(make_pair("ATTACK_JUMP", 6));
+    _timing.insert(make_pair("ATTACK_CROUCH", 5));
     _timing.insert(make_pair("ATTACK_DODGE", 4));
+    _timing.insert(make_pair("ATTACK_COMBO", 5));
+    _timing.insert(make_pair("PARRY", 5));
+    _timing.insert(make_pair("PUSHBACK", 4));
     _timing.insert(make_pair("DODGE", 2));
     _timing.insert(make_pair("CROUCH_DOWN", 3));
     _timing.insert(make_pair("CROUCH_UP", 3));
+    _timing.insert(make_pair("PORTION", 4));
 }
 
 void Player::playerAction(void)
@@ -83,7 +108,7 @@ void Player::playerAction(void)
         IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
         IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
 
-    if (KEYMANAGER->isStayKeyDown('A') && !_isFixed)
+    if (KEYMANAGER->isStayKeyDown('A'))
     {
         _isLeft = true;
         setState(WALK, true);
@@ -104,7 +129,7 @@ void Player::playerAction(void)
         if (_plPos_x > 0)
             _plPos_x -= 4.0f;
     }
-    if (KEYMANAGER->isStayKeyDown('D') && !_isFixed)
+    if (KEYMANAGER->isStayKeyDown('D'))
     {
         _isLeft = false;
         setState(WALK, true);
@@ -148,12 +173,12 @@ void Player::playerAction(void)
         setState(CROUCH, true);
         if (!_plState.none())
             setAction("CROUCH_DOWN");
-    }*/
+    }
     if (KEYMANAGER->isOnceKeyUp('A') || KEYMANAGER->isOnceKeyUp('D'))
     {
         _plState.reset();
         setAction("IDLE");
-    }
+    }*/
 
     if (KEYMANAGER->isOnceKeyUp('S') && isEmpty())
     {
@@ -165,17 +190,31 @@ void Player::playerAction(void)
         else
             _idx_x = 0;
     }
-    if (KEYMANAGER->isOnceKeyDown('J'))
+    if (KEYMANAGER->isOnceKeyDown('J') && isEmpty())
     {
         setState(PARRY, true);
+        setAction("PARRY");
         _actionList.push_back("PARRY");
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("PARRY")->getMaxFrameX();
         else
             _idx_x = 0;
     }
+    if (KEYMANAGER->isOnceKeyDown('F') && isEmpty() && _portion > 0)
+    {
+        setState(PORTION, true);
+        _actionList.push_back("PORTION");
+        setAction("PORTION");
+        _portion--;
+
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("PORTION")->getMaxFrameX();
+        else
+            _idx_x = 0;
+    }
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP])
     {
+        _isFixed = true;
         _tempY = _plPos_y;
         if (_plState[WALK])
         {
@@ -245,7 +284,7 @@ void Player::playerAction(void)
                 _idx_x = 0;
         }
     }*/
-    if (KEYMANAGER->isOnceKeyDown(VK_SHIFT))
+    if (KEYMANAGER->isOnceKeyDown(VK_SHIFT) && !_plState[DODGE] && !_isFixed)
     {
         _tempX = _plPos_x;
         setState(DODGE, true);
@@ -280,18 +319,39 @@ void Player::playerAction(void)
             else
                 _idx_x = 0;
         }
+        else if (_plState[CROUCH])
+        {
+            setState(ATTACK, true);
+            setAction("ATTACK_CROUCH");
+            _actionList.push_back("ATTACK_CROUCH");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("ATTACK_CROUCH")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+
         else
         {
             setState(ATTACK, true);
-            setAction("ATTACK");
-            _actionList.push_back("ATTACK");
+            setAction("ATTACK_COMBO");
+            _actionList.push_back("ATTACK_COMBO");
             if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("ATTACK")->getMaxFrameX();
+                _idx_x = IMAGEMANAGER->findImage("ATTACK_COMBO")->getMaxFrameX();
             else
                 _idx_x = 0;
         }
     }
+    if (_plState[HIT] && isEmpty())
+    {
+        _actionList.push_back("PUSHBACK");
+        _actionList.push_back("CROUCH_UP");
+        setAction("PUSHBACK");
 
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
+        else
+            _idx_x = 0;
+    }
    _cnt++;
    if (_actionList.empty())
    {
@@ -345,6 +405,7 @@ void Player::playerAction(void)
                    else
                    {
                        _plState.reset();
+                       _isFixed = false;
                        setAction("IDLE");
                    }
                }
@@ -367,6 +428,7 @@ void Player::playerAction(void)
                    else
                    {
                        _plState.reset();
+                       _isFixed = false;
                        setAction("IDLE");
                    }
                }
@@ -387,12 +449,10 @@ void Player::playerMove(void)
             {
                 if (_idx_x > getMaxFrameX() - 6)
                     _plPos_y -= 10.0f;
-                else
-                    setAction("FALLING");
             }
             if (!strcmp(_strAction, "JUMP"))
             {
-                if (_tempY - _plPos_y < 100)
+                if (_tempY - _plPos_y < 150)
                     _plPos_y -= 10.0f;
                 else if (_tempY <= _plPos_y)
                     setAction("IDLE");
@@ -406,7 +466,7 @@ void Player::playerMove(void)
                 _plPos_y -= 10.0f;
             if (!strcmp(_strAction, "JUMP"))
             {
-                if (_tempY - _plPos_y < 100)
+                if (_tempY - _plPos_y < 150)
                     _plPos_y -= 10.0f;
                 else
                     setAction("FALLING");
@@ -435,6 +495,19 @@ void Player::playerMove(void)
         }
     }
 
+    if (_plState[HIT])
+    {
+        if (_isLeft)
+        {
+            if (!strcmp(_strAction, "PUSHBACK") && _idx_x > getMaxFrameX() - 6)
+                _plPos_x += 5.0f;
+        }
+        else
+        {
+            if (!strcmp(_strAction, "PUSHBACK") && _idx_x < 6)
+                _plPos_x -= 5.0f;
+        }
+    }
     //if (_plState[JUMP])
     //{
     //    if (_isLeft)
@@ -504,4 +577,27 @@ void Player::renderPlayer(HDC hdc)
         DeleteObject(myPen);
     }
     
+    cout << _hp << endl;
+    cout << "hit"<<_plState[HIT] << endl;
+    cout <<"attack"<< _plState[ATTACK] << endl;
+    cout <<"parry"<< _plState[PARRY] << endl;
+    cout << _plPos_y << endl;
+
+}
+
+void Player::renderProfile(HDC hdc)
+{ 
+    IMAGEMANAGER->render("HP", hdc, 120, 52);
+    IMAGEMANAGER->render("Profile", hdc, 30, 30);
+    for (int i = 0; i < 5; i++)
+    {
+        if (i < _portion)
+        {
+            IMAGEMANAGER->render("flask_full", hdc, 160 + 35 * i, 100);
+        }
+        else
+        {
+            IMAGEMANAGER->render("flask_empty", hdc, 160 + 35 * i, 100);
+        }
+    }
 }

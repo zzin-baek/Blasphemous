@@ -154,19 +154,45 @@ void BaseMap::update(void)
     {
         _ac->setLeft(false);
     }
-    
+
 
     // ¿¸≈ı
     RECT _rt;
-    for (int i=0;i<2;i++)
+    for (int i = 0; i < 2; i++)
+    {
         if (IntersectRect(&_rt, &_pl->getRect(), &_ac->getBoundary(i)))
         {
-            if (i == 0)
-                _ac->setLeft(true);
-            else
-                _ac->setLeft(false);
-            _ac->setAction("Acolyte_attack");
+
+            if (_ac->isEmpty())
+            {
+                _ac->setAction("Acolyte_attack");
+                _ac->setState(IDLE_ENEMY, false);
+                _ac->setState(ATTACK_ENEMY, true);
+                _ac->addAction("Acolyte_attack");
+
+                if (i == 0)
+                {
+                    _ac->setLeft(true);
+                    _ac->setX(_ac->getMaxFrame());
+                }
+                else
+                {
+                    _ac->setLeft(false);
+                    _ac->setX(0);
+
+                }
+            }
         }
+    }
+    if (IntersectRect(&_rt, &_ac->getAttack(), &_pl->getRect()) && !_pl->getState()[PARRY])
+    {
+        if (!_pl->getState()[HIT])
+        {
+            _pl->setState(HIT, true);
+            _pl->setHP(_pl->getHP() - 5);
+        }
+    }
+
 }
 
 void BaseMap::render(void)
@@ -174,10 +200,6 @@ void BaseMap::render(void)
     _bf->render(getMemDC());
     _pl->renderPlayer(getMemDC());
     _ac->render(getMemDC());
+    _pl->renderProfile(getMemDC());
 
-    cout << "walk " << _pl->getState()[WALK] << endl;
-    cout << "jump " << _pl->getState()[JUMP] << endl;
-    cout << "crouch " << _pl->getState()[CROUCH] << endl;
-    cout << "dodge " << _pl->getState()[DODGE] << endl;
-    cout << _pl->getGround() << endl;
 }

@@ -5,8 +5,9 @@ class Acolyte : public Enemy
 {
 private:
 	POINT _acolytePos;
-	RECT _acolyte;
+	RECT _acolyte, _attack;
 	RECT _attackBoundary[2];
+	deque<string> _acList;
 	bitset<3> _acState;
 
 	bool _isLeft;
@@ -18,6 +19,7 @@ private:
 public:
 	HRESULT init(void);
 	void move(void);
+	void attack(void);
 	void render(HDC hdc);
 
 	void setPosX(int x) { _acolytePos.x = x; }
@@ -25,14 +27,21 @@ public:
 	int getPosX() { return _acolytePos.x; }
 	int getPosY() { return _acolytePos.y; }
 
+	void setX(int x) { _idx_x = x; }
+	void setY(int y) { _idx_y = y; }
+
 	void setLeft(bool state) { _isLeft = state; }
 	bool getLeft() { return _isLeft; }
 
 	void setState(int num, bool state) { _acState.set(num, state); }
 	void setAction(char* _action) { wsprintf(_strAction, _action); }
 	RECT getBoundary(int num) { return _attackBoundary[num]; }
+	RECT getAttack() { return _attack; }
 
 	int getMaxFrame() { return IMAGEMANAGER->findImage(_strAction)->getMaxFrameX(); }
+
+	bool isEmpty() { return _acList.empty(); }
+	void addAction(string _action) { _acList.push_back(_action); }
 
 	Acolyte() {}
 	~Acolyte() {}

@@ -56,4 +56,5 @@ void Tutorial::render(void)
 {
     _tf->render(getMemDC());
     _pl->renderPlayer(getMemDC());
-}\
+    _pl->renderProfile(getMemDC());
+}
