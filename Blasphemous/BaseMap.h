@@ -24,12 +24,15 @@ private:
 
 	int _cnt;
 	bool _isGround;
+	int _nextStage;
 
 public:
 	HRESULT init(void);
 	void release(void);
 	void update(void);
 	void render(void);
+
+	int getNext() { return _nextStage; }
 
 	BaseMap() {}
 	~BaseMap() {}

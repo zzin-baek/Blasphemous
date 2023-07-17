@@ -8,11 +8,14 @@ HRESULT MainGame::init(void)
 	_mainMenu = new MainMenu;
 	_mainMenu->init();
 
+	_tutorial = new Tutorial;
+	_tutorial->init();
+
 	_baseMap = new BaseMap;
 	_baseMap->init();
 
-	_tutorial = new Tutorial;
-	_tutorial->init();
+	_bossStage = new BossStage;
+	_bossStage->init();
 
 	_currentScene = _mainMenu;
 	assert(_currentScene != nullptr);
@@ -40,6 +43,9 @@ void MainGame::update(void)
 
 	if (_tutorial->getNext())
 		_currentScene = _baseMap;
+
+	if (_baseMap->getNext())
+		_currentScene = _bossStage;
 
 	_currentScene->update();
 }

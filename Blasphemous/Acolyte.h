@@ -1,6 +1,13 @@
 #pragma once
 #include "Enemy.h"
 
+struct acImageInfo
+{
+	int timing;
+	POINT leftMove;
+	POINT rightMove;
+};
+
 class Acolyte : public Enemy
 {
 private:
@@ -9,17 +16,21 @@ private:
 	RECT _attackBoundary[2];
 	deque<string> _acList;
 	bitset<3> _acState;
+	map<string, acImageInfo> _sync;
 
 	bool _isLeft;
 	int _cnt, _idx_x, _idx_y;
+	int _hp;
 
 	char _strAction[128];
 	char _loc[128];
 
 public:
 	HRESULT init(void);
+	void initSync(void);
 	void move(void);
 	void attack(void);
+	
 	void render(HDC hdc);
 
 	void setPosX(int x) { _acolytePos.x = x; }

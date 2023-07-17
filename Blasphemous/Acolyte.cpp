@@ -9,27 +9,40 @@ HRESULT Acolyte::init(void)
         705 * 2, 260 * 2, 15, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("Acolyte_attack", "Resources/Image/Enemy/acolyte_attack_anim.bmp",
         4899 * 2, 258 * 2, 23, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("Acolyte_hit", "Resources/Image/Enemy/acolyte_get_hit_anim.bmp",
+        1176 * 2, 236 * 2, 12, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("Acolyte_parry", "Resources/Image/Enemy/acolyte_parry_reaction_anim.bmp",
+        1963 * 2, 224 * 2, 13, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("Acolyte_death", "Resources/Image/Enemy/acolyte_death_anim.bmp",
+        3960 * 2, 266 * 2, 22, 2, true, MAGENTA);
 
     _acolytePos = { WINSIZE_X / 2 + 500, WINSIZE_Y / 2 + 325 };
     _isLeft = false;
     _cnt = _idx_x = _idx_y = 0;
     _acState.reset();
-    setState(IDLE_ENEMY, true);
+    _hp = 50;
 
+    setState(IDLE_ENEMY, true);
     wsprintf(_strAction, "Acolyte_walk");
+
+    initSync();
 
     return S_OK;
 }
 
+void Acolyte::initSync(void)
+{
+    _sync["Acolyte_walk"] = { 7, {0, 0}, {0, 0} };
+    _sync["Acolyte_attack"] = { 7, {-180, 20}, {-150, 20} };
+    _sync["Acolyte_hit"] = { 7, {40, 0}, {-120, 0} };
+    _sync["Acolyte_parry"] = { 7, {0, 0}, {0, 0} };
+    _sync["Acolyte_death"] = { 7, {-150, 0}, {-130, 0} };
+
+}
+
+
 void Acolyte::move(void)
 {
-    _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2
-        , _acolytePos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2,
-        80, 250);
-
-    _attackBoundary[0] = RectMake(_acolyte.left - 150, _acolytePos.y - 80, 150, 80);
-    _attackBoundary[1] = RectMake(_acolyte.right, _acolytePos.y - 80, 150, 80);
-
     if (_isLeft && _acState[IDLE_ENEMY])
     {
         _acolytePos.x -= 1;
@@ -100,7 +113,7 @@ void Acolyte::move(void)
                     {
                         _acState.reset();
                         setState(IDLE_ENEMY, true);
-                        setAction("Acolyte_idle");
+                        setAction("Acolyte_walk");
                     }
                 }
                 if (!_acList.empty())
@@ -123,7 +136,7 @@ void Acolyte::move(void)
                     {
                         _acState.reset();
                         setState(IDLE_ENEMY, true);
-                        setAction("Acolyte_idle");
+                        setAction("Acolyte_walk");
                     }
                 }
                 if (!_acList.empty())
@@ -151,12 +164,61 @@ void Acolyte::attack(void)
         }
     }
 }
-
 void Acolyte::render(HDC hdc)
 {
-    IMAGEMANAGER->frameRender(_strAction, hdc,
-        _acolytePos.x, _acolytePos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight(),
-        _idx_x, _idx_y);
+    if (_acList.empty())
+    {
+        if (_isLeft)
+        {
+            IMAGEMANAGER->frameRender(_strAction, hdc,
+                _acolytePos.x + _sync[_strAction].leftMove.x, 
+                _acolytePos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() + _sync[_strAction].leftMove.y,
+                _idx_x, _idx_y);
+
+            _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2 + _sync[_strAction].leftMove.x,
+                _acolytePos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2 + _sync[_strAction].leftMove.y,
+                80, 250);
+        }
+        else
+        {
+            IMAGEMANAGER->frameRender(_strAction, hdc,
+                _acolytePos.x + _sync[_strAction].rightMove.x,
+                _acolytePos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() + _sync[_strAction].rightMove.y,
+                _idx_x, _idx_y);
+
+            _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2 + _sync[_strAction].rightMove.x,
+                _acolytePos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2 + _sync[_strAction].rightMove.y,
+                80, 250);
+        }
+    }
+    else
+    {
+        if (_isLeft)
+        {
+            IMAGEMANAGER->frameRender(_acList.front().c_str(), hdc,
+                _acolytePos.x + _sync[_acList.front().c_str()].leftMove.x,
+                _acolytePos.y - IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameHeight() + _sync[_strAction].leftMove.y,
+                _idx_x, _idx_y);
+
+            _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameWidth() / 2 + _sync[_acList.front().c_str()].leftMove.x,
+                _acolytePos.y - IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameHeight() / 2 + _sync[_acList.front().c_str()].leftMove.y,
+                80, 250);
+        }
+        else
+        {
+            IMAGEMANAGER->frameRender(_acList.front().c_str(), hdc,
+                _acolytePos.x + _sync[_acList.front().c_str()].rightMove.x,
+                _acolytePos.y - IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameHeight() + _sync[_strAction].rightMove.y,
+                _idx_x, _idx_y);
+
+            _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameWidth() / 2 + _sync[_acList.front().c_str()].rightMove.x,
+                _acolytePos.y - IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameHeight() / 2 + _sync[_acList.front().c_str()].rightMove.y,
+                80, 250);
+        }
+    }
+    
+    _attackBoundary[0] = RectMake(_acolyte.left - 150, _acolytePos.y - 80, 150, 80);
+    _attackBoundary[1] = RectMake(_acolyte.right, _acolytePos.y - 80, 150, 80);
 
     if (KEYMANAGER->isToggleKey(VK_TAB))
     {

@@ -9,11 +9,19 @@ enum eState
 	JUMP,
 	ATTACK,
 	CROUCH,
+	CLIMB,
 	DODGE,
 	HANGON,
 	PARRY,
 	HIT,
 	PORTION
+};
+
+struct plImageInfo
+{
+	int timing;
+	POINT leftMove;
+	POINT rightMove;
 };
 
 // bool _isGround: 바닥인지 공중인지
@@ -27,12 +35,12 @@ private:
 	char _strAction[128];
 	bitset<MAX_STATE> _plState;
 	deque<string> _actionList;
-	map<string, int> _timing;
+	map<string, plImageInfo> _timing;
 	
 	RECT _player;
 	POINT _plPos;
 	float _plPos_x, _plPos_y, _centerX, _centerY;
-	bool _isLeft, _isGround, _isFixed;
+	bool _isLeft, _isGround, _isFixed, _hold;
 	int _cnt, _idx_x, _idx_y;
 	POINT _center;
 	float _tempX, _tempY;
@@ -63,6 +71,7 @@ public:
 	inline void setGround(bool state) { _isGround = state; }
 	inline bool getGround() { return _isGround; }
 	inline bool getLeft() { return _isLeft; }
+	inline void setHold(bool state) { _hold = state; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
 

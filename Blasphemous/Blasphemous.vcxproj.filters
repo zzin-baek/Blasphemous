@@ -22,11 +22,17 @@
     <Filter Include="2D FrameWork\PCH">
       <UniqueIdentifier>{38668fcf-e892-49a8-b564-dc2c4793fcb8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene1">
-      <UniqueIdentifier>{babd6a8c-c96d-4e30-b9be-0a7d273534e4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="MainMenu">
       <UniqueIdentifier>{d2ca9674-3c64-4513-9766-c303ef94aef7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Boss">
+      <UniqueIdentifier>{def5fd96-b6df-4588-a6c7-edd16f1aa480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tutorial">
+      <UniqueIdentifier>{3e3289ba-062e-40df-9251-606f57b6f5a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Battle">
+      <UniqueIdentifier>{babd6a8c-c96d-4e30-b9be-0a7d273534e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -62,22 +68,33 @@
       <Filter>2D FrameWork\FrameWorkManager</Filter>
     </ClInclude>
     <ClInclude Include="Player.h" />
-    <ClInclude Include="BossMap.h" />
     <ClInclude Include="Acolyte.h">
-      <Filter>Scene1</Filter>
+      <Filter>Battle</Filter>
     </ClInclude>
     <ClInclude Include="BaseMap.h">
-      <Filter>Scene1</Filter>
+      <Filter>Battle</Filter>
     </ClInclude>
     <ClInclude Include="BattleField.h">
-      <Filter>Scene1</Filter>
+      <Filter>Battle</Filter>
     </ClInclude>
     <ClInclude Include="MainMenu.h">
       <Filter>MainMenu</Filter>
     </ClInclude>
-    <ClInclude Include="Tutorial.h" />
-    <ClInclude Include="TutorialField.h" />
-    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="BossMap.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialField.h">
+      <Filter>Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Tutorial.h">
+      <Filter>Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Battle</Filter>
+    </ClInclude>
+    <ClInclude Include="BossStage.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -104,21 +121,32 @@
       <Filter>2D FrameWork\FrameWorkManager</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="BossMap.cpp" />
     <ClCompile Include="Acolyte.cpp">
-      <Filter>Scene1</Filter>
+      <Filter>Battle</Filter>
     </ClCompile>
     <ClCompile Include="BaseMap.cpp">
-      <Filter>Scene1</Filter>
+      <Filter>Battle</Filter>
     </ClCompile>
     <ClCompile Include="BattleField.cpp">
-      <Filter>Scene1</Filter>
+      <Filter>Battle</Filter>
     </ClCompile>
     <ClCompile Include="MainMenu.cpp">
       <Filter>MainMenu</Filter>
     </ClCompile>
-    <ClCompile Include="Tutorial.cpp" />
-    <ClCompile Include="TutorialField.cpp" />
-    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="BossMap.cpp">
+      <Filter>Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialField.cpp">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial.cpp">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Battle</Filter>
+    </ClCompile>
+    <ClCompile Include="BossStage.cpp">
+      <Filter>Boss</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
