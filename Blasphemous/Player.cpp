@@ -40,7 +40,7 @@ HRESULT Player::init(void)
     IMAGEMANAGER->addFrameImage("ATTACK_CROUCH", "Resources/Image/Penitent/penitent_crouch_attack_anim.bmp",
         1428 * 2, 132 * 2, 12, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("ATTACK_DODGE", "Resources/Image/Penitent/penitent_dodge_attack.bmp",
-        2048 * 2, 512 * 2, 8, 4, true, MAGENTA);
+        4850 * 2, 216 * 2, 25, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("PUSHBACK", "Resources/Image/Penitent/penitent_pushback_anim.bmp",
         1748 * 2, 152 * 2, 19, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("PARRY", "Resources/Image/Penitent/penitent_parry_failed.bmp",
@@ -48,22 +48,22 @@ HRESULT Player::init(void)
     IMAGEMANAGER->addFrameImage("PORTION", "Resources/Image/Penitent/penitent_healthposion_anim.bmp",
         3330 * 2, 280 * 2, 37, 2, true, MAGENTA);
 
-    IMAGEMANAGER->addImage("Profile", "Resources/Image/Sheet/PlayerPortrait_activePrayer.bmp",
-        88 * 2, 58 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("Profile", "Resources/Image/Sheet/life_portrait.bmp",
+        219 * 2, 58 * 2, true, MAGENTA);
     IMAGEMANAGER->addImage("HP", "Resources/Image/Sheet/HealthBar.bmp", 
-        132 * 2, 4 * 2, true, MAGENTA);
+        136 * 2, 4 * 2, true, MAGENTA);
 
-    IMAGEMANAGER->addImage("flask_full", "Resources/Image/Sheet/flask_full.bmp",
-        11 * 2, 17 * 2, true, MAGENTA);
-    IMAGEMANAGER->addImage("flask_empty", "Resources/Image/Sheet/flask_empty.bmp",
-        11 * 2, 17 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("flask_full", "Resources/Image/Sheet/flask2_full.bmp",
+        14 * 2, 21 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("flask_empty", "Resources/Image/Sheet/flask2_empty.bmp",
+        14 * 2, 21 * 2, true, MAGENTA);
 
     _plPos_x = WINSIZE_X / 2 - 400;
     _plPos_y = WINSIZE_Y / 2 - 100;
 
     //_plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
 
-    _cnt = _idx_x = _idx_y = 0;
+    _cnt = _idx_x = _idx_y = _hitCool = 0;
     _isLeft = _isGround = _isFixed = _hold =  false;
 
     _centerX = _centerY = 0.0f;
@@ -90,26 +90,26 @@ HRESULT Player::init(void)
 void Player::initTiming(void)
 {
     // ## 기본적으로 왼쪽모습은 오른쪽 모습의 x + 50 ##
-    _timing["IDLE"] = { 5, {0 + 50, 0}, {0, 0} };
-    _timing["RUNNING"] = { 5, {0 + 50, 0}, {0, 0} };
-    _timing["STOP"] = { 4, {-10 + 50, 10}, {-10, 10} };
-    _timing["FALLING"] = { 5, {0 + 50, 0}, {10, 0} };
-    _timing["HANGON"] = { 5, {0, 0}, {0, 0} };
-    _timing["CLIMB"] = { 5, {0, 0}, {0, 0} };
-    _timing["JUMP"] = { 10, {0 + 50, 0}, {30, 0} };
-    _timing["JUMP_FORWARD"] = { 6, {0 + 50, -20}, {0, -20} };
-    _timing["ATTACK"] = { 4, {-110 + 50, 0}, {0, 0} };
-    _timing["ATTACK_JUMP"] = { 6, {0 + 50, -80}, {0, -80} };
-    _timing["ATTACK_CROUCH"] = { 4, {-80 + 50, 20}, {-15, 20} };
-    _timing["ATTACK_DODGE"] = { 4, {0 + 50, 0}, {0, 0} };
-    _timing["ATTACK_COMBO_2"] = { 5, {-280 + 50, 10}, {-20, 10} };
-    _timing["ATTACK_COMBO_3"] = { 6, {-310 + 50, -8}, {60, -8} };
-    _timing["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
-    _timing["PUSHBACK"] = { 4, {-20 + 50, 10}, {0, 10} };
-    _timing["DODGE"] = { 2, {0 + 50, 0}, {0, 0} };
-    _timing["CROUCH_DOWN"] = { 3, {0 + 50, 10}, {-25, 10} };
-    _timing["CROUCH_UP"] = { 3, {0 + 50, 0}, {-25, 0} };
-    _timing["PORTION"] = { 4, {-50 + 50, -125}, {0, -125} };
+    _sync["IDLE"] = { 5, {0 + 50, 0}, {0, 0} };
+    _sync["RUNNING"] = { 3, {0 + 50, 0}, {0, 0} };
+    _sync["STOP"] = { 4, {-10 + 50, 10}, {-10, 10} };
+    _sync["FALLING"] = { 5, {0 + 50, 0}, {10, 0} };
+    _sync["HANGON"] = { 5, {0, 0}, {0, 0} };
+    _sync["CLIMB"] = { 5, {0, 0}, {0, 0} };
+    _sync["JUMP"] = { 8, {0 + 50, 0}, {30, 0} };
+    _sync["JUMP_FORWARD"] = { 6, {0 + 50, -20}, {0, -20} };
+    _sync["ATTACK"] = { 4, {-135 + 50, 2}, {0, 3} };
+    _sync["ATTACK_JUMP"] = { 6, {0 + 50, -80}, {0, -80} };
+    _sync["ATTACK_CROUCH"] = { 4, {-80 + 50, 20}, {-15, 20} };
+    _sync["ATTACK_DODGE"] = { 4, {-240 + 50, -55}, {-5, -55} };
+    _sync["ATTACK_COMBO_2"] = { 4, {-130 + 50, 10}, {-20, 10} };
+    _sync["ATTACK_COMBO_3"] = { 4, {-310 + 50, -8}, {60, -8} };
+    _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
+    _sync["PUSHBACK"] = { 4, {-20 + 50, 10}, {0, 10} };
+    _sync["DODGE"] = { 2, {0 + 50, 0}, {0, 0} };
+    _sync["CROUCH_DOWN"] = { 3, {0 + 50, 10}, {-25, 10} };
+    _sync["CROUCH_UP"] = { 3, {0 + 50, 0}, {-25, 0} };
+    _sync["PORTION"] = { 4, {-50 + 50, -125}, {0, -125} };
 }
 
 void Player::playerAction(void)
@@ -131,8 +131,8 @@ void Player::playerAction(void)
             setAction("FALLING");
     }
 
-    cout << "hold"<<_hold << endl;
-    if (KEYMANAGER->isStayKeyDown('A'))
+    //cout << "hold"<<_hold << endl;
+    if (KEYMANAGER->isStayKeyDown('A') && !_plState[ATTACK])
     {
         _isLeft = true;
         setState(WALK, true);
@@ -153,7 +153,7 @@ void Player::playerAction(void)
         if (_plPos_x > 0 && !_plState[CROUCH] && !_plState[DODGE])
             _plPos_x -= 4.0f;
     }
-    if (KEYMANAGER->isStayKeyDown('D'))
+    if (KEYMANAGER->isStayKeyDown('D') && !_plState[ATTACK])
     {
         _isLeft = false;
         setState(WALK, true);
@@ -162,7 +162,7 @@ void Player::playerAction(void)
         if (_plPos_x < WINSIZE_X && !_plState[CROUCH] && !_plState[DODGE])
             _plPos_x += 4.0f;
     }
-    if (KEYMANAGER->isStayKeyDown('S'))
+    if (KEYMANAGER->isStayKeyDown('S') && isEmpty())
     {
         setState(CROUCH, true);
         if (!_plState.none())
@@ -179,26 +179,6 @@ void Player::playerAction(void)
         else
             _idx_x = 0;*/
     }
-
-    /*if (KEYMANAGER->isStayKeyDown('A') && !_isFixed)
-    {
-        _isLeft = true;
-        setState(WALK, true);
-        if (!_plState[JUMP])
-            setAction("RUNNING");
-        if (_plPos.x > 0)
-            _plPos.x -= 5;
-    }
-    if (KEYMANAGER->isStayKeyDown('D') && !_isFixed)
-    {
-        _isLeft = false;
-        setState(WALK, true);
-        if (!_plState[JUMP])
-            setAction("RUNNING");
-        if (_plPos.x < WINSIZE_X)
-            _plPos.x += 5;
-    }*/
-
     if (KEYMANAGER->isOnceKeyUp('S') && isEmpty())
     {
         setState(CROUCH, false);
@@ -225,6 +205,9 @@ void Player::playerAction(void)
         _actionList.push_back("PORTION");
         setAction("PORTION");
         _portion--;
+        _hp += 30;
+        if (_hp > 100)
+            _hp = 100;
 
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("PORTION")->getMaxFrameX();
@@ -257,7 +240,7 @@ void Player::playerAction(void)
             else
                 _idx_x = 0;
         }
-        else if (_plState.none())
+        else if (_plState.none() && isEmpty())
         {
             setState(JUMP, true);
             setAction("JUMP");
@@ -267,42 +250,6 @@ void Player::playerAction(void)
                 _idx_x = 0;
         }
     }
-
-    /*if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP])
-    {
-        _tempY = _plPos.y;
-        if (_plState[WALK])
-        {
-            setState(JUMP, true);
-            setAction("JUMP_FORWARD");
-            _actionList.push_back("JUMP_FORWARD");
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX();
-            else
-                _idx_x = 0;
-        }
-        else if (_plState[DODGE])
-        {
-            setAction("JUMP_FORWARD");
-            setState(DODGE, false);
-            setState(JUMP, true);
-            _actionList.pop_front();
-            _actionList.push_back("JUMP_FORWARD");
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX();
-            else
-                _idx_x = 0;
-        }
-        else if (_plState.none())
-        {
-            setState(JUMP, true);
-            setAction("JUMP");
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("JUMP")->getMaxFrameX();
-            else
-                _idx_x = 0;
-        }
-    }*/
 
     if (KEYMANAGER->isOnceKeyDown('W') && _hold)
     {
@@ -317,7 +264,7 @@ void Player::playerAction(void)
             _idx_x = 0;
     }
 
-    if (KEYMANAGER->isOnceKeyDown(VK_SHIFT) && !_plState[DODGE] && !_isFixed)
+    if (KEYMANAGER->isOnceKeyDown(VK_SHIFT) && !_plState[DODGE] && isEmpty())
     {
         _tempX = _plPos_x;
         setState(DODGE, true);
@@ -328,62 +275,73 @@ void Player::playerAction(void)
         else
             _idx_x = 0;
     }
-    if (KEYMANAGER->isOnceKeyDown('K') && !_plState[ATTACK])
-    {
-        if (_plState[JUMP])
-        {
-            setState(ATTACK, true);
-            if (!isEmpty())
-                _actionList.pop_front();
 
-            setAction("ATTACK_JUMP");
-            _actionList.push_back("ATTACK_JUMP");
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("ATTACK_JUMP")->getMaxFrameX();
-            else
-                _idx_x = 0;
-        }
-        else if (_plState[DODGE])
+    if (KEYMANAGER->isOnceKeyDown('K'))
+    {
+        if (!_plState[ATTACK])
         {
-            setState(ATTACK, true);
-            setAction("ATTACK_DODGE");
-            _actionList.push_back("ATTACK_DODGE");
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("ATTACK_DODGE")->getMaxFrameX();
+            if (_plState[JUMP])
+            {
+                setState(ATTACK, true);
+                if (!isEmpty())
+                    _actionList.pop_front();
+
+                setAction("ATTACK_JUMP");
+                _actionList.push_back("ATTACK_JUMP");
+                if (_isLeft)
+                    _idx_x = IMAGEMANAGER->findImage("ATTACK_JUMP")->getMaxFrameX();
+                else
+                    _idx_x = 0;
+            }
+            else if (_plState[DODGE])
+            {
+                setState(ATTACK, true);
+                setState(DODGE, false);
+                setAction("ATTACK_DODGE");
+                if (!isEmpty())
+                    _actionList.clear();
+                _actionList.push_back("ATTACK_DODGE");
+                if (_isLeft)
+                    _idx_x = IMAGEMANAGER->findImage("ATTACK_DODGE")->getMaxFrameX();
+                else
+                    _idx_x = 0;
+            }
+            else if (_plState[CROUCH])
+            {
+                setState(ATTACK, true);
+                setAction("ATTACK_CROUCH");
+                _actionList.push_back("ATTACK_CROUCH");
+                if (_isLeft)
+                    _idx_x = IMAGEMANAGER->findImage("ATTACK_CROUCH")->getMaxFrameX();
+                else
+                    _idx_x = 0;
+            }
             else
-                _idx_x = 0;
-        }
-        else if (_plState[CROUCH])
-        {
-            setState(ATTACK, true);
-            setAction("ATTACK_CROUCH");
-            _actionList.push_back("ATTACK_CROUCH");
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("ATTACK_CROUCH")->getMaxFrameX();
-            else
-                _idx_x = 0;
+            {
+                _attackTime.push_back(clock());
+
+                comboAttack();
+            }
         }
         else
-        {
-            setState(ATTACK, true);
-            setAction("ATTACK_COMBO_3");
-            _actionList.push_back("ATTACK_COMBO_3");
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("ATTACK_COMBO_3")->getMaxFrameX() + 1;
-            else
-                _idx_x = 0;
-        }
+            _comboTime.push_back(clock());
     }
     if (_plState[HIT] && isEmpty())
     {
-        _actionList.push_back("PUSHBACK");
-        _actionList.push_back("CROUCH_UP");
-        setAction("PUSHBACK");
+        if (!_hitCool)
+        {
+            _actionList.push_back("PUSHBACK");
+            _actionList.push_back("CROUCH_UP");
+            setAction("PUSHBACK");
 
-        if (_isLeft)
-            _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
-        else
-            _idx_x = 0;
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+        _hitCool++;
+        if (_hitCool > 50)
+            _hitCool = 0;
     }
    _cnt++;
    if (_actionList.empty())
@@ -392,7 +350,7 @@ void Player::playerAction(void)
        {
            _idx_y = 1;
            IMAGEMANAGER->findImage(_strAction)->setFrameY(_idx_y);
-           if (_cnt % 5 == 0)
+           if (_cnt % _sync.find(_strAction)->second.timing == 0)
            {
                _idx_x--;
                if (_idx_x < 0)
@@ -408,7 +366,7 @@ void Player::playerAction(void)
        {
            _idx_y = 0;
            IMAGEMANAGER->findImage(_strAction)->setFrameY(_idx_y);
-           if (_cnt % 5 == 0)
+           if (_cnt % _sync.find(_strAction)->second.timing == 0)
            {
                _idx_x++;
                if (_idx_x > getMaxFrameX())
@@ -427,7 +385,7 @@ void Player::playerAction(void)
        {
            _idx_y = 1;
            IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
-           if (_cnt % _timing.find(_actionList.front())->second.timing == 0)
+           if (_cnt % _sync.find(_actionList.front())->second.timing == 0)
            {
                _idx_x--;
                if (_idx_x < 0)
@@ -453,7 +411,7 @@ void Player::playerAction(void)
        {
            _idx_y = 0;
            IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
-           if (_cnt % _timing.find(_actionList.front())->second.timing == 0)
+           if (_cnt % _sync.find(_actionList.front())->second.timing == 0)
            {
                _idx_x++;
                if (_idx_x > IMAGEMANAGER->findImage(_actionList.front())->getMaxFrameX())
@@ -487,12 +445,12 @@ void Player::playerMove(void)
             if (!strcmp(_strAction, "JUMP_FORWARD"))
             {
                 if (_idx_x > getMaxFrameX() - 6)
-                    _plPos_y -= 10.0f;
+                    _plPos_y -= 9.0f;
             }
             if (!strcmp(_strAction, "JUMP"))
             {
-                if (_tempY - _plPos_y < 150)
-                    _plPos_y -= 10.0f;
+                if (_tempY - _plPos_y < 130)
+                    _plPos_y -= 9.0f;
                 else if (_tempY <= _plPos_y)
                     setAction("IDLE");
                 else
@@ -505,11 +463,11 @@ void Player::playerMove(void)
         else
         {
             if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 6)
-                _plPos_y -= 10.0f;
+                _plPos_y -= 9.0f;
             if (!strcmp(_strAction, "JUMP"))
             {
-                if (_tempY - _plPos_y < 150)
-                    _plPos_y -= 10.0f;
+                if (_tempY - _plPos_y < 130)
+                    _plPos_y -= 9.0f;
                 else
                 {
                     setAction("FALLING");
@@ -530,59 +488,64 @@ void Player::playerMove(void)
         }
     }
 
-    if (_plState[HIT])
+    if (!strcmp(_strAction, "PUSHBACK"))
     {
         if (_isLeft)
         {
-            if (!strcmp(_strAction, "PUSHBACK") && _idx_x > getMaxFrameX() - 6)
+            if (_idx_x > getMaxFrameX() - 6)
                 _plPos_x += 6.0f;
         }
         else
         {
-            if (!strcmp(_strAction, "PUSHBACK") && _idx_x < 6)
+            if (_idx_x < 6)
                 _plPos_x -= 6.0f;
-        }
-    }
-}
-
-void Player::frameFromTo(char* _action, int _start, int _end)
-{
-    int count = 0;
-    while (1)
-    {
-        count++;
-        if (_start > _end)
-        {
-            IMAGEMANAGER->findImage(_action)->setFrameY(1);
-            if (count % _timing.find(_action)->second.timing == 0)
-            {
-                _start--;
-                if (_start < _end)
-                {
-                    break;
-                }
-                IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_start);
-            }
-        }
-        else
-        {
-            IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(0);
-            if (_cnt % _timing.find(_actionList.front())->second.timing == 0)
-            {
-                _start++;
-                if (_start > _end)
-                {
-                    break;
-                }
-                IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_start);
-            }
         }
     }
 }
 
 Player::~Player()
 {
-    
+}
+
+void Player::comboAttack(void)
+{
+    if (_comboTime.empty())
+    {
+        setState(ATTACK, true);
+        setAction("ATTACK");
+        _actionList.push_back("ATTACK");
+
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("ATTACK_COMBO_2")->getMaxFrameX();
+        else
+            _idx_x = 0;
+    }
+    else
+    {
+        if (_comboTime.back() - _attackTime.back() < 500)
+        {
+            if (!strcmp(_strAction, "ATTACK"))
+            {
+                setAction("ATTACK_COMBO_2");
+                _actionList.push_back("ATTACK_COMBO_2");
+
+            }
+            else if (!strcmp(_strAction, "ATTACK_COMBO_2"))
+            {
+                setAction("ATTACK_COMBO_3");
+                _actionList.push_back("ATTACK_COMBO_3");
+
+                _attackTime.clear();
+                _comboTime.clear();
+            }
+            else
+            {
+                setAction("ATTACK");
+                _actionList.push_back("ATTACK");
+
+            }
+        }
+    }
 }
 
 void Player::renderPlayer(HDC hdc)
@@ -592,22 +555,22 @@ void Player::renderPlayer(HDC hdc)
         if (_isLeft)
         {
             IMAGEMANAGER->frameRender(_strAction, hdc,
-                _plPos_x + _timing.find(_strAction)->second.leftMove.x,
-                _plPos_y + _timing.find(_strAction)->second.leftMove.y, _idx_x, _idx_y);
+                _plPos_x + _sync.find(_strAction)->second.leftMove.x,
+                _plPos_y + _sync.find(_strAction)->second.leftMove.y, _idx_x, _idx_y);
 
-            _player = RectMake(_plPos_x + _timing.find(_strAction)->second.leftMove.x, 
-                _plPos_y + _timing.find(_strAction)->second.leftMove.y,
+            _player = RectMake(_plPos_x + _sync.find(_strAction)->second.leftMove.x, 
+                _plPos_y + _sync.find(_strAction)->second.leftMove.y,
                 IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
                 IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
         }
         else
         {
             IMAGEMANAGER->frameRender(_strAction, hdc,
-                _plPos_x + _timing[_strAction].rightMove.x,
-                _plPos_y + _timing[_strAction].rightMove.y, _idx_x, _idx_y);
+                _plPos_x + _sync[_strAction].rightMove.x,
+                _plPos_y + _sync[_strAction].rightMove.y, _idx_x, _idx_y);
 
-            _player = RectMake(_plPos_x + _timing.find(_strAction)->second.rightMove.x,
-                _plPos_y + _timing.find(_strAction)->second.rightMove.y,
+            _player = RectMake(_plPos_x + _sync.find(_strAction)->second.rightMove.x,
+                _plPos_y + _sync.find(_strAction)->second.rightMove.y,
                 IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
                 IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
         }
@@ -617,26 +580,26 @@ void Player::renderPlayer(HDC hdc)
         if (_isLeft)
         {
             IMAGEMANAGER->frameRender(_actionList.front().c_str(), hdc, 
-                _plPos_x + _timing.find(_actionList.front().c_str())->second.leftMove.x,
-                _plPos_y + _timing.find(_actionList.front().c_str())->second.leftMove.y, _idx_x, _idx_y);
+                _plPos_x + _sync.find(_actionList.front().c_str())->second.leftMove.x,
+                _plPos_y + _sync.find(_actionList.front().c_str())->second.leftMove.y, _idx_x, _idx_y);
 
-            _player = RectMake(_plPos_x + _timing.find(_actionList.front().c_str())->second.leftMove.x,
-                _plPos_y + _timing.find(_actionList.front().c_str())->second.leftMove.y,
+            _player = RectMake(_plPos_x + _sync.find(_actionList.front().c_str())->second.leftMove.x,
+                _plPos_y + _sync.find(_actionList.front().c_str())->second.leftMove.y,
                 IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
                 IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
-            cout << _timing.find(_actionList.front().c_str())->second.leftMove.y << endl;
+            //cout << _sync.find(_actionList.front().c_str())->second.leftMove.y << endl;
         }
         else
         {
             IMAGEMANAGER->frameRender(_actionList.front().c_str(), hdc, 
-                _plPos_x + _timing[_actionList.front().c_str()].rightMove.x,
-                _plPos_y + _timing[_actionList.front().c_str()].rightMove.y, _idx_x, _idx_y);
+                _plPos_x + _sync[_actionList.front().c_str()].rightMove.x,
+                _plPos_y + _sync[_actionList.front().c_str()].rightMove.y, _idx_x, _idx_y);
             
-            _player = RectMake(_plPos_x + _timing.find(_actionList.front().c_str())->second.rightMove.x,
-                _plPos_y + _timing.find(_actionList.front().c_str())->second.rightMove.y,
+            _player = RectMake(_plPos_x + _sync.find(_actionList.front().c_str())->second.rightMove.x,
+                _plPos_y + _sync.find(_actionList.front().c_str())->second.rightMove.y,
                 IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
                 IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
-            cout << _timing.find(_actionList.front().c_str())->second.rightMove.y << endl;
+            //cout << _sync.find(_actionList.front().c_str())->second.rightMove.y << endl;
         }
     }
     
@@ -657,30 +620,23 @@ void Player::renderPlayer(HDC hdc)
         SelectObject(hdc, oldPen);
         DeleteObject(myPen);
     }
-    
-    /*cout << _hp << endl;
-    cout << "hit"<<_plState[HIT] << endl;
-    cout <<"attack"<< _plState[ATTACK] << endl;
-    cout <<"parry"<< _plState[PARRY] << endl;
-    cout << _plPos_y << endl;*/
-    // cout << _idx_x << endl;
-
+   
 }
 
 void Player::renderProfile(HDC hdc)
 {
-    IMAGEMANAGER->render("HP", hdc, 120, 52, 0, 0, 
-        IMAGEMANAGER->findImage("HP")->getWidth() * _hp / 100, IMAGEMANAGER->findImage("HP")->getHeight());
     IMAGEMANAGER->render("Profile", hdc, 30, 30);
+    IMAGEMANAGER->render("HP", hdc, 186, 76, 0, 0, 
+        IMAGEMANAGER->findImage("HP")->getWidth() * _hp / 100, IMAGEMANAGER->findImage("HP")->getHeight());
     for (int i = 0; i < 5; i++)
     {
         if (i < _portion)
         {
-            IMAGEMANAGER->render("flask_full", hdc, 160 + 35 * i, 100);
+            IMAGEMANAGER->render("flask_full", hdc, 155 + 42 * i, 105);
         }
         else
         {
-            IMAGEMANAGER->render("flask_empty", hdc, 160 + 35 * i, 100);
+            IMAGEMANAGER->render("flask_empty", hdc, 155 + 42 * i, 105);
         }
     }
 }

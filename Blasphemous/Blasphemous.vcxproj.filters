@@ -95,6 +95,7 @@
     <ClInclude Include="BossStage.h">
       <Filter>Boss</Filter>
     </ClInclude>
+    <ClInclude Include="Effect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -148,5 +149,6 @@
     <ClCompile Include="BossStage.cpp">
       <Filter>Boss</Filter>
     </ClCompile>
+    <ClCompile Include="Effect.cpp" />
   </ItemGroup>
 </Project>

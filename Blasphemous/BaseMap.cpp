@@ -64,28 +64,6 @@ void BaseMap::update(void)
         _bf->setY(_bf->getY() + 2.0f);
     }
 
-    /*if (!_pl->getGround())
-        _pl->setPosY(_pl->getPosY() + 5);
-
-    if (_pl->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 680 < 1280)
-    {
-        _bf->setX(_bf->getX() + 3);
-        _pl->setPosX(_pl->getPosX() - 3);
-    }
-    if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 && _bf->getX() > 0)
-    {
-        _bf->setX(_bf->getX() - 3);
-        _pl->setPosX(_pl->getPosX() + 3);
-    }
-    if (_pl->getRect().top < WINSIZE_Y / 2 && _bf->getY() > 0)
-    {
-        _bf->setY(_bf->getY() - 2);
-    }
-    if (_pl->getRect().top > WINSIZE_Y / 2 && (_bf->getY() + 380 < 600))
-    {
-        _bf->setY(_bf->getY() + 2);
-    }*/
-
     // ÇÈ¼¿ Ãæµ¹
     for (int i = _pl->getRect().left; i <= _pl->getRect().right; i++)
     {
@@ -99,6 +77,7 @@ void BaseMap::update(void)
         if ((r == 255 && g == 0 && b == 255))
         {
             _pl->setGround(true);
+            //_pl->setPosY(_pl->getPosY() - 1.0f);
             break;
         }
         _pl->setGround(false);
@@ -203,6 +182,7 @@ void BaseMap::update(void)
         if (!_ac->getState()[HIT_ENEMY])
         {
             _ac->setState(HIT_ENEMY, true);
+            //_ac->addAction("Acolyte_hit");
             _ac->setHP(_ac->getHP() - 10);
         }
     }

@@ -20,7 +20,7 @@ private:
 
 	bool _isLeft;
 	int _cnt, _idx_x, _idx_y;
-	int _hp;
+	int _hp, _hitCool;
 
 	char _strAction[128];
 	char _loc[128];

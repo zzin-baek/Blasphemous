@@ -149,6 +149,7 @@
     <ClInclude Include="BossMap.h" />
     <ClInclude Include="BossStage.h" />
     <ClInclude Include="CommonMacroFucntion.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GameNode.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="BattleField.cpp" />
     <ClCompile Include="BossMap.cpp" />
     <ClCompile Include="BossStage.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameNode.cpp" />

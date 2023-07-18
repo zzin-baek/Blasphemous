@@ -18,7 +18,7 @@ HRESULT Acolyte::init(void)
 
     _acolytePos = { WINSIZE_X / 2 + 500, WINSIZE_Y / 2 + 325 };
     _isLeft = false;
-    _cnt = _idx_x = _idx_y = 0;
+    _cnt = _idx_x = _idx_y = _hitCool = 0;
     _acState.reset();
     _hp = 80;
 
@@ -53,6 +53,7 @@ void Acolyte::move(void)
         _acolytePos.x += 1;
     }
 
+
     if (_acState[ATTACK_ENEMY])
     {
         if (_isLeft)
@@ -65,6 +66,15 @@ void Acolyte::move(void)
         }
     }
 
+    if (_acState[HIT_ENEMY])
+    {
+        if (!_hitCool)
+            _acList.push_back("Acolyte_hit");
+
+        _hitCool++;
+        if (_hitCool > 50)
+            _hitCool = 0;
+    }
     if (_hp < 0)
     {
         setState(IDLE_ENEMY, false);

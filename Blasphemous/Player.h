@@ -35,12 +35,14 @@ private:
 	char _strAction[128];
 	bitset<MAX_STATE> _plState;
 	deque<string> _actionList;
-	map<string, plImageInfo> _timing;
+	map<string, plImageInfo> _sync;
+	vector<int> _attackTime, _comboTime;
 	
 	RECT _player;
 	POINT _plPos;
 	float _plPos_x, _plPos_y, _centerX, _centerY;
 	bool _isLeft, _isGround, _isFixed, _hold;
+	int _hitCool;
 	int _cnt, _idx_x, _idx_y;
 	POINT _center;
 	float _tempX, _tempY;
@@ -54,7 +56,7 @@ public:
 	void initTiming(void);
 	void playerAction(void);
 	void playerMove(void);
-	void frameFromTo(char* _action, int _start, int _end);
+	void comboAttack(void);
 	void renderPlayer(HDC hdc);
 	void renderProfile(HDC hdc);
 

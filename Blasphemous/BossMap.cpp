@@ -8,6 +8,9 @@ HRESULT BossMap::init(void)
     IMAGEMANAGER->addImage("BossMap_bright", "Resources/Image/BackGround/Isidora_map_bright",
         640 * 2, 360 * 2);
 
+    IMAGEMANAGER->addImage("BossMap_collision", "Resources/Image/BackGround/Isidora_map_collision.bmp",
+        1200 * 2, 360 * 2);
+
     return S_OK;
 }
 
