@@ -4,7 +4,8 @@ enum tagEnemy
 {
 	IDLE_ENEMY = 0,
 	ATTACK_ENEMY,
-	HIT_ENEMY
+	HIT_ENEMY,
+	DIE_ENEMY
 };
 
 class Enemy

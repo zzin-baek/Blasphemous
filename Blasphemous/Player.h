@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_STATE 9
+#define MAX_STATE 10
 
 // bitset: 기본, 걷기, 점프, 앉기, 매달리기
 enum eState
@@ -54,6 +54,7 @@ public:
 	void initTiming(void);
 	void playerAction(void);
 	void playerMove(void);
+	void frameFromTo(char* _action, int _start, int _end);
 	void renderPlayer(HDC hdc);
 	void renderProfile(HDC hdc);
 

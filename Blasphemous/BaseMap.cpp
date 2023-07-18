@@ -103,6 +103,7 @@ void BaseMap::update(void)
         }
         _pl->setGround(false);
     }
+
     for (int i = _pl->getRect().top; i < _pl->getRect().bottom - 10; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
@@ -116,9 +117,7 @@ void BaseMap::update(void)
         {
             _pl->setPosX(_pl->getPosX() + 4.0f);
             break;
-        }
-
-        
+        } 
     }
 
     for (int i = _pl->getRect().top; i < _pl->getRect().bottom - 10; i++)
@@ -135,10 +134,9 @@ void BaseMap::update(void)
             _pl->setPosX(_pl->getPosX() - 4.0f);
             break;
         }
-
-
     }
 
+    // acolyte ÇÈ¼¿Ãæµ¹
     COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
         _bf->getX() + _ac->getPosX() + 80, _bf->getY() + _ac->getPosY());
 
@@ -176,6 +174,7 @@ void BaseMap::update(void)
                 _ac->setState(IDLE_ENEMY, false);
                 _ac->setState(ATTACK_ENEMY, true);
                 _ac->addAction("Acolyte_attack");
+                _ac->addAction("Acolyte_idle");
 
                 if (i == 0)
                 {
@@ -197,6 +196,14 @@ void BaseMap::update(void)
         {
             _pl->setState(HIT, true);
             _pl->setHP(_pl->getHP() - 5);
+        }
+    }
+    if (IntersectRect(&_rt, &_ac->getRect(), &_pl->getRect()) && _pl->getState()[ATTACK])
+    {
+        if (!_ac->getState()[HIT_ENEMY])
+        {
+            _ac->setState(HIT_ENEMY, true);
+            _ac->setHP(_ac->getHP() - 10);
         }
     }
 

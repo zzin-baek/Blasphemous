@@ -15,7 +15,7 @@ private:
 	RECT _acolyte, _attack;
 	RECT _attackBoundary[2];
 	deque<string> _acList;
-	bitset<3> _acState;
+	bitset<4> _acState;
 	map<string, acImageInfo> _sync;
 
 	bool _isLeft;
@@ -44,10 +44,15 @@ public:
 	void setLeft(bool state) { _isLeft = state; }
 	bool getLeft() { return _isLeft; }
 
+	bitset<4> getState() { return _acState; }
 	void setState(int num, bool state) { _acState.set(num, state); }
 	void setAction(char* _action) { wsprintf(_strAction, _action); }
+	RECT getRect() { return _acolyte; }
 	RECT getBoundary(int num) { return _attackBoundary[num]; }
 	RECT getAttack() { return _attack; }
+
+	void setHP(int hp) { _hp = hp; }
+	int getHP() { return _hp; }
 
 	int getMaxFrame() { return IMAGEMANAGER->findImage(_strAction)->getMaxFrameX(); }
 

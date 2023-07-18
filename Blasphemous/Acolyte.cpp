@@ -20,7 +20,7 @@ HRESULT Acolyte::init(void)
     _isLeft = false;
     _cnt = _idx_x = _idx_y = 0;
     _acState.reset();
-    _hp = 50;
+    _hp = 80;
 
     setState(IDLE_ENEMY, true);
     wsprintf(_strAction, "Acolyte_walk");
@@ -32,7 +32,8 @@ HRESULT Acolyte::init(void)
 
 void Acolyte::initSync(void)
 {
-    _sync["Acolyte_walk"] = { 7, {0, 0}, {0, 0} };
+    _sync["Acolyte_idle"] = { 4, {-5, 0}, {10, 0} };
+    _sync["Acolyte_walk"] = { 4, {0, 0}, {0, 0} };
     _sync["Acolyte_attack"] = { 7, {-180, 20}, {-150, 20} };
     _sync["Acolyte_hit"] = { 7, {40, 0}, {-120, 0} };
     _sync["Acolyte_parry"] = { 7, {0, 0}, {0, 0} };
@@ -63,6 +64,13 @@ void Acolyte::move(void)
             _attack = RectMake(_attackBoundary[1].right - 105, _attackBoundary[1].top + 5, 100, 65);
         }
     }
+
+    if (_hp < 0)
+    {
+        setState(IDLE_ENEMY, false);
+        setState(DIE_ENEMY, true);
+        _acList.push_back("Acolyte_death");
+    }
     _cnt++;
     if (isEmpty())
     {
@@ -70,7 +78,7 @@ void Acolyte::move(void)
         {
             _idx_y = 1;
             IMAGEMANAGER->findImage(_strAction)->setFrameY(_idx_y);
-            if (_cnt % 8 == 0)
+            if (_cnt % _sync[_strAction].timing == 0)
             {
                 _idx_x--;
                 if (_idx_x < 0)
@@ -84,7 +92,7 @@ void Acolyte::move(void)
         {
             _idx_y = 0;
             IMAGEMANAGER->findImage(_strAction)->setFrameY(_idx_y);
-            if (_cnt % 8 == 0)
+            if (_cnt % _sync[_strAction].timing == 0)
             {
                 _idx_x++;
                 if (_idx_x > getMaxFrame())
@@ -101,14 +109,18 @@ void Acolyte::move(void)
         {
             _idx_y = 1;
             IMAGEMANAGER->findImage(_acList.front().c_str())->setFrameY(_idx_y);
-            if (_cnt % 7 == 0)
+            if (_cnt % _sync[_acList.front().c_str()].timing == 0)
             {
                 _idx_x--;
                 if (_idx_x < 0)
                 {
                     _acList.pop_front();
                     if (!_acList.empty())
+                    {
                         _idx_x = IMAGEMANAGER->findImage(_acList.front().c_str())->getMaxFrameX();
+                        setAction((char*)_acList.front().c_str());
+                        _acState.reset();
+                    }
                     else
                     {
                         _acState.reset();
@@ -124,14 +136,18 @@ void Acolyte::move(void)
         {
             _idx_y = 0;
             IMAGEMANAGER->findImage(_acList.front().c_str())->setFrameY(_idx_y);
-            if (_cnt % 7 == 0)
+            if (_cnt % _sync[_acList.front().c_str()].timing == 0)
             {
                 _idx_x++;
                 if (_idx_x > IMAGEMANAGER->findImage(_acList.front())->getMaxFrameX())
                 {
                     _acList.pop_front();
                     if (!_acList.empty())
+                    {
                         _idx_x = 0;
+                        setAction((char*)_acList.front().c_str());
+                        _acState.reset();
+                    }
                     else
                     {
                         _acState.reset();
@@ -247,7 +263,4 @@ void Acolyte::render(HDC hdc)
         SelectObject(hdc, oldPen);
         DeleteObject(myPen);
     }
-
-    cout << isEmpty() << endl;
-
 }
