@@ -96,6 +96,8 @@
       <Filter>Boss</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="Inventory.h" />
+    <ClInclude Include="Item.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -150,5 +152,7 @@
       <Filter>Boss</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="Item.cpp" />
   </ItemGroup>
 </Project>

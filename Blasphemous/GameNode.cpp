@@ -25,6 +25,7 @@ HRESULT GameNode::init(bool managerInit)
         KEYMANAGER->init();
         IMAGEMANAGER->init();
         SOUNDMANAGER->init();
+        INVENTORY->init();
     }
 
     return S_OK;
@@ -41,6 +42,7 @@ void GameNode::release(void)
         IMAGEMANAGER->release();
         IMAGEMANAGER->releaseSingleton();
         SOUNDMANAGER->releaseSingleton();
+        INVENTORY->releaseSingleton();
         //SAFE_DELETE(_doubleBuffer);
     }
 
@@ -81,7 +83,7 @@ LRESULT GameNode::MainProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lPara
     case WM_KEYDOWN:
         switch (wParam)
         {
-        case VK_ESCAPE:
+        case VK_F1:
             PostMessage(hWnd, WM_DESTROY, 0, 0);
             break;
         }

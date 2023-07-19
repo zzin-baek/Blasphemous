@@ -28,10 +28,6 @@ struct plImageInfo
 class Player
 {
 private:
-
-	time_t timer;
-	struct tm t;
-
 	char _strAction[128];
 	bitset<MAX_STATE> _plState;
 	deque<string> _actionList;
@@ -41,13 +37,14 @@ private:
 	RECT _player;
 	POINT _plPos;
 	float _plPos_x, _plPos_y, _centerX, _centerY;
-	bool _isLeft, _isGround, _isFixed, _hold;
+	bool _isLeft, _isGround, _isFixed, _hold, _collect;
 	int _hitCool;
 	int _cnt, _idx_x, _idx_y;
 	POINT _center;
 	float _tempX, _tempY;
 
 	int _hp, _portion;
+	bool _collected;
 
 	char _loc[128], _action[128];
 
@@ -71,7 +68,10 @@ public:
 	inline void setGround(bool state) { _isGround = state; }
 	inline bool getGround() { return _isGround; }
 	inline bool getLeft() { return _isLeft; }
+	inline bool getFixed() { return _isFixed; }
 	inline void setHold(bool state) { _hold = state; }
+	inline void setCollect(bool state) { _collect = state; }
+	inline bool getCollected() { return _collected; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
 	inline void addAction(string _action) { _actionList.push_back(_action); }

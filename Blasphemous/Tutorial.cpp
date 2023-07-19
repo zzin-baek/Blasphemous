@@ -9,8 +9,13 @@ HRESULT Tutorial::init(void)
     _tf = new TutorialField();
     _tf->init();
 
-    _nextStage = 0;
+    _item = new Item;
+    _item->init(WINSIZE_X / 2, WINSIZE_Y / 2  + 180);
 
+    _itemList.push_back(_item);
+
+    _nextStage = 0;
+    _isInven = false;
 
     return S_OK;
 }
@@ -19,12 +24,39 @@ void Tutorial::release(void)
 {
     SAFE_DELETE(_pl);
     SAFE_DELETE(_tf);
+    SAFE_DELETE(_item);
 }
 
 void Tutorial::update(void)
 {
-    _pl->playerAction();
-    _pl->playerMove();
+    if (!_isInven)
+    {
+        _pl->playerAction();
+        _pl->playerMove();
+    }
+
+    if (!_itemList.empty())
+    {
+        _itemList[0]->update();
+
+        RECT _rt;
+        if (IntersectRect(&_rt, &_pl->getRect(), &_item->getRect()))
+        {
+            _itemList[0]->setPick(true);
+            _pl->setCollect(true);
+
+            if (_pl->getCollected())
+            {
+                _itemList.pop_back();
+                INVENTORY->addItem(ROSARY, { "Item1", "¼³¸í", "¾îÂ¼±¸", false });
+            }
+        }
+        else
+        {
+            _itemList[0]->setPick(false);
+            _pl->setCollect(false);
+        }
+    }
 
     if (!_pl->getGround())
         _pl->setPosY(_pl->getPosY() + 5.0f);
@@ -48,11 +80,35 @@ void Tutorial::update(void)
 
     if (_pl->getCenterX() > WINSIZE_X)
         _nextStage = 1;
+
+    if (KEYMANAGER->isOnceKeyDown('I'))
+    {
+        _isInven = true;
+        INVENTORY->setOut(false);
+    }
+    if (_isInven)
+    {
+        INVENTORY->update();
+
+        if (INVENTORY->getOut())
+        {
+            _isInven = false;
+        }
+    }
 }
 
 void Tutorial::render(void)
 {
     _tf->render(getMemDC());
+
+    if (!_itemList.empty())
+        _itemList[0]->showItem(getMemDC());
+
     _pl->renderPlayer(getMemDC());
     _pl->renderProfile(getMemDC());
+
+    if (_isInven)
+    {
+        INVENTORY->render(getMemDC());
+    }
 }

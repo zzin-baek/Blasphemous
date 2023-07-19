@@ -11,17 +11,15 @@ HRESULT Player::init(void)
     //_plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
 
     _cnt = _idx_x = _idx_y = _hitCool = 0;
-    _isLeft = _isGround = _isFixed = _hold =  false;
+    _isLeft = _isGround = _isFixed = _hold = _collect = false;
 
     _centerX = _centerY = 0.0f;
     //_center = { 0, 0 };
     _tempX = _tempY = 0.0f;
 
-    timer = time(NULL);
-    localtime_s(&t, &timer);
-
     _hp = 100; 
     _portion = 5;
+    _collected = false;
 
     for (int i = 0; i < MAX_STATE; i++)
     {
@@ -42,17 +40,15 @@ HRESULT Player::init(int startX, int startY)
     _plPos_y = startY;
 
     _cnt = _idx_x = _idx_y = _hitCool = 0;
-    _isLeft = _isGround = _isFixed = _hold = false;
+    _isLeft = _isGround = _isFixed = _hold = _collect = false;
 
     _centerX = _centerY = 0.0f;
     //_center = { 0, 0 };
     _tempX = _tempY = 0.0f;
 
-    timer = time(NULL);
-    localtime_s(&t, &timer);
-
     _hp = 100;
     _portion = 5;
+    _collected = false;
 
     for (int i = 0; i < MAX_STATE; i++)
     {
@@ -113,9 +109,12 @@ void Player::initImage(void)
         1617 * 2, 216 * 2, 11, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("PORTION", "Resources/Image/Penitent/penitent_healthposion_anim.bmp",
         3330 * 2, 280 * 2, 37, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("COLLECT", "Resources/Image/Penitent/penitent_collecting_object_anim.bmp",
+        2470 * 2, 164 * 2, 26, 2, true, MAGENTA);
 
     IMAGEMANAGER->addImage("Profile", "Resources/Image/Sheet/life_portrait.bmp",
         219 * 2, 58 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("Score", "Resources/Image/Sheet/score.bmp", 83 * 2, 48 * 2, true, MAGENTA);
     IMAGEMANAGER->addImage("HP", "Resources/Image/Sheet/HealthBar.bmp",
         136 * 2, 4 * 2, true, MAGENTA);
 
@@ -127,13 +126,13 @@ void Player::initImage(void)
 
 void Player::initTiming(void)
 {
-    // ## 기본적으로 왼쪽모습은 오른쪽 모습의 x + 50 ##
+    // ## 기본적으로 왼쪽모습은 오른쪽 모습의 x + 50 
     _sync["IDLE"] = { 5, {0 + 50, 0}, {0, 0} };
     _sync["RUNNING"] = { 3, {0 + 50, 0}, {0, 0} };
     _sync["STOP"] = { 4, {-10 + 50, 10}, {-10, 10} };
     _sync["FALLING"] = { 5, {0 + 50, 0}, {10, 0} };
-    _sync["HANGON"] = { 5, {0, 0}, {0, 0} };
-    _sync["CLIMB"] = { 5, {0, 0}, {0, 0} };
+    _sync["HANGON"] = { 5, {0, -50}, {50, -50} };
+    _sync["CLIMB"] = { 5, {0, -150}, {50, -150} };
     _sync["JUMP"] = { 8, {0 + 50, 0}, {30, 0} };
     _sync["JUMP_FORWARD"] = { 6, {0 + 50, -20}, {0, -20} };
     _sync["ATTACK"] = { 4, {-135 + 50, 2}, {0, 3} };
@@ -149,6 +148,7 @@ void Player::initTiming(void)
     _sync["CROUCH_DOWN"] = { 3, {0 + 50, 10}, {-25, 10} };
     _sync["CROUCH_UP"] = { 3, {0 + 50, 0}, {-25, 0} };
     _sync["PORTION"] = { 4, {-50 + 50, -125}, {0, -125} };
+    _sync["COLLECT"] = { 5, {0, -6}, {-1, -6} };
 }
 
 void Player::playerAction(void)
@@ -253,9 +253,22 @@ void Player::playerAction(void)
         else
             _idx_x = 0;
     }
+
+    if (KEYMANAGER->isOnceKeyDown('E') && _collect)
+    {
+        _actionList.push_back("COLLECT");
+        _collected = true;
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("COLLECT")->getMaxFrameX();
+        else
+            _idx_x = 0;
+    }
+    if (KEYMANAGER->isOnceKeyUp('E'))
+        _collected = false;
+
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP])
     {
-        _isFixed = true;
+        //_isFixed = true;
         _tempY = _plPos_y;
         if (_plState[WALK])
         {
@@ -295,10 +308,13 @@ void Player::playerAction(void)
         if (!isEmpty())
             _actionList.pop_front();
 
+        _isFixed = true;
+        _hold = false;
         setAction("CLIMB");
+        _actionList.push_back("HANGON");
         _actionList.push_back("CLIMB");
         if (_isLeft)
-            _idx_x = IMAGEMANAGER->findImage("CLIMB")->getMaxFrameX();
+            _idx_x = IMAGEMANAGER->findImage("HANGON")->getMaxFrameX();
         else
             _idx_x = 0;
     }
@@ -395,7 +411,7 @@ void Player::playerAction(void)
            if (_cnt % _sync.find(_strAction)->second.timing == 0)
            {
                _idx_x--;
-               if (_idx_x < 0)
+               if (_idx_x < 1)
                {
                    if (strcmp(_strAction, "CROUCH_DOWN") == 0)
                        _idx_x = 0;
@@ -430,7 +446,7 @@ void Player::playerAction(void)
            if (_cnt % _sync.find(_actionList.front())->second.timing == 0)
            {
                _idx_x--;
-               if (_idx_x < 0)
+               if (_idx_x < 1)
                {
                    _actionList.pop_front();
                    if (!_actionList.empty())
@@ -455,7 +471,6 @@ void Player::playerAction(void)
            IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameY(_idx_y);
            if (_cnt % _sync.find(_actionList.front())->second.timing == 0)
            {
-               _idx_x++;
                if (_idx_x > IMAGEMANAGER->findImage(_actionList.front())->getMaxFrameX())
                {
                    _actionList.pop_front();
@@ -473,6 +488,7 @@ void Player::playerAction(void)
                }
                if (!_actionList.empty())
                     IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_idx_x);
+               _idx_x++;
            }
        }
    }
@@ -676,8 +692,10 @@ void Player::renderPlayer(HDC hdc)
 void Player::renderProfile(HDC hdc)
 {
     IMAGEMANAGER->render("Profile", hdc, 30, 30);
+    IMAGEMANAGER->render("Score", hdc, WINSIZE_X - 200, 30);
     IMAGEMANAGER->render("HP", hdc, 186, 76, 0, 0, 
         IMAGEMANAGER->findImage("HP")->getWidth() * _hp / 100, IMAGEMANAGER->findImage("HP")->getHeight());
+
     for (int i = 0; i < 5; i++)
     {
         if (i < _portion)

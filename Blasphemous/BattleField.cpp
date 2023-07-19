@@ -19,8 +19,22 @@ HRESULT BattleField::init(void)
     _startPos_x = 0.0f;
     _startPos_y = 70.0f;
 
-    _startPos = { 0, 70 };
+    _copyPos_x = _startPos_x;
+    _copyPos_y = _startPos_y;
+
     return S_OK;
+}
+
+void BattleField::rectMove(void)
+{
+    _grab[0] = RectMakeCenter(940 - (_startPos_x - _copyPos_x), 
+        240 - (_startPos_y - _copyPos_y), 20, 40);
+    _grab[1] = RectMakeCenter(1155 - (_startPos_x - _copyPos_x), 
+        240 - (_startPos_y - _copyPos_y), 20, 40);
+    _grab[2] = RectMakeCenter(1230 - (_startPos_x - _copyPos_x), 
+        360 - (_startPos_y - _copyPos_y), 20, 40);
+    _grab[3] = RectMakeCenter(1420 - (_startPos_x - _copyPos_x), 
+        360 - (_startPos_y - _copyPos_y), 20, 40);
 }
 
 void BattleField::render(HDC hdc)
@@ -36,6 +50,10 @@ void BattleField::render(HDC hdc)
     {
         //ÇÈ¼¿Ãæµ¹¿ë
         IMAGEMANAGER->render("bg_collision", hdc, 0, 0, _startPos_x, _startPos_y, WINSIZE_X, WINSIZE_Y);
+        for (int i = 0; i < 4; i++)
+        {
+            DrawRectMake(hdc, _grab[i]);
+        }
 
     }
 }

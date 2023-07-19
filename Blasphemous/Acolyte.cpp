@@ -94,7 +94,7 @@ void Acolyte::move(void)
             if (_cnt % _sync[_strAction].timing == 0)
             {
                 _idx_x--;
-                if (_idx_x < 0)
+                if (_idx_x < 1)
                 {
                     _idx_x = getMaxFrame();
                 }
@@ -125,7 +125,7 @@ void Acolyte::move(void)
             if (_cnt % _sync[_acList.front().c_str()].timing == 0)
             {
                 _idx_x--;
-                if (_idx_x < 0)
+                if (_idx_x < 1)
                 {
                     _acList.pop_front();
                     if (!_acList.empty())

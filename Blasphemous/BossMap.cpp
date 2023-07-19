@@ -18,4 +18,9 @@ HRESULT BossMap::init(void)
 void BossMap::render(HDC hdc)
 {
     IMAGEMANAGER->render("BossMap_dark", hdc, 0, 0, 0, 0, WINSIZE_X, WINSIZE_Y);
+
+    if (KEYMANAGER->isToggleKey(VK_TAB))
+    {
+        IMAGEMANAGER->render("BossMap_collision", hdc, 0, 0, 0, 0, WINSIZE_X, WINSIZE_Y);
+    }
 }

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Acolyte.h"
 #include "BattleField.h"
+#include "Item.h"
 
 // bitset: 기본, 걷기, 점프, 앉기, 매달리기
 //typedef enum eState
@@ -21,10 +22,13 @@ private:
 	Player* _pl;
 	Acolyte* _ac;
 	BattleField* _bf;
+	Item* _item;
 
-	int _cnt;
-	bool _isGround;
-	int _nextStage;
+	vector<Item*> _itemList;
+	vector<Acolyte*> _acolyteList;
+
+	int _cnt, _nextStage;
+	bool _isInven;
 
 public:
 	HRESULT init(void);

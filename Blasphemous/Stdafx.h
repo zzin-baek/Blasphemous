@@ -61,6 +61,7 @@ ID2D1HwndRenderTarget*		_ID2DRenderTarget = nullptr;
 #include "ImageManager.h"
 #include "FontManager.h"
 #include "SoundManager.h"
+#include "Inventory.h"
 
 // # ΩÃ±€≈Ê #
 #define RND					RandomFunction::getSingleton()
@@ -68,6 +69,7 @@ ID2D1HwndRenderTarget*		_ID2DRenderTarget = nullptr;
 #define IMAGEMANAGER		ImageManager::getSingleton()
 #define FONTMANAGER			FontManager::getSingleton()
 #define SOUNDMANAGER		SoundManager::getSingleton()
+#define INVENTORY			Inventory::getSingleton()
 
 // ≈∏¿Ã∆≤
 #define WINNAME					(LPTSTR)(TEXT("Blasphemous"))
