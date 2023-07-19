@@ -3,6 +3,70 @@
 
 HRESULT Player::init(void)
 {
+    initImage();
+
+    _plPos_x = WINSIZE_X / 2 - 400;
+    _plPos_y = WINSIZE_Y / 2 - 100;
+
+    //_plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
+
+    _cnt = _idx_x = _idx_y = _hitCool = 0;
+    _isLeft = _isGround = _isFixed = _hold =  false;
+
+    _centerX = _centerY = 0.0f;
+    //_center = { 0, 0 };
+    _tempX = _tempY = 0.0f;
+
+    timer = time(NULL);
+    localtime_s(&t, &timer);
+
+    _hp = 100; 
+    _portion = 5;
+
+    for (int i = 0; i < MAX_STATE; i++)
+    {
+        setState(i, false);
+    }
+
+    wsprintf(_strAction, "IDLE");
+    initTiming();
+
+    return S_OK;
+}
+
+HRESULT Player::init(int startX, int startY)
+{
+    initImage();
+
+    _plPos_x = startX;
+    _plPos_y = startY;
+
+    _cnt = _idx_x = _idx_y = _hitCool = 0;
+    _isLeft = _isGround = _isFixed = _hold = false;
+
+    _centerX = _centerY = 0.0f;
+    //_center = { 0, 0 };
+    _tempX = _tempY = 0.0f;
+
+    timer = time(NULL);
+    localtime_s(&t, &timer);
+
+    _hp = 100;
+    _portion = 5;
+
+    for (int i = 0; i < MAX_STATE; i++)
+    {
+        setState(i, false);
+    }
+
+    wsprintf(_strAction, "IDLE");
+    initTiming();
+
+    return S_OK;
+}
+
+void Player::initImage(void)
+{
     IMAGEMANAGER->addFrameImage("IDLE", "Resources/Image/Penitent/penitent_idle_anim.bmp",
         871 * 2, 146 * 2, 13, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("RUNNING", "Resources/Image/Penitent/penitent_running_anim.bmp",
@@ -45,46 +109,20 @@ HRESULT Player::init(void)
         1748 * 2, 152 * 2, 19, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("PARRY", "Resources/Image/Penitent/penitent_parry_failed.bmp",
         740 * 2, 144 * 2, 10, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("PARRY_SUCCESS", "Resources/Image/Penitent/penitent_parry_anim.bmp",
+        1617 * 2, 216 * 2, 11, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("PORTION", "Resources/Image/Penitent/penitent_healthposion_anim.bmp",
         3330 * 2, 280 * 2, 37, 2, true, MAGENTA);
 
     IMAGEMANAGER->addImage("Profile", "Resources/Image/Sheet/life_portrait.bmp",
         219 * 2, 58 * 2, true, MAGENTA);
-    IMAGEMANAGER->addImage("HP", "Resources/Image/Sheet/HealthBar.bmp", 
+    IMAGEMANAGER->addImage("HP", "Resources/Image/Sheet/HealthBar.bmp",
         136 * 2, 4 * 2, true, MAGENTA);
 
     IMAGEMANAGER->addImage("flask_full", "Resources/Image/Sheet/flask2_full.bmp",
         14 * 2, 21 * 2, true, MAGENTA);
     IMAGEMANAGER->addImage("flask_empty", "Resources/Image/Sheet/flask2_empty.bmp",
         14 * 2, 21 * 2, true, MAGENTA);
-
-    _plPos_x = WINSIZE_X / 2 - 400;
-    _plPos_y = WINSIZE_Y / 2 - 100;
-
-    //_plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
-
-    _cnt = _idx_x = _idx_y = _hitCool = 0;
-    _isLeft = _isGround = _isFixed = _hold =  false;
-
-    _centerX = _centerY = 0.0f;
-    //_center = { 0, 0 };
-    _tempX = _tempY = 0.0f;
-
-    timer = time(NULL);
-    localtime_s(&t, &timer);
-
-    _hp = 100; 
-    _portion = 5;
-
-    for (int i = 0; i < MAX_STATE; i++)
-    {
-        setState(i, false);
-    }
-
-    wsprintf(_strAction, "IDLE");
-    initTiming();
-
-    return S_OK;
 }
 
 void Player::initTiming(void)
@@ -105,6 +143,7 @@ void Player::initTiming(void)
     _sync["ATTACK_COMBO_2"] = { 4, {-130 + 50, 10}, {-20, 10} };
     _sync["ATTACK_COMBO_3"] = { 4, {-310 + 50, -8}, {60, -8} };
     _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
+    _sync["PARRY_SUCCESS"] = { 4, {-85, -65}, {-15, -65} };
     _sync["PUSHBACK"] = { 4, {-20 + 50, 10}, {0, 10} };
     _sync["DODGE"] = { 2, {0 + 50, 0}, {0, 0} };
     _sync["CROUCH_DOWN"] = { 3, {0 + 50, 10}, {-25, 10} };
@@ -132,7 +171,7 @@ void Player::playerAction(void)
     }
 
     //cout << "hold"<<_hold << endl;
-    if (KEYMANAGER->isStayKeyDown('A') && !_plState[ATTACK])
+    if (KEYMANAGER->isStayKeyDown('A') && !strstr("ATTACK", _strAction) && !_plState[DODGE])
     {
         _isLeft = true;
         setState(WALK, true);
@@ -150,16 +189,16 @@ void Player::playerAction(void)
             else
                 _idx_x = 6;
         }
-        if (_plPos_x > 0 && !_plState[CROUCH] && !_plState[DODGE])
+        if (_plPos_x > 0 && !_plState[CROUCH])
             _plPos_x -= 4.0f;
     }
-    if (KEYMANAGER->isStayKeyDown('D') && !_plState[ATTACK])
+    if (KEYMANAGER->isStayKeyDown('D') && !strstr("ATTACK", _strAction) && !_plState[DODGE])
     {
         _isLeft = false;
         setState(WALK, true);
         if (!_plState[JUMP])
             setAction("RUNNING");
-        if (_plPos_x < WINSIZE_X && !_plState[CROUCH] && !_plState[DODGE])
+        if (_plPos_x < WINSIZE_X && !_plState[CROUCH])
             _plPos_x += 4.0f;
     }
     if (KEYMANAGER->isStayKeyDown('S') && isEmpty())
@@ -318,8 +357,9 @@ void Player::playerAction(void)
             }
             else
             {
+                //setState(ATTACK, true);
                 _attackTime.push_back(clock());
-
+                cout << "dd" << endl;
                 comboAttack();
             }
         }
@@ -330,6 +370,7 @@ void Player::playerAction(void)
     {
         if (!_hitCool)
         {
+            cout << "pushback" << endl;
             _actionList.push_back("PUSHBACK");
             _actionList.push_back("CROUCH_UP");
             setAction("PUSHBACK");
@@ -340,6 +381,7 @@ void Player::playerAction(void)
                 _idx_x = 0;
         }
         _hitCool++;
+        cout << _hitCool << endl;
         if (_hitCool > 50)
             _hitCool = 0;
     }
@@ -516,7 +558,7 @@ void Player::comboAttack(void)
         _actionList.push_back("ATTACK");
 
         if (_isLeft)
-            _idx_x = IMAGEMANAGER->findImage("ATTACK_COMBO_2")->getMaxFrameX();
+            _idx_x = IMAGEMANAGER->findImage("ATTACK")->getMaxFrameX();
         else
             _idx_x = 0;
     }
@@ -526,26 +568,35 @@ void Player::comboAttack(void)
         {
             if (!strcmp(_strAction, "ATTACK"))
             {
+                //setState(ATTACK, true);
                 setAction("ATTACK_COMBO_2");
                 _actionList.push_back("ATTACK_COMBO_2");
 
             }
             else if (!strcmp(_strAction, "ATTACK_COMBO_2"))
             {
+
+                //setState(ATTACK, true);
                 setAction("ATTACK_COMBO_3");
                 _actionList.push_back("ATTACK_COMBO_3");
 
-                _attackTime.clear();
-                _comboTime.clear();
             }
             else
             {
+                //setState(ATTACK, true);
                 setAction("ATTACK");
                 _actionList.push_back("ATTACK");
-
-            }
+                if (_isLeft)
+                    _idx_x = IMAGEMANAGER->findImage("ATTACK")->getMaxFrameX();
+                else
+                    _idx_x = 0;
+            }        
+        }
+        else
+        {
         }
     }
+
 }
 
 void Player::renderPlayer(HDC hdc)
@@ -620,7 +671,6 @@ void Player::renderPlayer(HDC hdc)
         SelectObject(hdc, oldPen);
         DeleteObject(myPen);
     }
-   
 }
 
 void Player::renderProfile(HDC hdc)

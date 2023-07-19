@@ -4,15 +4,13 @@
 HRESULT Tutorial::init(void)
 {
     _pl = new Player();
-    _pl->init();
+    _pl->init(88, 484);
 
     _tf = new TutorialField();
     _tf->init();
 
     _nextStage = 0;
 
-    _pl->setPosX(1000);
-    _pl->setPosY(600);
 
     return S_OK;
 }

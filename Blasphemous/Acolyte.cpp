@@ -17,8 +17,8 @@ HRESULT Acolyte::init(void)
         3960 * 2, 266 * 2, 22, 2, true, MAGENTA);
 
     _acolytePos = { WINSIZE_X / 2 + 500, WINSIZE_Y / 2 + 325 };
-    _isLeft = false;
-    _cnt = _idx_x = _idx_y = _hitCool = 0;
+    _isLeft = _canAttack = _hit = false;
+    _cnt = _idx_x = _idx_y = 0;
     _acState.reset();
     _hp = 80;
 
@@ -33,9 +33,9 @@ HRESULT Acolyte::init(void)
 void Acolyte::initSync(void)
 {
     _sync["Acolyte_idle"] = { 4, {-5, 0}, {10, 0} };
-    _sync["Acolyte_walk"] = { 4, {0, 0}, {0, 0} };
+    _sync["Acolyte_walk"] = { 5, {0, 0}, {0, 0} };
     _sync["Acolyte_attack"] = { 7, {-180, 20}, {-150, 20} };
-    _sync["Acolyte_hit"] = { 7, {40, 0}, {-120, 0} };
+    _sync["Acolyte_hit"] = { 7, {10, 0}, {-120, 0} };
     _sync["Acolyte_parry"] = { 7, {0, 0}, {0, 0} };
     _sync["Acolyte_death"] = { 7, {-150, 0}, {-130, 0} };
 
@@ -58,22 +58,25 @@ void Acolyte::move(void)
     {
         if (_isLeft)
         {
-            _attack = RectMake(_attackBoundary[0].left + 5, _attackBoundary[0].top + 5, 100, 65);
+            _attack = RectMake(_attackBoundary[0].left + 20, _attackBoundary[0].top + 15, 90, 55);
         }
         else
         {
-            _attack = RectMake(_attackBoundary[1].right - 105, _attackBoundary[1].top + 5, 100, 65);
+            _attack = RectMake(_attackBoundary[1].right - 120, _attackBoundary[1].top + 15, 90, 55);
         }
     }
 
-    if (_acState[HIT_ENEMY])
+    if (_acState[HIT_ENEMY] && !_hit)
     {
-        if (!_hitCool)
-            _acList.push_back("Acolyte_hit");
+        _acList.clear();
+        _acState.reset();
+        _hit = true;
+        _acList.push_back("Acolyte_hit");
 
-        _hitCool++;
-        if (_hitCool > 50)
-            _hitCool = 0;
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("Acolyte_hit")->getMaxFrameX();
+        else
+            _idx_x = 0;
     }
     if (_hp < 0)
     {
@@ -134,6 +137,7 @@ void Acolyte::move(void)
                     else
                     {
                         _acState.reset();
+                        _hit = false;
                         setState(IDLE_ENEMY, true);
                         setAction("Acolyte_walk");
                     }
@@ -161,6 +165,7 @@ void Acolyte::move(void)
                     else
                     {
                         _acState.reset();
+                        _hit = false;
                         setState(IDLE_ENEMY, true);
                         setAction("Acolyte_walk");
                     }
@@ -181,12 +186,20 @@ void Acolyte::attack(void)
         if (_isLeft)
         {
             if (_idx_x < (getMaxFrame() - 6) && _idx_x >(getMaxFrame() - 15))
+            {
                 _acolytePos.x -= 5;
+                _canAttack = true;
+            }
+            else _canAttack = false;
         }
         else
         {
             if (_idx_x > 6 && _idx_x < 15)
+            {
                 _acolytePos.x += 5;
+                _canAttack = true;
+            }
+            else _canAttack = false;
         }
     }
 }
@@ -223,7 +236,7 @@ void Acolyte::render(HDC hdc)
         {
             IMAGEMANAGER->frameRender(_acList.front().c_str(), hdc,
                 _acolytePos.x + _sync[_acList.front().c_str()].leftMove.x,
-                _acolytePos.y - IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameHeight() + _sync[_strAction].leftMove.y,
+                _acolytePos.y - IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameHeight() + _sync[_acList.front().c_str()].leftMove.y,
                 _idx_x, _idx_y);
 
             _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameWidth() / 2 + _sync[_acList.front().c_str()].leftMove.x,
@@ -234,7 +247,7 @@ void Acolyte::render(HDC hdc)
         {
             IMAGEMANAGER->frameRender(_acList.front().c_str(), hdc,
                 _acolytePos.x + _sync[_acList.front().c_str()].rightMove.x,
-                _acolytePos.y - IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameHeight() + _sync[_strAction].rightMove.y,
+                _acolytePos.y - IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameHeight() + _sync[_acList.front().c_str()].rightMove.y,
                 _idx_x, _idx_y);
 
             _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_acList.front().c_str())->getFrameWidth() / 2 + _sync[_acList.front().c_str()].rightMove.x,

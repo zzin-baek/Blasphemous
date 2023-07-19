@@ -18,9 +18,9 @@ private:
 	bitset<4> _acState;
 	map<string, acImageInfo> _sync;
 
-	bool _isLeft;
+	bool _isLeft, _canAttack, _hit;
 	int _cnt, _idx_x, _idx_y;
-	int _hp, _hitCool;
+	int _hp;
 
 	char _strAction[128];
 	char _loc[128];
@@ -43,10 +43,12 @@ public:
 
 	void setLeft(bool state) { _isLeft = state; }
 	bool getLeft() { return _isLeft; }
+	bool canAttack() { return _canAttack; }
 
 	bitset<4> getState() { return _acState; }
 	void setState(int num, bool state) { _acState.set(num, state); }
 	void setAction(char* _action) { wsprintf(_strAction, _action); }
+
 	RECT getRect() { return _acolyte; }
 	RECT getBoundary(int num) { return _attackBoundary[num]; }
 	RECT getAttack() { return _attack; }

@@ -4,7 +4,7 @@
 HRESULT BaseMap::init(void)
 {
     _pl = new Player;
-    _pl->init();
+    _pl->init(100, 315);
 
     _bf = new BattleField;
     _bf->init();
@@ -137,7 +137,13 @@ void BaseMap::update(void)
 
     if ((r == 255 && g == 0 && b == 255))
     {
-        _ac->setLeft(false);
+        if (!_ac->getState()[ATTACK])
+            _ac->setLeft(false);
+        else
+        {
+            _ac->setPosX(_ac->getRect().left);
+            _ac->setPosY(_ac->getRect().bottom); 
+        }
     }
 
     // ÀüÅõ
@@ -169,20 +175,28 @@ void BaseMap::update(void)
             }
         }
     }
-    if (IntersectRect(&_rt, &_ac->getAttack(), &_pl->getRect()) && !_pl->getState()[PARRY])
+    if (IntersectRect(&_rt, &_ac->getAttack(), &_pl->getRect())
+        && _ac->getState()[ATTACK_ENEMY] && !_pl->getState()[PARRY])
     {
-        if (!_pl->getState()[HIT])
+        if (!_pl->getState()[HIT] && _ac->canAttack())
         {
             _pl->setState(HIT, true);
             _pl->setHP(_pl->getHP() - 5);
         }
     }
+    else if (IntersectRect(&_rt, &_ac->getAttack(), &_pl->getRect()) && _pl->getState()[PARRY])
+    {
+        _pl->addAction("PARRY_SUCCESS");
+    }
+
     if (IntersectRect(&_rt, &_ac->getRect(), &_pl->getRect()) && _pl->getState()[ATTACK])
     {
         if (!_ac->getState()[HIT_ENEMY])
         {
             _ac->setState(HIT_ENEMY, true);
             //_ac->addAction("Acolyte_hit");
+            
+
             _ac->setHP(_ac->getHP() - 10);
         }
     }
