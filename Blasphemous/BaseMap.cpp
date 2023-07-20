@@ -54,7 +54,9 @@ void BaseMap::update(void)
             if (_pl->getCollected())
             {
                 _itemList.pop_back();
-                INVENTORY->addItem(HERITAGE, { "Item2", "설명", "어쩌구", false });
+                INVENTORY->addItem(HERITAGE, { "Item2", "꿈결의 죄의 장막",
+                    {"열정적인 고해의 증거인", "노란색 직물. 고문당한 영혼", "앞에 다가가면 파르르 떨리며", "더 이상 말할 수 없는 자들의", "목소리를 들을 수 있게 된다." }, false
+            });
             }
         }
         else
@@ -85,7 +87,7 @@ void BaseMap::update(void)
             _itemList[0]->setPosX(_item->getPosX() - 4);
 
     }
-    if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 + 10)
+    if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 + 10 && (_bf->getX() > 0))
     {
         _bf->setX(_bf->getX() - 4.0f);
         _pl->setPosX(_pl->getPosX() + 4.0f);

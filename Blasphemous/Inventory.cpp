@@ -19,6 +19,7 @@ HRESULT Inventory::init(void)
     IMAGEMANAGER->addImage("Item_equip", "Resources/Image/Sheet/item_equip.bmp", 60, 60, true, MAGENTA);
     IMAGEMANAGER->addImage("Item_own", "Resources/Image/Sheet/item_own.bmp", 60, 60, true, MAGENTA);
     IMAGEMANAGER->addImage("SkillSelect", "Resources/Image/Sheet/skillSelect.bmp", 54, 54, true, MAGENTA);
+    IMAGEMANAGER->addImage("Blank1", "Resources/Image/Sheet/blank1.bmp", 60, 60, true, MAGENTA);
 
     IMAGEMANAGER->addImage("Item1", "Resources/Image/sheet/item1.bmp", 60, 60, true, MAGENTA);
     IMAGEMANAGER->addImage("Item2", "Resources/Image/sheet/item2.bmp", 60, 60, true, MAGENTA);
@@ -27,8 +28,8 @@ HRESULT Inventory::init(void)
     IMAGEMANAGER->addImage("Item5", "Resources/Image/sheet/item5.bmp", 60, 60, true, MAGENTA);
     IMAGEMANAGER->addImage("Pray1", "Resources/Image/sheet/pray1.bmp", 60, 60, true, MAGENTA);
 
-    _alpha = _slot = _slotSelect = _cnt = _score = 0;
-    _select = _rosarySelect = _heritageSelect = _questSelect = _praySelect = 0;
+    _alpha = _slot = _slotSelect = _cnt = 0;
+    _select = _rosarySelect = _heritageSelect = _questSelect = _praySelect = _skillSelect = _colSelect = 0;
     _eqRosary = _eqHeritage = _eqMea = _eqPray = 0;
     _idx = { 0, 0 };
     _out = false;
@@ -39,6 +40,7 @@ HRESULT Inventory::init(void)
         for (int j = 0; j < 7; j++)
         {
             _rosarySlot[i * 7 + j] = RectMake(200 + 72 * j, 474 + 72 * i, 60, 60);
+            _collectSlot[i * 7 + j] = RectMake(200 + 72 * j, 474 + 72 * i, 60, 60);
         }
     }
     for (int i = 0; i < 7; i++)
@@ -56,16 +58,43 @@ HRESULT Inventory::init(void)
         }
     }
 
-    _quest.push_back({ "Item3", "예아", "야얍", false });
-    _mea.push_back({ "Item4", "d", "dd", false });
+    for (int i = 0; i < 5; i++)
+    {
+        _skillSlot[i] = RectMake(216 + 60 * i, 250, 54, 54);
+    }
 
+
+    // 미리 넣어 놓는 아이템
+    _quest.push_back({ "Item3", "신성한 회개의 상처", 
+        {"참회자의 영혼 속 회개의", "순수함을 드러내는 황금", "얼굴이 남긴 징표."}, false });
+    _mea.push_back({ "Item4", "끓는 피로 녹아내린 심장", 
+        { "메마른 감촉과 함께 표면에 많은", "구멍이 나 있는 검의 중심부 장식.", "메아 쿨파로 적을 처치할 때마다",
+         "착용자에게 체력을 전달하지만", "담즘 용기의 회복량이 줄어든다."}, false });
+    _pray.push_back({ "Pray1", "로르퀴아나", { "기적의 힘으로 태어난 번광을", "불러내 메아 쿨파 앞을",
+        "가로막는 모든 적을 관통하는", "기도문이다." }, false });
+    _collection.push_back({ "Item5", "도박사 존의 척추뼈", {"많은 사람들은 뛰어난 도박", "실력으로 유명한 존 폰",
+        "감메라마인츠의 운명이 신의", "의지에 인도를 받았다고 믿고", "있다."}, false });
+
+    _skill.push_back({ "skill1", "마지막 말씀", { "참회자가 네 번째 콤보 마무리", "공격을 펼칩니다."}, false });
+    _skill.push_back({ "skill2", "죄악의 분노", { "칼날의 메아 쿨파 힘을 집중시켜",
+        "참회자가 모든 잠재력을 발산하지만, ", "강력하고 파괴적인 공격을 가합니다." }, false});
+    _skill.push_back({ "skill3", "열정의 피", { "메아 쿨파 소지자가 칼날을 사용해 ",
+        "자신의 피에 축복을 내려서 던지는", "무기로 만드는 신성한 기술입니다.", "열정을 사용합니다." }, false});
+    _skill.push_back({ "skill4", "죄악의 무게", { "낙하 속도를 이용해 강력한", "내려치기 공격을 가합니다." }, false });
+    _skill.push_back({ "skill5", "신성한 찌르기", { "참회자가 회피 충격을 이용해",
+        "가장 먼 곳의 적에 메아 쿨파를", "찔러넣습니다." }, false });
+
+
+    _rt = RectMake(208, 180, 60, 60);
+
+    // 아이템 탈부착
     _rosaryEquip[0] = RectMake(774, 394, 60, 60);
     _rosaryEquip[1] = RectMake(774, 470, 60, 60);
 
     _heritageEquip[0] = RectMake(790, 262, 60, 60);
     _heritageEquip[1] = RectMake(790, 354, 60, 60);
     _heritageEquip[2] = RectMake(790, 446, 60, 60);
-
+    
     _meaEquip = RectMake(802, 292, 60, 60);
     _prayEquip = RectMake(802, 292, 60, 60);
 
@@ -77,21 +106,14 @@ void Inventory::update(void)
     if (KEYMANAGER->isOnceKeyDown('E'))
     {
         _slot++;
-        _heritageSelect = 0;
-        _rosarySelect = 0;
-        _questSelect = 0;
-        _meaSelect = 0;
-        _praySelect = 0;
+        _rosarySelect = _heritageSelect = _questSelect = _praySelect = _skillSelect = _colSelect = 0;
     }
     if (KEYMANAGER->isOnceKeyDown('Q'))
     {
         _slot--;
         if (_slot < 0)
             _slot = 6;
-        _heritageSelect = 0;
-        _rosarySelect = 0;
-        _questSelect = 0;
-        _meaSelect = 0;
+        _rosarySelect = _heritageSelect = _questSelect = _praySelect = _skillSelect = _colSelect = 0;
     }
 
     _slotSelect = _slot % SLOT_NUM;
@@ -122,10 +144,17 @@ void Inventory::update(void)
             _meaSelect %= 7;
             break;
         case PRAY:
+            _praySelect++;
+            _praySelect %= 7;
             break;
         case SKILL:
+            _skillSelect++;
+            if (_skillSelect > 4)
+                _skillSelect = 4;
             break;
         case COLLECTION:
+            _colSelect++;
+            _colSelect %= 14;
             break;
         }
     }
@@ -158,6 +187,23 @@ void Inventory::update(void)
                 _meaSelect = 6;
             _meaSelect %= 7;
             break;
+        case PRAY:
+            _praySelect--;
+            if (_praySelect < 0)
+                _praySelect = 6;
+            _praySelect %= 7;
+            break;
+        case SKILL:
+            _skillSelect--;
+            if (_skillSelect < 0)
+                _skillSelect = 0;
+            break;
+        case COLLECTION:
+            _colSelect--;
+            if (_colSelect < 0)
+                _colSelect = 13;
+            _colSelect %= 14;
+            break;
         }
     }
     if (KEYMANAGER->isOnceKeyDown('W'))
@@ -189,10 +235,18 @@ void Inventory::update(void)
             _meaSelect %= 7;
             break;
         case PRAY:
+            _praySelect -= 7;
+            if (_praySelect < 0)
+                _praySelect += 7;
+            _praySelect %= 7;
             break;
         case SKILL:
             break;
         case COLLECTION:
+            _colSelect -= 7;
+            if (_colSelect < 0)
+                _colSelect += 14;
+            _colSelect %= 14;
             break;
         }
     }
@@ -217,10 +271,14 @@ void Inventory::update(void)
             _meaSelect %= 7;
             break;
         case PRAY:
+            _praySelect += 7;
+            _praySelect %= 7;
             break;
         case SKILL:
             break;
         case COLLECTION:
+            _colSelect += 7;
+            _colSelect %= 14;
             break;
         }
     }
@@ -281,6 +339,24 @@ void Inventory::update(void)
                 }
             }
         }
+        else if (_slotSelect == PRAY && _praySelect < _pray.size())
+        {
+            if (_pray[_praySelect]._equip)
+            {
+                _pray[_praySelect]._equip = false;
+                _equipPray.erase(_equipPray.find(_pray[_praySelect]._iImage));
+                _eqPray--;
+            }
+            else
+            {
+                if (_eqPray < 1)
+                {
+                    _pray[_praySelect]._equip = true;
+                    _equipPray.insert(make_pair(_pray[_praySelect]._iImage, _eqPray));
+                    _eqPray++;
+                }
+            }
+        }
     }
 
     _cnt++;
@@ -327,6 +403,18 @@ void Inventory::render(HDC hdc)
 
                 IMAGEMANAGER->render(_rosary[i]._iImage.c_str(), hdc, _rosarySlot[i].left, _rosarySlot[i].top);
             }
+
+            if (_rosarySelect < _rosary.size())
+            {
+                IMAGEMANAGER->render(_rosary[_rosarySelect]._iImage.c_str(), hdc, _rt.left, _rt.top);
+                FONTMANAGER->drawText(hdc, 285, 200, "Neo둥근모 Pro", 35, 1,
+                    _rosary[_rosarySelect]._iName, strlen(_rosary[_rosarySelect]._iName), RGB(171, 154, 63));
+                for (int i = 0; i < 7; i++)
+                {
+                    FONTMANAGER->drawText(hdc, 200, 255 + 35 * i, "Neo둥근모 Pro", 30, 1,
+                        _rosary[_rosarySelect]._iManual[i], strlen(_rosary[_rosarySelect]._iManual[i]), RGB(101, 96, 68));
+                }
+            }
         }
         if (!_equipRosary.empty())
         {
@@ -356,6 +444,17 @@ void Inventory::render(HDC hdc)
 
                 IMAGEMANAGER->render(_heritage[i]._iImage.c_str(), hdc, _heritageSlot[i].left, _heritageSlot[i].top);
             }
+            if (_heritageSelect < _heritage.size())
+            {
+                IMAGEMANAGER->render(_heritage[_heritageSelect]._iImage.c_str(), hdc, _rt.left, _rt.top);
+                FONTMANAGER->drawText(hdc, 285, 200, "Neo둥근모 Pro", 35, 1,
+                    _heritage[_heritageSelect]._iName, strlen(_heritage[_heritageSelect]._iName), RGB(171, 154, 63));
+                for (int i = 0; i < 7; i++)
+                {
+                    FONTMANAGER->drawText(hdc, 210, 255 + 35 * i, "Neo둥근모 Pro", 30, 1,
+                        _heritage[_heritageSelect]._iManual[i], strlen(_heritage[_heritageSelect]._iManual[i]), RGB(101, 96, 68));
+                }
+            }
         }
         if (!_equipHeritage.empty())
         {
@@ -372,7 +471,6 @@ void Inventory::render(HDC hdc)
     else if (_slotSelect == QUEST)
     {
         IMAGEMANAGER->render("Inventory_quest", hdc, 0, 0);
-
         if (!_quest.empty())
         {
             for (int i = 0; i < _quest.size(); i++)
@@ -380,6 +478,18 @@ void Inventory::render(HDC hdc)
 
                 IMAGEMANAGER->render("Item_own", hdc, _questSlot[i].left, _questSlot[i].top);
                 IMAGEMANAGER->render(_quest[i]._iImage.c_str(), hdc, _questSlot[i].left, _questSlot[i].top);
+            }
+
+            if (_questSelect < _quest.size())
+            {
+                IMAGEMANAGER->render(_quest[_questSelect]._iImage.c_str(), hdc, _rt.left, _rt.top);
+                FONTMANAGER->drawText(hdc, 285, 200, "Neo둥근모 Pro", 35, 1,
+                    _quest[_questSelect]._iName, strlen(_quest[_questSelect]._iName), RGB(171, 154, 63));
+                for (int i = 0; i < 7; i++)
+                {
+                    FONTMANAGER->drawText(hdc, 220, 255 + 35 * i, "Neo둥근모 Pro", 30, 1,
+                        _quest[_questSelect]._iManual[i], strlen(_quest[_questSelect]._iManual[i]), RGB(101, 96, 68));
+                }
             }
         }
 
@@ -400,6 +510,17 @@ void Inventory::render(HDC hdc)
 
                 IMAGEMANAGER->render(_mea[i]._iImage.c_str(), hdc, _meaSlot[i].left, _meaSlot[i].top);
             }
+            if (_meaSelect < _mea.size())
+            {
+                IMAGEMANAGER->render(_mea[_meaSelect]._iImage.c_str(), hdc, _rt.left, _rt.top);
+                FONTMANAGER->drawText(hdc, 285, 200, "Neo둥근모 Pro", 35, 1,
+                    _mea[_meaSelect]._iName, strlen(_mea[_meaSelect]._iName), RGB(171, 154, 63));
+                for (int i = 0; i < 7; i++)
+                {
+                    FONTMANAGER->drawText(hdc, 220, 255 + 35 * i, "Neo둥근모 Pro", 30, 1,
+                        _mea[_meaSelect]._iManual[i], strlen(_mea[_meaSelect]._iManual[i]), RGB(101, 96, 68));
+                }
+            }
         }
         if (!_equipMea.empty())
         {
@@ -413,13 +534,84 @@ void Inventory::render(HDC hdc)
     else if (_slotSelect == PRAY)
     {
         IMAGEMANAGER->render("Inventory_pray", hdc, 0, 0);
+        if (!_pray.empty())
+        {
+            for (int i = 0; i < _pray.size(); i++)
+            {
+                if (_pray[i]._equip)
+                    IMAGEMANAGER->render("Item_equip", hdc, _praySlot[i].left, _praySlot[i].top);
+                else
+                    IMAGEMANAGER->render("Item_own", hdc, _praySlot[i].left, _praySlot[i].top);
+
+                IMAGEMANAGER->render(_pray[i]._iImage.c_str(), hdc, _praySlot[i].left, _praySlot[i].top);
+                
+            }
+            if (_praySelect < _pray.size())
+            {
+                IMAGEMANAGER->render(_pray[_praySelect]._iImage.c_str(), hdc, _rt.left, _rt.top);
+                FONTMANAGER->drawText(hdc, 285, 200, "Neo둥근모 Pro", 35, 1,
+                    _pray[_praySelect]._iName, strlen(_pray[_praySelect]._iName), RGB(171, 154, 63));
+               
+                for (int i = 0; i < 7; i++)
+                {
+                    FONTMANAGER->drawText(hdc, 220, 255 + 35 * i, "Neo둥근모 Pro", 30, 1,
+                        _pray[_praySelect]._iManual[i], strlen(_pray[_praySelect]._iManual[i]), RGB(101, 96, 68));
+                }
+            }
+        }
+        if (!_equipPray.empty())
+        {
+            IMAGEMANAGER->render("Item_equip", hdc, _prayEquip.left, _prayEquip.top);
+            IMAGEMANAGER->render(_equipPray.begin()->first.c_str(), hdc, _prayEquip.left, _prayEquip.top);
+
+        }
+        IMAGEMANAGER->frameRender("ItemSelect", hdc,
+            _praySlot[_praySelect].left, _praySlot[_praySelect].top);
+        for(int i=0;i<7;i++)
+            IMAGEMANAGER->alphaRender("Blank1", hdc, _praySlot[i].left, _praySlot[i].top, 190);
     }
     else if (_slotSelect == SKILL)
     {
         IMAGEMANAGER->render("Inventory_skill", hdc, 0, 0);
+
+        IMAGEMANAGER->render("SkillSelect", hdc, _skillSlot[_skillSelect].left, _skillSlot[_skillSelect].top);
+
+        FONTMANAGER->drawText(hdc, 640, 280, "Neo둥근모 Pro", 35, 1,
+            _skill[_skillSelect]._iName, strlen(_skill[_skillSelect]._iName), RGB(171, 154, 63));
+        for (int i = 0; i < 7; i++)
+        {
+            FONTMANAGER->drawText(hdc, 670, 350 + 35 * i, "Neo둥근모 Pro", 30, 1,
+                _skill[_skillSelect]._iManual[i], strlen(_skill[_skillSelect]._iManual[i]), RGB(101, 96, 68));
+        }
     }
     else if (_slotSelect == COLLECTION)
     {
         IMAGEMANAGER->render("Inventory_collection", hdc, 0, 0);
+        if (!_collection.empty())
+        {
+            for (int i = 0; i < _collection.size(); i++)
+            {
+                if (_collection[i]._equip)
+                    IMAGEMANAGER->render("Item_equip", hdc, _collectSlot[i].left, _collectSlot[i].top);
+                else
+                    IMAGEMANAGER->render("Item_own", hdc, _collectSlot[i].left, _collectSlot[i].top);
+
+                IMAGEMANAGER->render(_collection[i]._iImage.c_str(), hdc, _collectSlot[i].left, _collectSlot[i].top);
+            }
+            if (_colSelect < _collection.size())
+            {
+                IMAGEMANAGER->render(_collection[_colSelect]._iImage.c_str(), hdc, _rt.left, _rt.top);
+                FONTMANAGER->drawText(hdc, 285, 200, "Neo둥근모 Pro", 35, 1,
+                    _collection[_colSelect]._iName, strlen(_collection[_colSelect]._iName), RGB(171, 154, 63));
+                for (int i = 0; i < 7; i++)
+                {
+                    FONTMANAGER->drawText(hdc, 220, 255 + 35 * i, "Neo둥근모 Pro", 30, 1,
+                        _collection[_colSelect]._iManual[i], strlen(_collection[_colSelect]._iManual[i]), RGB(101, 96, 68));
+                }
+            }
+        }
+        IMAGEMANAGER->frameRender("ItemSelect", hdc,
+            _collectSlot[_colSelect].left, _collectSlot[_colSelect].top);
     }
+
 }

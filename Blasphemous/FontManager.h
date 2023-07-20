@@ -8,6 +8,9 @@ public:
 	void drawText(HDC hdc, int destX, int destY, char* fontName, int fontSize, int fontWeight,
 		char* printString, int length, COLORREF color);
 
+	void drawText(HDC hdc, int destX, int destY, char* fontName, int fontSize, char* printString,
+		int interval, const char* delimiter, COLORREF color);
+
 	void drawText(HDC hdc, int destX, int destY, char* fontName, int fontSize, int fontWeight,
 		LPCWSTR printString, int length, COLORREF color);
 

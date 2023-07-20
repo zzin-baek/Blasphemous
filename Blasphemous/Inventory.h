@@ -17,30 +17,30 @@ enum eSlot
 struct tagItem
 {
 	string _iImage;
-	/*char* _iName[CHAR_MAX];
-	char* _iManual[CHAR_MAX];*/
-	string _iName;
-	string _iManual;
+	char _iName[CHAR_MAX];
+	char _iManual[7][CHAR_MAX];
 	bool _equip = false;
 };
 
 class Inventory : public SingletonBase<Inventory>
 {
 private:
-	vector<tagItem> _rosary, _heritage, _quest, _mea, _pray, _skill;
+	vector<tagItem> _rosary, _heritage, _quest, _mea, _pray, _skill, _collection;
 	map<string, int> _equipRosary, _equipHeritage, _equipMea, _equipPray;
 
 	int _alpha, _slot;
-	int _eqRosary, _eqHeritage, _eqMea, _eqPray;
-	int _slotSelect, _select, _cnt;
-	int _rosarySelect, _heritageSelect, _questSelect, _meaSelect, _praySelect, _skillSelect;
-	RECT _rosarySlot[14], _heritageSlot[7], _questSlot[30], _meaSlot[7], _praySlot[7];
-	RECT _skillSlot[5];
-	RECT _rosaryEquip[2], _heritageEquip[3], _meaEquip, _prayEquip;
 	POINT _idx;
-
 	bool _out;
 
+	int _eqRosary, _eqHeritage, _eqMea, _eqPray;
+	int _slotSelect, _select, _cnt;
+	int _rosarySelect, _heritageSelect, _questSelect, _meaSelect, _praySelect, _skillSelect, _colSelect;
+
+	RECT _rosarySlot[14], _heritageSlot[7], _questSlot[30], _meaSlot[7];
+	RECT _praySlot[7], _skillSlot[5], _collectSlot[14];
+	RECT _rosaryEquip[2], _heritageEquip[3], _meaEquip, _prayEquip;
+	RECT _rt;
+	
 public:
 	HRESULT init(void);
 	void update(void);
