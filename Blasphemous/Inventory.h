@@ -27,21 +27,18 @@ struct tagItem
 class Inventory : public SingletonBase<Inventory>
 {
 private:
-	vector<tagItem> _rosary;
-	vector<tagItem> _heritage;
-	vector<tagItem> _quest;
-	vector<tagItem> _mea;
+	vector<tagItem> _rosary, _heritage, _quest, _mea, _pray, _skill;
 	map<string, int> _equipRosary, _equipHeritage, _equipMea, _equipPray;
 
 	int _alpha, _slot;
 	int _eqRosary, _eqHeritage, _eqMea, _eqPray;
 	int _slotSelect, _select, _cnt;
-	int _rosarySelect, _heritageSelect, _questSelect, _meaSelect, _praySelect;
+	int _rosarySelect, _heritageSelect, _questSelect, _meaSelect, _praySelect, _skillSelect;
 	RECT _rosarySlot[14], _heritageSlot[7], _questSlot[30], _meaSlot[7], _praySlot[7];
+	RECT _skillSlot[5];
 	RECT _rosaryEquip[2], _heritageEquip[3], _meaEquip, _prayEquip;
 	POINT _idx;
 
-	int _score;
 	bool _out;
 
 public:
