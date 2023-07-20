@@ -18,7 +18,7 @@ HRESULT BaseMap::init(void)
     _acolyteList.push_back(_ac);
     _itemList.push_back(_item);
 
-    _nextStage = _preStage = _cnt = 0;
+    _nextStage = _preStage = _cnt = _term = 0;
     _isInven = false;
     return S_OK;
 }
@@ -264,13 +264,12 @@ void BaseMap::update(void)
             {
                 _acolyteList[0]->setState(HIT_ENEMY, true);
                 //_ac->addAction("Acolyte_hit");
-
-
                 _acolyteList[0]->setHP(_acolyteList[0]->getHP() - 10);
             }
         }
-        if (_acolyteList[0]->getHP() < 0)
+        if (_acolyteList[0]->getHP() < 0 && !_acolyteList[0]->getState()[DIE_ENEMY])
         {
+            
             _acolyteList.pop_back();
         }
     }

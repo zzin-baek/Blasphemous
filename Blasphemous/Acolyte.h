@@ -18,7 +18,7 @@ private:
 	bitset<4> _acState;
 	map<string, acImageInfo> _sync;
 
-	bool _isLeft, _canAttack, _hit;
+	bool _isLeft, _canAttack, _hit, _die;
 	int _cnt, _idx_x, _idx_y;
 	int _hp;
 
@@ -44,6 +44,7 @@ public:
 	void setLeft(bool state) { _isLeft = state; }
 	bool getLeft() { return _isLeft; }
 	bool canAttack() { return _canAttack; }
+	bool getDie() { return _die; }
 
 	bitset<4> getState() { return _acState; }
 	void setState(int num, bool state) { _acState.set(num, state); }

@@ -34,6 +34,9 @@
     <Filter Include="Battle">
       <UniqueIdentifier>{babd6a8c-c96d-4e30-b9be-0a7d273534e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{c2a14420-85bc-469a-a979-918a27a4969f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -95,10 +98,18 @@
     <ClInclude Include="BossStage.h">
       <Filter>Boss</Filter>
     </ClInclude>
-    <ClInclude Include="Effect.h" />
-    <ClInclude Include="Inventory.h" />
-    <ClInclude Include="Item.h" />
-    <ClInclude Include="Isidora.h" />
+    <ClInclude Include="Isidora.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -152,9 +163,17 @@
     <ClCompile Include="BossStage.cpp">
       <Filter>Boss</Filter>
     </ClCompile>
-    <ClCompile Include="Effect.cpp" />
-    <ClCompile Include="Inventory.cpp" />
-    <ClCompile Include="Item.cpp" />
-    <ClCompile Include="Isidora.cpp" />
+    <ClCompile Include="Isidora.cpp">
+      <Filter>Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

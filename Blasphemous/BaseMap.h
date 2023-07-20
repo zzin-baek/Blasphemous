@@ -30,6 +30,8 @@ private:
 	int _cnt, _nextStage, _preStage;
 	bool _isInven;
 
+	int _term;
+
 public:
 	HRESULT init(void);
 	void release(void);

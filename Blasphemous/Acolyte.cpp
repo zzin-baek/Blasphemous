@@ -17,10 +17,10 @@ HRESULT Acolyte::init(void)
         3960 * 2, 266 * 2, 22, 2, true, MAGENTA);
 
     _acolytePos = { WINSIZE_X / 2 + 500, WINSIZE_Y / 2 + 325 };
-    _isLeft = _canAttack = _hit = false;
+    _isLeft = _canAttack = _hit = _die = false;
     _cnt = _idx_x = _idx_y = 0;
     _acState.reset();
-    _hp = 80;
+    _hp = 50;
 
     setState(IDLE_ENEMY, true);
     wsprintf(_strAction, "Acolyte_walk");
@@ -78,12 +78,20 @@ void Acolyte::move(void)
         else
             _idx_x = 0;
     }
-    if (_hp < 0)
+
+    if (_hp < 0 && !_die)
     {
         setState(IDLE_ENEMY, false);
         setState(DIE_ENEMY, true);
+        _die = true;
         _acList.push_back("Acolyte_death");
+
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("Acolyte_death")->getMaxFrameX();
+        else
+            _idx_x = 0;
     }
+
     _cnt++;
     if (isEmpty())
     {
@@ -127,6 +135,8 @@ void Acolyte::move(void)
                 _idx_x--;
                 if (_idx_x < 1)
                 {
+                    if (!strcmp(_acList.front().c_str(), "Acolyte_death"))
+                        setState(DIE_ENEMY, true);
                     _acList.pop_front();
                     if (!_acList.empty())
                     {
@@ -155,6 +165,8 @@ void Acolyte::move(void)
                 _idx_x++;
                 if (_idx_x > IMAGEMANAGER->findImage(_acList.front())->getMaxFrameX())
                 {
+                    if (!strcmp(_acList.front().c_str(), "Acolyte_death"))
+                        setState(DIE_ENEMY, true);
                     _acList.pop_front();
                     if (!_acList.empty())
                     {
