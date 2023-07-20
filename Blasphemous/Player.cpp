@@ -85,6 +85,8 @@ void Player::initImage(void)
         1872 * 2, 166 * 2, 18, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("CLIMB", "Resources/Image/Penitent/penitent_climbledge_reviewed.bmp",
         1020 * 2, 262 * 2, 10, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("LADDER", "Resources/Image/Penitent/penitent_ladder_climb_loop_anim.bmp",
+        330 * 2, 156 * 2, 10, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("ATTACK", "Resources/Image/Penitent/penitent_attack_combo_1.bmp",
         1224 * 2, 144 * 2, 9, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("ATTACK_COMBO_2", "Resources/Image/Penitent/penitent_attack_combo_2.bmp",
@@ -133,6 +135,7 @@ void Player::initTiming(void)
     _sync["FALLING"] = { 5, {0 + 50, 0}, {10, 0} };
     _sync["HANGON"] = { 5, {0, -50}, {50, -50} };
     _sync["CLIMB"] = { 5, {0, -150}, {50, -150} };
+    _sync["LADDER"] = { 6, {50, 0}, {50, 0} };
     _sync["JUMP"] = { 8, {0 + 50, 0}, {30, 0} };
     _sync["JUMP_FORWARD"] = { 6, {0 + 50, -20}, {0, -20} };
     _sync["ATTACK"] = { 4, {-135 + 50, 2}, {0, 3} };
@@ -303,20 +306,22 @@ void Player::playerAction(void)
         }
     }
 
-    if (KEYMANAGER->isOnceKeyDown('W') && _hold)
+    if (KEYMANAGER->isStayKeyDown('W') && _hold)
     {
         if (!isEmpty())
             _actionList.pop_front();
 
         _isFixed = true;
-        _hold = false;
-        setAction("CLIMB");
-        _actionList.push_back("HANGON");
+        //_hold = false;
+        setState(LADDER, true);
+        setAction("LADDER");
+        _plPos_y -= 3.0f;
+       /* _actionList.push_back("HANGON");
         _actionList.push_back("CLIMB");
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("HANGON")->getMaxFrameX();
         else
-            _idx_x = 0;
+            _idx_x = 0;*/
     }
 
     if (KEYMANAGER->isOnceKeyDown(VK_SHIFT) && !_plState[DODGE] && isEmpty())
@@ -544,6 +549,14 @@ void Player::playerMove(void)
         {
             _plPos_x += 8.5f;
         }
+    }
+    if (_plState[ATTACK])
+    {
+        if (!strcmp(_strAction, "ATTACK_DODGE"))
+        {
+
+        }
+
     }
 
     if (!strcmp(_strAction, "PUSHBACK"))

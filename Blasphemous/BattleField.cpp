@@ -11,7 +11,7 @@ HRESULT BattleField::init(void)
         1300, WINSIZE_Y, true, MAGENTA);
     IMAGEMANAGER->addImage("churches-field-bg3", "Resources/Image/BackGround/churches-field-bg3.bmp",
         1016, WINSIZE_Y, true, MAGENTA);
-    IMAGEMANAGER->addImage("church-field", "Resources/Image/BackGround/churches-field-map2.bmp",
+    IMAGEMANAGER->addImage("church-field", "Resources/Image/BackGround/churches-field-map22(ladder).bmp",
         2000, 938, true, MAGENTA);
     IMAGEMANAGER->addImage("bg_collision", "Resources/Image/BackGround/churches-field-map_colision2.bmp",
         2000 , 938, true, RGB(255, 255, 255));
@@ -27,14 +27,8 @@ HRESULT BattleField::init(void)
 
 void BattleField::rectMove(void)
 {
-    _grab[0] = RectMakeCenter(940 - (_startPos_x - _copyPos_x), 
-        240 - (_startPos_y - _copyPos_y), 20, 40);
-    _grab[1] = RectMakeCenter(1155 - (_startPos_x - _copyPos_x), 
-        240 - (_startPos_y - _copyPos_y), 20, 40);
-    _grab[2] = RectMakeCenter(1230 - (_startPos_x - _copyPos_x), 
-        360 - (_startPos_y - _copyPos_y), 20, 40);
-    _grab[3] = RectMakeCenter(1420 - (_startPos_x - _copyPos_x), 
-        360 - (_startPos_y - _copyPos_y), 20, 40);
+    _ladder = RectMake(970 - (_startPos_x - _copyPos_x),
+        245 - (_startPos_y - _copyPos_y), 50, 300);
 }
 
 void BattleField::render(HDC hdc)
@@ -50,10 +44,7 @@ void BattleField::render(HDC hdc)
     {
         //ÇÈ¼¿Ãæµ¹¿ë
         IMAGEMANAGER->render("bg_collision", hdc, 0, 0, _startPos_x, _startPos_y, WINSIZE_X, WINSIZE_Y);
-        for (int i = 0; i < 4; i++)
-        {
-            DrawRectMake(hdc, _grab[i]);
-        }
+        DrawRectMake(hdc, _ladder);
 
     }
 }

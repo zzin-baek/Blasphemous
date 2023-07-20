@@ -18,6 +18,7 @@ private:
 
 public:
 	HRESULT init(void);
+	void initPlayer(int x, int y);
 	void release(void);
 	void update(void);
 	void render(void);

@@ -98,6 +98,7 @@
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="Isidora.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -154,5 +155,6 @@
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="Isidora.cpp" />
   </ItemGroup>
 </Project>

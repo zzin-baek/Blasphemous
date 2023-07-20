@@ -18,14 +18,18 @@ HRESULT Inventory::init(void)
     IMAGEMANAGER->addImage("KB_RETURN", "Resources/Image/Sheet/KB_RETURN.bmp", 17 * 2, 18 * 2, true, MAGENTA);
     IMAGEMANAGER->addImage("Item_equip", "Resources/Image/Sheet/item_equip.bmp", 60, 60, true, MAGENTA);
     IMAGEMANAGER->addImage("Item_own", "Resources/Image/Sheet/item_own.bmp", 60, 60, true, MAGENTA);
+    IMAGEMANAGER->addImage("SkillSelect", "Resources/Image/Sheet/skillSelect.bmp", 54, 54, true, MAGENTA);
 
     IMAGEMANAGER->addImage("Item1", "Resources/Image/sheet/item1.bmp", 60, 60, true, MAGENTA);
     IMAGEMANAGER->addImage("Item2", "Resources/Image/sheet/item2.bmp", 60, 60, true, MAGENTA);
+    IMAGEMANAGER->addImage("Item3", "Resources/Image/sheet/item3.bmp", 60, 60, true, MAGENTA);
+    IMAGEMANAGER->addImage("Item4", "Resources/Image/sheet/item4.bmp", 60, 60, true, MAGENTA);
+    IMAGEMANAGER->addImage("Item5", "Resources/Image/sheet/item5.bmp", 60, 60, true, MAGENTA);
+    IMAGEMANAGER->addImage("Pray1", "Resources/Image/sheet/pray1.bmp", 60, 60, true, MAGENTA);
 
-
-    _alpha = _slot = _slotSelect = _cnt = 0;
-    _select = _rosarySelect = _heritageSelect = 0;
-    _eqRosary = _eqHeritage = 0;
+    _alpha = _slot = _slotSelect = _cnt = _score = 0;
+    _select = _rosarySelect = _heritageSelect = _questSelect = _praySelect = 0;
+    _eqRosary = _eqHeritage = _eqMea = _eqPray = 0;
     _idx = { 0, 0 };
     _out = false;
 
@@ -40,7 +44,20 @@ HRESULT Inventory::init(void)
     for (int i = 0; i < 7; i++)
     {
         _heritageSlot[i] = RectMake(200 + 72 * i, 474, 60, 60);
+        _meaSlot[i] = RectMake(200 + 72 * i, 474, 60, 60);
+        _praySlot[i] = RectMake(200 + 72 * i, 474, 60, 60);
     }
+
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            _questSlot[i * 5 + j] = RectMake(752 + 72 * j, 174 + 72 * i, 60, 60);
+        }
+    }
+
+    _quest.push_back({ "Item3", "¿¹¾Æ", "¾ß¾å", false });
+    _mea.push_back({ "Item4", "d", "dd", false });
 
     _rosaryEquip[0] = RectMake(774, 394, 60, 60);
     _rosaryEquip[1] = RectMake(774, 470, 60, 60);
@@ -48,6 +65,9 @@ HRESULT Inventory::init(void)
     _heritageEquip[0] = RectMake(790, 262, 60, 60);
     _heritageEquip[1] = RectMake(790, 354, 60, 60);
     _heritageEquip[2] = RectMake(790, 446, 60, 60);
+
+    _meaEquip = RectMake(802, 292, 60, 60);
+    _prayEquip = RectMake(802, 292, 60, 60);
 
     return S_OK;
 }
@@ -59,6 +79,9 @@ void Inventory::update(void)
         _slot++;
         _heritageSelect = 0;
         _rosarySelect = 0;
+        _questSelect = 0;
+        _meaSelect = 0;
+        _praySelect = 0;
     }
     if (KEYMANAGER->isOnceKeyDown('Q'))
     {
@@ -67,6 +90,8 @@ void Inventory::update(void)
             _slot = 6;
         _heritageSelect = 0;
         _rosarySelect = 0;
+        _questSelect = 0;
+        _meaSelect = 0;
     }
 
     _slotSelect = _slot % SLOT_NUM;
@@ -78,68 +103,126 @@ void Inventory::update(void)
 
     if (KEYMANAGER->isOnceKeyDown('D'))
     {
-        if (_slotSelect == ROSARY)
+        switch (_slotSelect)
         {
+        case ROSARY:
             _rosarySelect++;
             _rosarySelect %= 14;
-        }
-        else if (_slotSelect == HERITAGE)
-        {
+            break;
+        case HERITAGE:
             _heritageSelect++;
             _heritageSelect %= 7;
+            break;
+        case QUEST:
+            _questSelect++;
+            _questSelect % 30;
+            break;
+        case MEA:
+            _meaSelect++;
+            _meaSelect %= 7;
+            break;
+        case PRAY:
+            break;
+        case SKILL:
+            break;
+        case COLLECTION:
+            break;
         }
-
     }
     if (KEYMANAGER->isOnceKeyDown('A'))
     {
-        if (_slotSelect == ROSARY)
+        switch (_slotSelect)
         {
+        case ROSARY:
             _rosarySelect--;
             if (_rosarySelect < 0)
                 _rosarySelect = 13;
             _rosarySelect %= 14;
-        }
-        else if (_slotSelect == HERITAGE)
-        {
+
+            break;
+        case HERITAGE:
             _heritageSelect--;
             if (_heritageSelect < 0)
                 _heritageSelect = 6;
             _heritageSelect %= 7;
+            break;
+        case QUEST:
+            _questSelect--;
+            if (_questSelect < 0)
+                _questSelect = 29;
+            _questSelect %= 30;
+            break;
+        case MEA:
+            _meaSelect--;
+            if (_meaSelect < 0)
+                _meaSelect = 6;
+            _meaSelect %= 7;
+            break;
         }
-
     }
     if (KEYMANAGER->isOnceKeyDown('W'))
     {
-        if (_slotSelect == ROSARY)
+        switch (_slotSelect)
         {
+        case ROSARY:
             _rosarySelect -= 7;
             if (_rosarySelect < 0)
                 _rosarySelect += 14;
             _rosarySelect %= 14;
-            //cout<<_rosarySelect<<endl;
-        }
-        else if (_slotSelect == HERITAGE)
-        {
+            break;
+        case HERITAGE:
             _heritageSelect -= 7;
             if (_heritageSelect < 0)
-                _heritageSelect += 14;
+                _heritageSelect += 7;
             _heritageSelect %= 7;
+            break;
+        case QUEST:
+            _questSelect -= 5;
+            if (_questSelect < 0)
+                _questSelect += 30;
+            _questSelect %= 30;
+            break;
+        case MEA:
+            _meaSelect -= 7;
+            if (_meaSelect < 0)
+                _meaSelect += 7;
+            _meaSelect %= 7;
+            break;
+        case PRAY:
+            break;
+        case SKILL:
+            break;
+        case COLLECTION:
+            break;
         }
-
     }
     if (KEYMANAGER->isOnceKeyDown('S'))
     {
-        if (_slotSelect == ROSARY)
+        switch (_slotSelect)
         {
+        case ROSARY:
             _rosarySelect += 7;
             _rosarySelect %= 14;
-        }
-        else if (_slotSelect == HERITAGE)
-        {
+            break;
+        case HERITAGE:
             _heritageSelect += 7;
             _heritageSelect %= 7;
+            break;
+        case QUEST:
+            _questSelect += 5;
+            _questSelect %= 30;
+            break;
+        case MEA:
+            _meaSelect += 7;
+            _meaSelect %= 7;
+            break;
+        case PRAY:
+            break;
+        case SKILL:
+            break;
+        case COLLECTION:
+            break;
         }
-
     }
 
     if (KEYMANAGER->isOnceKeyDown(VK_RETURN))
@@ -177,6 +260,24 @@ void Inventory::update(void)
                     _heritage[_heritageSelect]._equip = true;
                     _equipHeritage.insert(make_pair(_heritage[_heritageSelect]._iImage, _eqHeritage));
                     _eqHeritage++;
+                }
+            }
+        }
+        else if (_slotSelect == MEA && _meaSelect < _mea.size())
+        {
+            if (_mea[_meaSelect]._equip)
+            {
+                _mea[_meaSelect]._equip = false;
+                _equipMea.erase(_equipMea.find(_mea[_meaSelect]._iImage));
+                _eqMea--;
+            }
+            else
+            {
+                if (_eqMea < 1)
+                {
+                    _mea[_meaSelect]._equip = true;
+                    _equipMea.insert(make_pair(_mea[_meaSelect]._iImage, _eqMea));
+                    _eqMea++;
                 }
             }
         }
@@ -239,6 +340,7 @@ void Inventory::render(HDC hdc)
         IMAGEMANAGER->frameRender("ItemSelect", hdc,
             _rosarySlot[_rosarySelect].left, _rosarySlot[_rosarySelect].top);
     }
+
     else if (_slotSelect == HERITAGE)
     {
         IMAGEMANAGER->render("Inventory_heritage", hdc, 0, 0);
@@ -270,10 +372,43 @@ void Inventory::render(HDC hdc)
     else if (_slotSelect == QUEST)
     {
         IMAGEMANAGER->render("Inventory_quest", hdc, 0, 0);
+
+        if (!_quest.empty())
+        {
+            for (int i = 0; i < _quest.size(); i++)
+            {
+
+                IMAGEMANAGER->render("Item_own", hdc, _questSlot[i].left, _questSlot[i].top);
+                IMAGEMANAGER->render(_quest[i]._iImage.c_str(), hdc, _questSlot[i].left, _questSlot[i].top);
+            }
+        }
+
+        IMAGEMANAGER->frameRender("ItemSelect", hdc,
+            _questSlot[_questSelect].left, _questSlot[_questSelect].top);
     }
     else if (_slotSelect == MEA)
     {
         IMAGEMANAGER->render("Inventory_mea", hdc, 0, 0);
+        if (!_mea.empty())
+        {
+            for (int i = 0; i < _mea.size(); i++)
+            {
+                if (_mea[i]._equip)
+                    IMAGEMANAGER->render("Item_equip", hdc, _meaSlot[i].left, _meaSlot[i].top);
+                else
+                    IMAGEMANAGER->render("Item_own", hdc, _meaSlot[i].left, _meaSlot[i].top);
+
+                IMAGEMANAGER->render(_mea[i]._iImage.c_str(), hdc, _meaSlot[i].left, _meaSlot[i].top);
+            }
+        }
+        if (!_equipMea.empty())
+        {
+            IMAGEMANAGER->render("Item_equip", hdc, _meaEquip.left, _meaEquip.top);
+            IMAGEMANAGER->render(_equipMea.begin()->first.c_str(), hdc, _meaEquip.left, _meaEquip.top);
+            
+        }
+        IMAGEMANAGER->frameRender("ItemSelect", hdc,
+            _meaSlot[_meaSelect].left, _meaSlot[_meaSelect].top);
     }
     else if (_slotSelect == PRAY)
     {

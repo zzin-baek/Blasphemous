@@ -27,7 +27,7 @@ private:
 	vector<Item*> _itemList;
 	vector<Acolyte*> _acolyteList;
 
-	int _cnt, _nextStage;
+	int _cnt, _nextStage, _preStage;
 	bool _isInven;
 
 public:
@@ -37,6 +37,7 @@ public:
 	void render(void);
 
 	int getNext() { return _nextStage; }
+	int getPre() { return _preStage; }
 
 	BaseMap() {}
 	~BaseMap() {}

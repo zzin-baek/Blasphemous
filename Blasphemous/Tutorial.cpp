@@ -20,6 +20,11 @@ HRESULT Tutorial::init(void)
     return S_OK;
 }
 
+void Tutorial::initPlayer(int x, int y)
+{
+    this->_pl->init(x, y);
+}
+
 void Tutorial::release(void)
 {
     SAFE_DELETE(_pl);
@@ -78,7 +83,7 @@ void Tutorial::update(void)
         _pl->setGround(false);
     }
 
-    if (_pl->getCenterX() > WINSIZE_X)
+    if (_pl->getRect().left > WINSIZE_X)
         _nextStage = 1;
 
     if (KEYMANAGER->isOnceKeyDown('I'))

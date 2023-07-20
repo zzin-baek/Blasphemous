@@ -4,7 +4,7 @@
 HRESULT BaseMap::init(void)
 {
     _pl = new Player;
-    _pl->init(100, 315);
+    _pl->init(120, 315);
 
     _bf = new BattleField;
     _bf->init();
@@ -18,7 +18,7 @@ HRESULT BaseMap::init(void)
     _acolyteList.push_back(_ac);
     _itemList.push_back(_item);
 
-    _nextStage = _cnt = 0;
+    _nextStage = _preStage = _cnt = 0;
     _isInven = false;
     return S_OK;
 }
@@ -66,6 +66,8 @@ void BaseMap::update(void)
 
     if (_pl->getRect().left >= WINSIZE_X)
         _nextStage = 1;
+    else if (_pl->getRect().right <= 0)
+        _preStage = 1;
 
     // 중력
     if (!_pl->getGround() && !_pl->getFixed())
@@ -83,7 +85,7 @@ void BaseMap::update(void)
             _itemList[0]->setPosX(_item->getPosX() - 4);
 
     }
-    if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 + 10 && _bf->getX() > 0)
+    if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 + 10)
     {
         _bf->setX(_bf->getX() - 4.0f);
         _pl->setPosX(_pl->getPosX() + 4.0f);
@@ -117,12 +119,15 @@ void BaseMap::update(void)
     _bf->rectMove();
 
     RECT _rt;
-    for (int i = 0; i < 4; i++)
+    if (PtInRect(&_bf->getLadder(), { (_pl->getRect().left + _pl->getRect().right) / 2,
+        _pl->getRect().bottom - 20 }))
     {
-        if (IntersectRect(&_rt, &_pl->getRect(), &_bf->getHold(i)))
-        {
-            _pl->setHold(true);
-        }
+        _pl->setHold(true);
+    }
+    else
+    {
+        _pl->setHold(false);
+        _pl->setFixed(false);
     }
 
     // 픽셀 충돌

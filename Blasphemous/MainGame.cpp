@@ -46,6 +46,11 @@ void MainGame::update(void)
 
 	if (_baseMap->getNext())
 		_currentScene = _bossStage;
+	/*else if (_baseMap->getPre())
+	{
+		_currentScene = _tutorial;
+		_tutorial->initPlayer(1200, 484);
+	}*/
 
 	_currentScene->update();
 }

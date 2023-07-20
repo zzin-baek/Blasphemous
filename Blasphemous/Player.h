@@ -10,6 +10,7 @@ enum eState
 	ATTACK,
 	CROUCH,
 	CLIMB,
+	LADDER,
 	DODGE,
 	HANGON,
 	PARRY,
@@ -68,6 +69,7 @@ public:
 	inline void setGround(bool state) { _isGround = state; }
 	inline bool getGround() { return _isGround; }
 	inline bool getLeft() { return _isLeft; }
+	inline void setFixed(bool state) { _isFixed = state; }
 	inline bool getFixed() { return _isFixed; }
 	inline void setHold(bool state) { _hold = state; }
 	inline void setCollect(bool state) { _collect = state; }

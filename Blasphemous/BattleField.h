@@ -5,7 +5,7 @@ class BattleField
 private:
 	float _startPos_x, _startPos_y;
 	float _copyPos_x, _copyPos_y;
-	RECT _grab[4];
+	RECT _ladder;
 
 public:
 	HRESULT init(void);
@@ -17,7 +17,7 @@ public:
 	float getX() { return _startPos_x; }
 	float getY() { return _startPos_y; }
 
-	RECT getHold(int num) { return _grab[num]; }
+	RECT getLadder() { return _ladder; }
 
 	BattleField() {}
 	~BattleField() {}
