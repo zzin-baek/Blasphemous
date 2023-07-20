@@ -1,12 +1,17 @@
 #pragma once
 #include "SingletonBase.h"
 
-#define SLOT_NUM 2
+#define SLOT_NUM 7
 
 enum eSlot
 {
 	ROSARY,
-	HERITAGE
+	HERITAGE,
+	QUEST,
+	MEA,
+	PRAY,
+	SKILL,
+	COLLECTION
 };
 
 struct tagItem
@@ -24,11 +29,15 @@ class Inventory : public SingletonBase<Inventory>
 private:
 	vector<tagItem> _rosary;
 	vector<tagItem> _heritage;
+	map<string, int> _equipRosary;
+	map<string, int> _equipHeritage;
 
 	int _alpha, _slot;
+	int _eqRosary, _eqHeritage;
 	int _slotSelect, _select, _cnt;
 	int _rosarySelect, _heritageSelect;
 	RECT _rosarySlot[14], _heritageSlot[7];
+	RECT _rosaryEquip[2], _heritageEquip[3];
 	POINT _idx;
 
 	bool _out;
