@@ -6,8 +6,7 @@ HRESULT BossStage::init(void)
     _bm = new BossMap;
     _bm->init();
 
-    _pl = new Player;
-    _pl->init(88, 484);
+    //PLAYER = new Player;
 
     _boss = new Isidora;
     _boss->init();
@@ -22,30 +21,29 @@ HRESULT BossStage::init(void)
 void BossStage::release(void)
 {
     SAFE_DELETE(_bm);
-    SAFE_DELETE(_pl);
 }
 
 void BossStage::update(void)
 {
     if (!_intro)
     {
-        _pl->playerAction();
-        _pl->playerMove();
+        PLAYER->playerAction();
+        PLAYER->playerMove();
 
 
-        if (!_pl->getGround())
-            _pl->setPosY(_pl->getPosY() + 5.0f);
+        if (!PLAYER->getFixed())
+            PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
 
-        if (_pl->getRect().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 2400)
+        if (PLAYER->getRect().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 2400)
         {
             _bm->setPosX(_bm->getPosX() + 4);
-            _pl->setPosX(_pl->getPosX() - 4.0f);
+            PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
             _bm->movdRect(4);
         }
-        if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 + 10 && (_bm->getPosX() > 0))
+        if (PLAYER->getLeft() && PLAYER->getCenterX() < WINSIZE_X / 2 + 10 && (_bm->getPosX() > 0))
         {
             _bm->setPosX(_bm->getPosX() - 4);
-            _pl->setPosX(_pl->getPosX() + 4.0f);
+            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
             _bm->movdRect(-4);
         }
     }
@@ -58,7 +56,7 @@ void BossStage::update(void)
             if (_bm->getPosX() < 650)
             {
                 _bm->setPosX(_bm->getPosX() + 8);
-                _pl->setPosX(_pl->getPosX() - 8.0f);
+                PLAYER->setPosX(PLAYER->getPosX() - 8.0f);
                 _bm->movdRect(8);
                 _boss->setX(_boss->getX() - 8);
             }
@@ -67,15 +65,18 @@ void BossStage::update(void)
     }
 
     RECT _rt;
-    if (_pl->getRect().right >= _bm->getRect().right)
+    if (PLAYER->getPosX() >= _bm->getRect().left)
     {
         _intro = true;
-        _pl->setAction("IDLE");
+        PLAYER->setPosX(_bm->getRect().left);
+        //PLAYER->getState().reset();
+        PLAYER->setAction("IDLE");
     }
-    for (int i = _pl->getRect().left; i <= _pl->getRect().right; i++)
+
+    for (int i = PLAYER->getRect().left; i <= PLAYER->getRect().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("BossMap_collision")->getMemDC(),
-            i, _pl->getRect().bottom);
+            i, PLAYER->getRect().bottom);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
@@ -83,18 +84,19 @@ void BossStage::update(void)
 
         if ((r == 255 && g == 0 && b == 255))
         {
-            _pl->setGround(true);
+            PLAYER->setGround(true);
+            PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
             break;
         }
-        _pl->setGround(false);
+        PLAYER->setGround(false);
     }
 }
 
 void BossStage::render(void)
 {
     _bm->render(getMemDC());
-    _pl->renderPlayer(getMemDC());
-    _pl->renderProfile(getMemDC());
+    PLAYER->renderPlayer(getMemDC());
+    PLAYER->renderProfile(getMemDC());
 
     if (_intro)
         _boss->render(getMemDC());

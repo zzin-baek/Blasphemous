@@ -1,10 +1,18 @@
 #pragma once
+
+struct tagSkill
+{
+
+};
+
 class Isidora
 {
 private:
 	POINT _pos;
 	int _cnt, _idx;
 	int _idx_x, _idx_y;
+
+	char _loc[128];
 
 public:
 	HRESULT init(void);

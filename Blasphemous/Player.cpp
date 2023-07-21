@@ -5,8 +5,8 @@ HRESULT Player::init(void)
 {
     initImage();
 
-    _plPos_x = WINSIZE_X / 2 - 400;
-    _plPos_y = WINSIZE_Y / 2 - 100;
+    //_plPos_x = WINSIZE_X / 2 - 400;
+    //_plPos_y = WINSIZE_Y / 2 - 100;
 
     //_plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
 
@@ -18,15 +18,16 @@ HRESULT Player::init(void)
     _tempX = _tempY = 0.0f;
 
     _hp = 100; 
+    _score = 0;
     _portion = 5;
     _collected = false;
 
-    for (int i = 0; i < MAX_STATE; i++)
+   /* for (int i = 0; i < MAX_STATE; i++)
     {
         setState(i, false);
     }
 
-    wsprintf(_strAction, "IDLE");
+    wsprintf(_strAction, "IDLE");*/
     initTiming();
 
     return S_OK;
@@ -34,29 +35,35 @@ HRESULT Player::init(void)
 
 HRESULT Player::init(int startX, int startY)
 {
-    initImage();
+    //initImage();
 
     _plPos_x = startX;
     _plPos_y = startY;
 
-    _cnt = _idx_x = _idx_y = _hitCool = 0;
-    _isLeft = _isGround = _isFixed = _hold = _collect = false;
-
-    _centerX = _centerY = 0.0f;
-    //_center = { 0, 0 };
-    _tempX = _tempY = 0.0f;
-
-    _hp = 100;
-    _portion = 5;
-    _collected = false;
-
+    //_cnt = _idx_x = _idx_y = _hitCool = 0;
+    //_isLeft = _isGround = _isFixed = _hold = _collect = false;
+    //
+    //_centerX = _centerY = 0.0f;
+    ////_center = { 0, 0 };
+    //_tempX = _tempY = 0.0f;
+    //
+    //_hp = 100;
+    //_portion = 5;
+    //_collected = false;
+    //
+    //for (int i = 0; i < MAX_STATE; i++)
+    //{
+    //    setState(i, false);
+    //}
+    //
+    //wsprintf(_strAction, "IDLE");
+    //initTiming();
     for (int i = 0; i < MAX_STATE; i++)
     {
         setState(i, false);
     }
 
     wsprintf(_strAction, "IDLE");
-    initTiming();
 
     return S_OK;
 }
@@ -136,7 +143,7 @@ void Player::initTiming(void)
     _sync["HANGON"] = { 5, {0, -50}, {50, -50} };
     _sync["CLIMB"] = { 5, {0, -150}, {50, -150} };
     _sync["LADDER"] = { 6, {50, 0}, {50, 0} };
-    _sync["JUMP"] = { 8, {0 + 50, 0}, {30, 0} };
+    _sync["JUMP"] = { 7, {0 + 50, 0}, {30, 0} };
     _sync["JUMP_FORWARD"] = { 6, {0 + 50, -20}, {0, -20} };
     _sync["ATTACK"] = { 4, {-135 + 50, 2}, {0, 3} };
     _sync["ATTACK_JUMP"] = { 6, {0 + 50, -80}, {0, -80} };
@@ -192,7 +199,7 @@ void Player::playerAction(void)
             else
                 _idx_x = 6;
         }
-        if (_plPos_x > 0 && !_plState[CROUCH])
+        if (!_plState[CROUCH])
             _plPos_x -= 4.0f;
     }
     if (KEYMANAGER->isStayKeyDown('D') && !strstr("ATTACK", _strAction) && !_plState[DODGE])
@@ -201,6 +208,18 @@ void Player::playerAction(void)
         setState(WALK, true);
         if (!_plState[JUMP])
             setAction("RUNNING");
+        if (!strcmp(_strAction, "JUMP"))
+        {
+            if (!isEmpty())
+                _actionList.pop_front();
+            _actionList.push_back("JUMP_FORWARD");
+            setAction("JUMP_FORWARD");
+
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX() - 5;
+            else
+                _idx_x = 6;
+        }
         if (_plPos_x < WINSIZE_X && !_plState[CROUCH])
             _plPos_x += 4.0f;
     }
@@ -572,6 +591,11 @@ void Player::playerMove(void)
                 _plPos_x -= 6.0f;
         }
     }
+}
+
+int Player::getMaxFrameX()
+{
+    return IMAGEMANAGER->findImage(_strAction)->getMaxFrameX();
 }
 
 Player::~Player()

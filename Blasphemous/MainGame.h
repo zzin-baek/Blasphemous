@@ -14,6 +14,8 @@ private:
 	BossStage* _bossStage;
 
 	GameNode* _currentScene;
+
+	bool _initOnce[4];
 public:
 	HRESULT init(void);
 	void release(void);

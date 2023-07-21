@@ -25,6 +25,8 @@ HRESULT GameNode::init(bool managerInit)
         KEYMANAGER->init();
         IMAGEMANAGER->init();
         SOUNDMANAGER->init();
+
+        PLAYER->init();
         INVENTORY->init();
     }
 
@@ -42,6 +44,8 @@ void GameNode::release(void)
         IMAGEMANAGER->release();
         IMAGEMANAGER->releaseSingleton();
         SOUNDMANAGER->releaseSingleton();
+
+        PLAYER->releaseSingleton();
         INVENTORY->releaseSingleton();
         //SAFE_DELETE(_doubleBuffer);
     }

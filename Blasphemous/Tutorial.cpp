@@ -3,8 +3,10 @@
 
 HRESULT Tutorial::init(void)
 {
-    _pl = new Player();
-    _pl->init(88, 484);
+    /*PLAYER = new Player();
+    PLAYER->init(88, 484);*/
+
+    //PLAYER->init(88, 484);
 
     _tf = new TutorialField();
     _tf->init();
@@ -20,14 +22,13 @@ HRESULT Tutorial::init(void)
     return S_OK;
 }
 
-void Tutorial::initPlayer(int x, int y)
+void Tutorial::init(int s, int e)
 {
-    this->_pl->init(x, y);
+    PLAYER->init(s, e);
 }
 
 void Tutorial::release(void)
 {
-    SAFE_DELETE(_pl);
     SAFE_DELETE(_tf);
     SAFE_DELETE(_item);
 }
@@ -36,8 +37,8 @@ void Tutorial::update(void)
 {
     if (!_isInven)
     {
-        _pl->playerAction();
-        _pl->playerMove();
+        PLAYER->playerAction();
+        PLAYER->playerMove();
     }
 
     if (!_itemList.empty())
@@ -45,12 +46,12 @@ void Tutorial::update(void)
         _itemList[0]->update();
 
         RECT _rt;
-        if (IntersectRect(&_rt, &_pl->getRect(), &_item->getRect()))
+        if (IntersectRect(&_rt, &PLAYER->getRect(), &_item->getRect()))
         {
             _itemList[0]->setPick(true);
-            _pl->setCollect(true);
+            PLAYER->setCollect(true);
 
-            if (_pl->getCollected())
+            if (PLAYER->getCollected())
             {
                 _itemList.pop_back();
                 INVENTORY->addItem(ROSARY, { "Item1", "비둘기 뼈", 
@@ -60,17 +61,23 @@ void Tutorial::update(void)
         else
         {
             _itemList[0]->setPick(false);
-            _pl->setCollect(false);
+            PLAYER->setCollect(false);
         }
     }
 
-    if (!_pl->getGround())
-        _pl->setPosY(_pl->getPosY() + 5.0f);
+    // 중력
+    //if (!PLAYER->getGround())
+    PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
 
-    for (int i = _pl->getRect().left; i <= _pl->getRect().right; i++)
+    if (PLAYER->getRect().left <= 0)
+    {
+        PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
+    }
+
+    for (int i = PLAYER->getRect().left; i <= PLAYER->getRect().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
-            i, _pl->getRect().bottom);
+            i, PLAYER->getRect().bottom);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
@@ -78,13 +85,14 @@ void Tutorial::update(void)
 
         if ((r == 255 && g == 0 && b == 255))
         {
-            _pl->setGround(true);
+            PLAYER->setGround(true);
+            PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
             break;
         }
-        _pl->setGround(false);
+        PLAYER->setGround(false);
     }
 
-    if (_pl->getRect().left > WINSIZE_X)
+    if (PLAYER->getCenterX() > WINSIZE_X)
         _nextStage = 1;
 
     if (KEYMANAGER->isOnceKeyDown('I'))
@@ -110,8 +118,8 @@ void Tutorial::render(void)
     if (!_itemList.empty())
         _itemList[0]->showItem(getMemDC());
 
-    _pl->renderPlayer(getMemDC());
-    _pl->renderProfile(getMemDC());
+    PLAYER->renderPlayer(getMemDC());
+    PLAYER->renderProfile(getMemDC());
 
     if (_isInven)
     {

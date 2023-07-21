@@ -79,10 +79,10 @@ void Acolyte::move(void)
             _idx_x = 0;
     }
 
-    if (_hp < 0 && !_die)
+    if (_hp < 0)
     {
         setState(IDLE_ENEMY, false);
-        setState(DIE_ENEMY, true);
+        //setState(DIE_ENEMY, true);
         _die = true;
         _acList.push_back("Acolyte_death");
 
@@ -150,6 +150,8 @@ void Acolyte::move(void)
                         _hit = false;
                         setState(IDLE_ENEMY, true);
                         setAction("Acolyte_walk");
+
+                        if (_die) setState(DIE_ENEMY, true);
                     }
                 }
                 if (!_acList.empty())
@@ -180,6 +182,8 @@ void Acolyte::move(void)
                         _hit = false;
                         setState(IDLE_ENEMY, true);
                         setAction("Acolyte_walk");
+
+                        if (_die) setState(DIE_ENEMY, true);
                     }
                 }
                 if (!_acList.empty())
@@ -278,6 +282,7 @@ void Acolyte::render(HDC hdc)
         HPEN myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
         HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
 
+
         DrawRectMake(hdc, _acolyte);
         
         _stprintf_s(_loc, "x: %d y: %d", _acolytePos.x, _acolytePos.y);
@@ -298,4 +303,6 @@ void Acolyte::render(HDC hdc)
         SelectObject(hdc, oldPen);
         DeleteObject(myPen);
     }
+
+    cout << "a" << getState()[DIE_ENEMY] << endl;
 }

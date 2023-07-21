@@ -1,6 +1,7 @@
 #pragma once
+#include "SingletonBase.h"
 
-#define MAX_STATE 10
+#define MAX_STATE 11
 
 // bitset: 기본, 걷기, 점프, 앉기, 매달리기
 enum eState
@@ -26,7 +27,7 @@ struct plImageInfo
 };
 
 // bool _isGround: 바닥인지 공중인지
-class Player
+class Player : public SingletonBase <Player>
 {
 private:
 	char _strAction[128];
@@ -44,7 +45,7 @@ private:
 	POINT _center;
 	float _tempX, _tempY;
 
-	int _hp, _portion;
+	int _hp, _score, _portion;
 	bool _collected;
 
 	char _loc[128], _action[128];
@@ -78,7 +79,7 @@ public:
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
 	inline void addAction(string _action) { _actionList.push_back(_action); }
 
-	inline int getMaxFrameX() { return IMAGEMANAGER->findImage(_strAction)->getMaxFrameX(); }
+	int getMaxFrameX();
 
 	// 상태 getset
 	bitset<MAX_STATE> getState() { return _plState; }

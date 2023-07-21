@@ -61,6 +61,8 @@ ID2D1HwndRenderTarget*		_ID2DRenderTarget = nullptr;
 #include "ImageManager.h"
 #include "FontManager.h"
 #include "SoundManager.h"
+
+#include "Player.h"
 #include "Inventory.h"
 
 // # ΩÃ±€≈Ê #
@@ -69,6 +71,8 @@ ID2D1HwndRenderTarget*		_ID2DRenderTarget = nullptr;
 #define IMAGEMANAGER		ImageManager::getSingleton()
 #define FONTMANAGER			FontManager::getSingleton()
 #define SOUNDMANAGER		SoundManager::getSingleton()
+
+#define PLAYER				Player::getSingleton()
 #define INVENTORY			Inventory::getSingleton()
 
 // ≈∏¿Ã∆≤

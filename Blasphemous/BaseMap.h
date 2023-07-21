@@ -1,6 +1,6 @@
 #pragma once
 #include "GameNode.h"
-#include "Player.h"
+//#include "Player.h"
 #include "Acolyte.h"
 #include "BattleField.h"
 #include "Item.h"
@@ -19,7 +19,7 @@
 class BaseMap : public GameNode
 {
 private:
-	Player* _pl;
+	//Player* _pl;
 	Acolyte* _ac;
 	BattleField* _bf;
 	Item* _item;
@@ -40,6 +40,7 @@ public:
 
 	int getNext() { return _nextStage; }
 	int getPre() { return _preStage; }
+	void setPre(int p) { _preStage = p; }
 
 	BaseMap() {}
 	~BaseMap() {}

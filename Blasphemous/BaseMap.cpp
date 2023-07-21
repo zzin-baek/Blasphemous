@@ -3,8 +3,8 @@
 
 HRESULT BaseMap::init(void)
 {
-    _pl = new Player;
-    _pl->init(120, 315);
+    //PLAYER = new Player;
+    PLAYER->init(120, 315);
 
     _bf = new BattleField;
     _bf->init();
@@ -25,7 +25,6 @@ HRESULT BaseMap::init(void)
 
 void BaseMap::release(void)
 {
-    SAFE_DELETE(_pl);
     SAFE_DELETE(_bf);
     SAFE_DELETE(_ac);
     SAFE_DELETE(_item);
@@ -35,8 +34,8 @@ void BaseMap::update(void)
 {
     if (!_isInven)
     {
-        _pl->playerAction();
-        _pl->playerMove();
+        PLAYER->playerAction();
+        PLAYER->playerMove();
         if(!_acolyteList.empty())
             _acolyteList[0]->move();
     }
@@ -46,12 +45,12 @@ void BaseMap::update(void)
         _itemList[0]->update();
 
         RECT _rt;
-        if (IntersectRect(&_rt, &_pl->getRect(), &_item->getRect()))
+        if (IntersectRect(&_rt, &PLAYER->getRect(), &_item->getRect()))
         {
             _itemList[0]->setPick(true);
-            _pl->setCollect(true);
+            PLAYER->setCollect(true);
 
-            if (_pl->getCollected())
+            if (PLAYER->getCollected())
             {
                 _itemList.pop_back();
                 INVENTORY->addItem(HERITAGE, { "Item2", "꿈결의 죄의 장막",
@@ -62,24 +61,29 @@ void BaseMap::update(void)
         else
         {
             _itemList[0]->setPick(false);
-            _pl->setCollect(false);
+            PLAYER->setCollect(false);
         }
     }
 
-    if (_pl->getRect().left >= WINSIZE_X)
+    if (PLAYER->getCenterX() > WINSIZE_X)
+    {
         _nextStage = 1;
-    else if (_pl->getRect().right <= 0)
+    }
+    else if (PLAYER->getCenterX() < 0)
+    {
+        _nextStage = 0;
         _preStage = 1;
+    }
 
     // 중력
-    if (!_pl->getGround() && !_pl->getFixed())
-        _pl->setPosY(_pl->getPosY() + 5.0f);
+    if (!PLAYER->getFixed())
+        PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
 
     // 카메라 이동
-    if (_pl->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 1280 < 2000)
+    if (PLAYER->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 1280 < 2000)
     {
         _bf->setX(_bf->getX() + 4.0f);
-        _pl->setPosX(_pl->getPosX() - 4.0f);
+        PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
 
         if (!_acolyteList.empty())
             _acolyteList[0]->setPosX(_ac->getPosX() - 4);
@@ -87,19 +91,19 @@ void BaseMap::update(void)
             _itemList[0]->setPosX(_item->getPosX() - 4);
 
     }
-    if (_pl->getLeft() && _pl->getCenterX() < WINSIZE_X / 2 + 10 && (_bf->getX() > 0))
+    if (PLAYER->getLeft() && PLAYER->getCenterX() < WINSIZE_X / 2 + 10 && (_bf->getX() > 0))
     {
         _bf->setX(_bf->getX() - 4.0f);
-        _pl->setPosX(_pl->getPosX() + 4.0f);
+        PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
 
         if (!_acolyteList.empty())
             _acolyteList[0]->setPosX(_ac->getPosX() + 4);
         if (!_itemList.empty())
             _itemList[0]->setPosX(_item->getPosX() + 4);
     }
-    if (_pl->getRect().top < WINSIZE_Y / 2 && _bf->getY() > 0)
+    if (PLAYER->getRect().top < WINSIZE_Y / 2 && _bf->getY() > 0)
     {
-        _pl->setPosY(_pl->getPosY() + 2.0f);
+        PLAYER->setPosY(PLAYER->getPosY() + 2.0f);
         _bf->setY(_bf->getY() - 2.0f);
 
         if (!_acolyteList.empty())
@@ -107,9 +111,9 @@ void BaseMap::update(void)
         if (!_itemList.empty())
             _itemList[0]->setPosY(_item->getPosY() + 2);
     }
-    if (_pl->getRect().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 720 < 938))
+    if (PLAYER->getRect().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 720 < 938))
     {
-        _pl->setPosY(_pl->getPosY() - 2.0f);
+        PLAYER->setPosY(PLAYER->getPosY() - 2.0f);
         _bf->setY(_bf->getY() + 2.0f);
 
         if (!_acolyteList.empty())
@@ -121,22 +125,22 @@ void BaseMap::update(void)
     _bf->rectMove();
 
     RECT _rt;
-    if (PtInRect(&_bf->getLadder(), { (_pl->getRect().left + _pl->getRect().right) / 2,
-        _pl->getRect().bottom - 20 }))
+    if (PtInRect(&_bf->getLadder(), { (PLAYER->getRect().left + PLAYER->getRect().right) / 2,
+        PLAYER->getRect().bottom - 20 }))
     {
-        _pl->setHold(true);
+        PLAYER->setHold(true);
     }
     else
     {
-        _pl->setHold(false);
-        _pl->setFixed(false);
+        PLAYER->setHold(false);
+        PLAYER->setFixed(false);
     }
 
     // 픽셀 충돌
-    for (int i = _pl->getRect().left; i <= _pl->getRect().right; i++)
+    for (int i = PLAYER->getRect().left; i <= PLAYER->getRect().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + i, _bf->getY() + _pl->getRect().bottom);
+            _bf->getX() + i, _bf->getY() + PLAYER->getRect().bottom);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
@@ -144,17 +148,17 @@ void BaseMap::update(void)
 
         if ((r == 255 && g == 0 && b == 255))
         {
-            _pl->setGround(true);
-            //_pl->setPosY(_pl->getPosY() - 1.0f);
+            PLAYER->setGround(true);
+            PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
             break;
         }
-        _pl->setGround(false);
+        PLAYER->setGround(false);
     }
 
-    for (int i = _pl->getRect().top; i < _pl->getRect().bottom - 40; i++)
+    for (int i = PLAYER->getRect().top; i < PLAYER->getRect().bottom - 40; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + _pl->getRect().left, _bf->getY() + i);
+            _bf->getX() + PLAYER->getRect().left, _bf->getY() + i);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
@@ -162,15 +166,15 @@ void BaseMap::update(void)
 
         if ((r == 255 && g == 0 && b == 255))
         {
-            _pl->setPosX(_pl->getPosX() + 4.0f);
+            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
             break;
         } 
     }
 
-    for (int i = _pl->getRect().top; i < _pl->getRect().bottom - 40; i++)
+    for (int i = PLAYER->getRect().top; i < PLAYER->getRect().bottom - 40; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + _pl->getRect().right, _bf->getY() + i);
+            _bf->getX() + PLAYER->getRect().right, _bf->getY() + i);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
@@ -178,7 +182,7 @@ void BaseMap::update(void)
         
         if ((r == 255 && g == 0 && b == 255))
         {
-            _pl->setPosX(_pl->getPosX() - 4.0f);
+            PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
             break;
         }
     }
@@ -219,7 +223,7 @@ void BaseMap::update(void)
         // 전투
         for (int i = 0; i < 2; i++)
         {
-            if (IntersectRect(&_rt, &_pl->getRect(), &_acolyteList[0]->getBoundary(i)))
+            if (IntersectRect(&_rt, &PLAYER->getRect(), &_acolyteList[0]->getBoundary(i)))
             {
 
                 if (_ac->isEmpty())
@@ -244,21 +248,21 @@ void BaseMap::update(void)
                 }
             }
         }
-        if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &_pl->getRect())
-            && _acolyteList[0]->getState()[ATTACK_ENEMY] && !_pl->getState()[PARRY])
+        if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &PLAYER->getRect())
+            && _acolyteList[0]->getState()[ATTACK_ENEMY] && !PLAYER->getState()[PARRY])
         {
-            if (!_pl->getState()[HIT] && _acolyteList[0]->canAttack())
+            if (!PLAYER->getState()[HIT] && _acolyteList[0]->canAttack())
             {
-                _pl->setState(HIT, true);
-                _pl->setHP(_pl->getHP() - 5);
+                PLAYER->setState(HIT, true);
+                PLAYER->setHP(PLAYER->getHP() - 5);
             }
         }
-        else if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &_pl->getRect()) && _pl->getState()[PARRY])
+        else if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &PLAYER->getRect()) && PLAYER->getState()[PARRY])
         {
-            _pl->addAction("PARRY_SUCCESS");
+            PLAYER->addAction("PARRY_SUCCESS");
         }
 
-        if (IntersectRect(&_rt, &_acolyteList[0]->getRect(), &_pl->getRect()) && _pl->getState()[ATTACK])
+        if (IntersectRect(&_rt, &_acolyteList[0]->getRect(), &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
         {
             if (!_acolyteList[0]->getState()[HIT_ENEMY])
             {
@@ -267,6 +271,7 @@ void BaseMap::update(void)
                 _acolyteList[0]->setHP(_acolyteList[0]->getHP() - 10);
             }
         }
+        cout << "b" << _acolyteList[0]->getState()[DIE_ENEMY] << endl;
         if (_acolyteList[0]->getHP() < 0 && !_acolyteList[0]->getState()[DIE_ENEMY])
         {
             
@@ -300,8 +305,8 @@ void BaseMap::render(void)
     if (!_acolyteList.empty())
         _acolyteList[0]->render(getMemDC());
 
-    _pl->renderPlayer(getMemDC());
-    _pl->renderProfile(getMemDC());
+    PLAYER->renderPlayer(getMemDC());
+    PLAYER->renderProfile(getMemDC());
 
     if (_isInven)
     {
