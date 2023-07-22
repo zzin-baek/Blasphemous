@@ -70,6 +70,8 @@ HRESULT Player::init(int startX, int startY)
 
 void Player::initImage(void)
 {
+    IMAGEMANAGER->addFrameImage("RESPAWN", "Resources/Image/Penitent/penitent_respawn_anim.bmp",
+        1166 * 2, 708 * 2, 11, 4, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("IDLE", "Resources/Image/Penitent/penitent_idle_anim.bmp",
         871 * 2, 146 * 2, 13, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("RUNNING", "Resources/Image/Penitent/penitent_running_anim.bmp",
@@ -487,6 +489,7 @@ void Player::playerAction(void)
                }
                if (!_actionList.empty())
                     IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_idx_x);
+               
            }
        }
        else

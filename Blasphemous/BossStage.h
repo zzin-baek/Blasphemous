@@ -1,7 +1,6 @@
 #pragma once
 #include "GameNode.h"
 #include "BossMap.h"
-//#include "Player.h"
 #include "Isidora.h"
 
 class BossStage : public GameNode
@@ -11,8 +10,8 @@ private:
 	Isidora* _boss;
 	
 	RECT _startPos;
-	bool _intro;
-	int _cnt;
+	bool _intro, _mainStage, _ending;
+	int _cnt, _pattern;
 
 public:
 	HRESULT init(void);

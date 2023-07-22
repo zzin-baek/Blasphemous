@@ -6,13 +6,11 @@ HRESULT BossStage::init(void)
     _bm = new BossMap;
     _bm->init();
 
-    //PLAYER = new Player;
-
     _boss = new Isidora;
     _boss->init();
 
     _startPos = RectMakeCenter(490, 490, 50, 60);
-    _intro = false;
+    _intro = _mainStage = _ending = false;
     _cnt = 0;
 
     return S_OK;
@@ -29,11 +27,14 @@ void BossStage::update(void)
     {
         PLAYER->playerAction();
         PLAYER->playerMove();
-
-
+        
         if (!PLAYER->getFixed())
             PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
+    }
 
+    if (!_intro && _ending)
+    {
+        // 카메라
         if (PLAYER->getRect().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 2400)
         {
             _bm->setPosX(_bm->getPosX() + 4);
@@ -46,6 +47,16 @@ void BossStage::update(void)
             PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
             _bm->movdRect(-4);
         }
+    }
+
+    // 계속해서 인트로 해결하기 
+    RECT _rt;
+    if (PLAYER->getPosX() >= _bm->getRect().left && !_boss->getFin())
+    {
+        _intro = true;
+        PLAYER->setPosX(_bm->getRect().left);
+        PLAYER->getState().reset();
+        PLAYER->setAction("IDLE");
     }
 
     if (_intro)
@@ -62,15 +73,25 @@ void BossStage::update(void)
             }
         }
         _boss->update();
+        if (_boss->getFin())
+        {
+            _intro = false;
+            _mainStage = true;
+        }
     }
 
-    RECT _rt;
-    if (PLAYER->getPosX() >= _bm->getRect().left)
+    if (_mainStage)
     {
-        _intro = true;
-        PLAYER->setPosX(_bm->getRect().left);
-        //PLAYER->getState().reset();
-        PLAYER->setAction("IDLE");
+        _pattern = RND->getInt(3);
+        switch (_pattern)
+        {
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        }
     }
 
     for (int i = PLAYER->getRect().left; i <= PLAYER->getRect().right; i++)

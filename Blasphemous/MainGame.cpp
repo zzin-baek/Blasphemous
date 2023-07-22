@@ -66,7 +66,7 @@ void MainGame::update(void)
 		_currentScene = _baseMap;
 	}
 
-	if (_baseMap->getNext())
+	if (_baseMap->getNext() || KEYMANAGER->isOnceKeyDown(VK_F3))
 	{
 		if (!_initOnce[2])
 		{

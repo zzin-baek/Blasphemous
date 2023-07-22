@@ -1,28 +1,40 @@
 #pragma once
 
+enum eSkill
+{
+	RISING,
+	TWIRL,
+	SLASH
+};
+
 struct tagSkill
 {
-
+	
 };
 
 class Isidora
 {
 private:
 	POINT _pos;
-	int _cnt, _idx;
+	int _cnt, _idx, _hp;
 	int _idx_x, _idx_y;
+	char _strSkill[128];
 
+	bool _isLeft, _finIntro;
 	char _loc[128];
 
 public:
 	HRESULT init(void);
 	void update(void);
+	void routine(HDC hdc, int num, char* action, int maxFrame = 0);
 	void render(HDC hdc);
 
 	inline int getX() { return _pos.x; }
 	inline int getY() { return _pos.y; }
 	inline void setX(int x) { _pos.x = x; }
 	inline void setY(int y) { _pos.y = y; }
+
+	inline bool getFin() { return _finIntro; }
 
 	Isidora() {}
 	~Isidora() {}
