@@ -9,6 +9,7 @@ HRESULT Isidora::init(void)
 		1484 * 2, 240 * 2, 14, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_vanish", "Resources/Image/Isidora/Isidora/idleToVanishFinal.bmp",
 		1339 * 2, 254 * 2, 13, 2, true, MAGENTA);
+
 	IMAGEMANAGER->addFrameImage("Isidora_outToCast", "Resources/Image/Isidora/Isidora_outToCastFinal.bmp",
 		1463 * 2, 260 * 2, 11, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_outToRising", "Resources/Image/Isidora/Isidora_outToRisingScytheFinal.bmp",
@@ -16,12 +17,18 @@ HRESULT Isidora::init(void)
 	IMAGEMANAGER->addFrameImage("Isidora_outToTwirl", "Resources/Image/Isidora/Isidora_outToTwirlFinal.bmp",
 		1958 * 2, 262 * 2, 11, 2, true, MAGENTA);
 
+	IMAGEMANAGER->addFrameImage("Isidora_scy", "Resources/Image/Isidora/Isidora_risingScytheSequence.bmp",
+		5516 * 2, 388 * 2, 28, 2, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Isidora_slash", "Resources/Image/Isidora_slashSequence.bmp",
+		8277 * 2, 338 * 2, 31, 2, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Isidora_twirl", "Resources/Image/Isidora/Isidora_Twirl.bmp",
+		1632 * 2, 256 * 2, 8, 2, true, MAGENTA);
+
 
 	IMAGEMANAGER->addImage("Isidora_HP_Bar", "Resources/Image/Sheet/boss_healthBar.bmp",
 		346 * 2, 30 * 2, true, MAGENTA);
 	IMAGEMANAGER->addImage("Isidora_HP", "Resources/Image/Sheet/boss_healthBlood.bmp", 
 		289 * 2, 8 * 2, true, MAGENTA);
-
 	_pos = { WINSIZE_X / 2 + 380, WINSIZE_Y / 2 - 400 };
 	_cnt = _idx = _idx_x = _idx_y = 0;
 	_hp = 200;

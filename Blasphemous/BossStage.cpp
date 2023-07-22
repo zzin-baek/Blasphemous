@@ -119,6 +119,6 @@ void BossStage::render(void)
     PLAYER->renderPlayer(getMemDC());
     PLAYER->renderProfile(getMemDC());
 
-    if (_intro)
+    if (_intro || _mainStage)
         _boss->render(getMemDC());
 }
