@@ -40,13 +40,14 @@ private:
 	POINT _plPos;
 	float _plPos_x, _plPos_y, _centerX, _centerY;
 	bool _isLeft, _isGround, _isFixed, _hold, _collect;
+
 	int _hitCool;
 	int _cnt, _idx_x, _idx_y;
 	POINT _center;
 	float _tempX, _tempY;
 
 	int _hp, _score, _portion;
-	bool _collected;
+	bool _collected, _respawn;
 
 	char _loc[128], _action[128];
 
@@ -73,6 +74,8 @@ public:
 	inline void setFixed(bool state) { _isFixed = state; }
 	inline bool getFixed() { return _isFixed; }
 	inline void setHold(bool state) { _hold = state; }
+	inline void setRespawn(bool state) { _respawn = state; }
+	inline bool getRespawn() { return _respawn; }
 	inline void setCollect(bool state) { _collect = state; }
 	inline bool getCollected() { return _collected; }
 

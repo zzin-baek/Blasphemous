@@ -12,6 +12,7 @@ private:
 	RECT _startPos;
 	bool _intro, _mainStage, _ending;
 	int _cnt, _pattern;
+	char* _ac;
 
 public:
 	HRESULT init(void);

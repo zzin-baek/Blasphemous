@@ -14,11 +14,10 @@ private:
 	vector<Item*> _itemList;
 
 	int _nextStage;
-	bool _isInven;
+	bool _isInven, _isRespawn;
 
 public:
 	HRESULT init(void);
-	void init(int s, int e);
 	void release(void);
 	void update(void);
 	void render(void);

@@ -5,29 +5,18 @@ HRESULT Player::init(void)
 {
     initImage();
 
-    //_plPos_x = WINSIZE_X / 2 - 400;
-    //_plPos_y = WINSIZE_Y / 2 - 100;
-
-    //_plPos = { WINSIZE_X / 2 - 100, WINSIZE_Y / 2 - 100 };
-
     _cnt = _idx_x = _idx_y = _hitCool = 0;
     _isLeft = _isGround = _isFixed = _hold = _collect = false;
 
     _centerX = _centerY = 0.0f;
-    //_center = { 0, 0 };
     _tempX = _tempY = 0.0f;
 
     _hp = 100; 
     _score = 0;
     _portion = 5;
-    _collected = false;
+    _collected = _respawn = false;
 
-   /* for (int i = 0; i < MAX_STATE; i++)
-    {
-        setState(i, false);
-    }
-
-    wsprintf(_strAction, "IDLE");*/
+    wsprintf(_strAction, "IDLE");
     initTiming();
 
     return S_OK;
@@ -35,35 +24,15 @@ HRESULT Player::init(void)
 
 HRESULT Player::init(int startX, int startY)
 {
-    //initImage();
-
     _plPos_x = startX;
     _plPos_y = startY;
 
-    //_cnt = _idx_x = _idx_y = _hitCool = 0;
-    //_isLeft = _isGround = _isFixed = _hold = _collect = false;
-    //
-    //_centerX = _centerY = 0.0f;
-    ////_center = { 0, 0 };
-    //_tempX = _tempY = 0.0f;
-    //
-    //_hp = 100;
-    //_portion = 5;
-    //_collected = false;
-    //
-    //for (int i = 0; i < MAX_STATE; i++)
-    //{
-    //    setState(i, false);
-    //}
-    //
-    //wsprintf(_strAction, "IDLE");
-    //initTiming();
+    
+
     for (int i = 0; i < MAX_STATE; i++)
     {
         setState(i, false);
     }
-
-    wsprintf(_strAction, "IDLE");
 
     return S_OK;
 }
@@ -72,6 +41,8 @@ void Player::initImage(void)
 {
     IMAGEMANAGER->addFrameImage("RESPAWN", "Resources/Image/Penitent/penitent_respawn_anim.bmp",
         1166 * 2, 708 * 2, 11, 4, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("RESPAWN2", "Resources/Image/Penitent/penitent_respawn2_anim.bmp",
+        4558 * 2, 177 * 2, 43, 1, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("IDLE", "Resources/Image/Penitent/penitent_idle_anim.bmp",
         871 * 2, 146 * 2, 13, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("RUNNING", "Resources/Image/Penitent/penitent_running_anim.bmp",
@@ -138,6 +109,7 @@ void Player::initImage(void)
 void Player::initTiming(void)
 {
     // ## 기본적으로 왼쪽모습은 오른쪽 모습의 x + 50 
+    _sync["RESPAWN2"] = { 5, {0, -195}, {-16, -194} };
     _sync["IDLE"] = { 5, {0 + 50, 0}, {0, 0} };
     _sync["RUNNING"] = { 3, {0 + 50, 0}, {0, 0} };
     _sync["STOP"] = { 4, {-10 + 50, 10}, {-10, 10} };
@@ -165,6 +137,11 @@ void Player::initTiming(void)
 
 void Player::playerAction(void)
 {
+    if (!_respawn && isEmpty())
+    {
+        _actionList.push_back("RESPAWN2");
+    }
+
     _centerX = _plPos_x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2;
     _centerY = _plPos_y + IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2;
 
@@ -181,12 +158,10 @@ void Player::playerAction(void)
         if (_plState.none())
             setAction("FALLING");
     }
-
     //cout << "hold"<<_hold << endl;
     if (KEYMANAGER->isStayKeyDown('A') && !strstr("ATTACK", _strAction) && !_plState[DODGE])
     {
-        _isLeft = true;
-        setState(WALK, true);
+        
         if (!_plState[JUMP])
             setAction("RUNNING");
         if (!strcmp(_strAction, "JUMP"))
@@ -201,13 +176,13 @@ void Player::playerAction(void)
             else
                 _idx_x = 6;
         }
+        _isLeft = true;
+        setState(WALK, true);
         if (!_plState[CROUCH])
             _plPos_x -= 4.0f;
     }
     if (KEYMANAGER->isStayKeyDown('D') && !strstr("ATTACK", _strAction) && !_plState[DODGE])
     {
-        _isLeft = false;
-        setState(WALK, true);
         if (!_plState[JUMP])
             setAction("RUNNING");
         if (!strcmp(_strAction, "JUMP"))
@@ -222,6 +197,8 @@ void Player::playerAction(void)
             else
                 _idx_x = 6;
         }
+        _isLeft = false;
+        setState(WALK, true);
         if (_plPos_x < WINSIZE_X && !_plState[CROUCH])
             _plPos_x += 4.0f;
     }
@@ -350,6 +327,7 @@ void Player::playerAction(void)
         _tempX = _plPos_x;
         setState(DODGE, true);
         _actionList.push_back("DODGE");
+        //_actionList.push_back("STOP");
         setAction("DODGE");
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("DODGE")->getMaxFrameX();
@@ -510,6 +488,7 @@ void Player::playerAction(void)
                    {
                        _plState.reset();
                        _isFixed = false;
+                       _respawn = true;
                        setAction("IDLE");
                    }
                }
@@ -692,8 +671,8 @@ void Player::renderPlayer(HDC hdc)
 
             _player = RectMake(_plPos_x + _sync.find(_actionList.front().c_str())->second.leftMove.x,
                 _plPos_y + _sync.find(_actionList.front().c_str())->second.leftMove.y,
-                IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
-                IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
+                IMAGEMANAGER->findImage(_actionList.front().c_str())->getFrameWidth(),
+                IMAGEMANAGER->findImage(_actionList.front().c_str())->getFrameHeight());
             //cout << _sync.find(_actionList.front().c_str())->second.leftMove.y << endl;
         }
         else
@@ -704,8 +683,8 @@ void Player::renderPlayer(HDC hdc)
             
             _player = RectMake(_plPos_x + _sync.find(_actionList.front().c_str())->second.rightMove.x,
                 _plPos_y + _sync.find(_actionList.front().c_str())->second.rightMove.y,
-                IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
-                IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
+                IMAGEMANAGER->findImage(_actionList.front().c_str())->getFrameWidth(),
+                IMAGEMANAGER->findImage(_actionList.front().c_str())->getFrameHeight());
             //cout << _sync.find(_actionList.front().c_str())->second.rightMove.y << endl;
         }
     }

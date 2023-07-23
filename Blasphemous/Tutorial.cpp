@@ -12,19 +12,15 @@ HRESULT Tutorial::init(void)
     _tf->init();
 
     _item = new Item;
-    _item->init(WINSIZE_X / 2, WINSIZE_Y / 2  + 180);
+    _item->init(WINSIZE_X / 2 + 300, WINSIZE_Y / 2  + 180);
 
     _itemList.push_back(_item);
 
     _nextStage = 0;
     _isInven = false;
+    _isRespawn = true;
 
     return S_OK;
-}
-
-void Tutorial::init(int s, int e)
-{
-    PLAYER->init(s, e);
 }
 
 void Tutorial::release(void)
@@ -40,7 +36,6 @@ void Tutorial::update(void)
         PLAYER->playerAction();
         PLAYER->playerMove();
     }
-
     if (!_itemList.empty())
     {
         _itemList[0]->update();
@@ -64,7 +59,8 @@ void Tutorial::update(void)
             PLAYER->setCollect(false);
         }
     }
-
+    
+    _tf->update();
     // ม฿ทย
     //if (!PLAYER->getGround())
     PLAYER->setPosY(PLAYER->getPosY() + 5.0f);

@@ -29,6 +29,7 @@
 #include <deque>
 
 #define		PI			3.141592653f
+#define		M_E         2.7182818284590452354   /* e */
 #define		MAGENTA		RGB(255, 0, 255)
 
 using namespace std;

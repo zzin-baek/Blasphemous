@@ -45,7 +45,7 @@ void MainGame::update(void)
 	{
 		if (!_initOnce[0])
 		{
-			PLAYER->init(88, 484);
+			PLAYER->init(WINSIZE_X / 2 - 100, 480);
 			_initOnce[0] = true;
 		}
 		_currentScene = _tutorial;
@@ -86,9 +86,6 @@ void MainGame::update(void)
 		}
 		_currentScene = _tutorial;
 	}
-	cout << _tutorial->getNext() << endl;
-	cout << "getNExt" << _baseMap->getNext() << endl;
-	cout << "getpre" << _baseMap->getPre() << endl;
 	_currentScene->update();
 }
 
