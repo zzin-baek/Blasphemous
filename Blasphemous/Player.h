@@ -39,7 +39,7 @@ private:
 	RECT _player;
 	POINT _plPos;
 	float _plPos_x, _plPos_y, _centerX, _centerY;
-	bool _isLeft, _isGround, _isFixed, _hold, _collect;
+	bool _isLeft, _isGround, _isFixed, _hold, _collect, _parry;
 
 	int _hitCool;
 	int _cnt, _idx_x, _idx_y;
@@ -78,6 +78,8 @@ public:
 	inline bool getRespawn() { return _respawn; }
 	inline void setCollect(bool state) { _collect = state; }
 	inline bool getCollected() { return _collected; }
+	inline bool getParry() { return _parry; }
+	inline void setParry(bool state) { _parry = true; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
 	inline void addAction(string _action) { _actionList.push_back(_action); }

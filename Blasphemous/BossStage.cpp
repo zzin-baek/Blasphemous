@@ -30,9 +30,12 @@ void BossStage::update(void)
         
         if (!PLAYER->getFixed())
             PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
+
+        if (PLAYER->getRect().left <= 0)
+            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
     }
 
-    if (!_intro && _ending)
+    if ((!_intro || _ending) && !_mainStage)
     {
         // 카메라
         if (PLAYER->getRect().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 2400)
@@ -68,7 +71,7 @@ void BossStage::update(void)
             _boss->addPattern("Isidora_Intro2");
             _boss->addPattern("Isidora_idle");
             _boss->addPattern("Isidora_vanish");
-            
+
             if (_boss->getLeft())
                 _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_Intro2")->getMaxFrameX());
             else
@@ -96,22 +99,24 @@ void BossStage::update(void)
     {
         if (_boss->getDo())
         {
-            _pattern = RND->getFromIntTo(1, 4);
-            
+            _pattern = 2; // RND->getFromIntTo(1, 4);
+            _boss->setPattern(_pattern);
             switch (_pattern)
             {
             case 1:
                 _boss->initPos(200, 200);
                 _boss->addPattern("Isidora_outToCast");
-                _boss->addPattern("Isidora_slash");
-                _boss->addPattern("Isidora_slashToVanish");
+                //_boss->addPattern("Isidora_slash");
+                //_boss->addPattern("Isidora_slashToVanish");
+                // idx x 초기화?
+
                 _boss->setDo(false);
                 break;
             case 2:
                 _boss->initPos(1000, 400);
                 _boss->addPattern("Isidora_outToRising");
-                _boss->addPattern("Isidora_scy2");
-                _boss->addPattern("Isidora_vanish");
+                _boss->addPattern("Isidora_scy_crop");
+                //_boss->addPattern("Isidora_vanish");
                 _boss->setDo(false);
                 break;
             case 3:
@@ -132,7 +137,9 @@ void BossStage::update(void)
         }
         //cout << "패턴 넘버" << _pattern << endl;
     }
+
     _boss->update();
+    _bm->update();
 
     for (int i = PLAYER->getRect().left; i <= PLAYER->getRect().right; i++)
     {

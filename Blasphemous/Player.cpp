@@ -14,7 +14,7 @@ HRESULT Player::init(void)
     _hp = 100; 
     _score = 0;
     _portion = 5;
-    _collected = _respawn = false;
+    _collected = _respawn = _parry = false;
 
     wsprintf(_strAction, "IDLE");
     initTiming();
@@ -120,7 +120,7 @@ void Player::initTiming(void)
     _sync["JUMP"] = { 7, {0 + 50, 0}, {30, 0} };
     _sync["JUMP_FORWARD"] = { 6, {0 + 50, -20}, {0, -20} };
     _sync["ATTACK"] = { 4, {-135 + 50, 2}, {0, 3} };
-    _sync["ATTACK_JUMP"] = { 6, {0 + 50, -80}, {0, -80} };
+    _sync["ATTACK_JUMP"] = { 6, {-100 + 50, -80}, {0, -80} };
     _sync["ATTACK_CROUCH"] = { 4, {-80 + 50, 20}, {-15, 20} };
     _sync["ATTACK_DODGE"] = { 4, {-240 + 50, -55}, {-5, -55} };
     _sync["ATTACK_COMBO_2"] = { 4, {-130 + 50, 10}, {-20, 10} };
@@ -239,6 +239,21 @@ void Player::playerAction(void)
         else
             _idx_x = 0;
     }
+
+    // 패링 성공
+    if (_parry && !_isFixed)
+    {
+        _parry = false;
+        _isFixed = true;
+        if (!isEmpty())
+            _actionList.pop_front();
+
+        _actionList.push_back("PARRY_SUCCESS");
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("PARRY_SUCCESS")->getMaxFrameX();
+        else
+            _idx_x = 0;
+    }
     if (KEYMANAGER->isOnceKeyDown('F') && isEmpty() && _portion > 0)
     {
         setState(PORTION, true);
@@ -343,8 +358,9 @@ void Player::playerAction(void)
             {
                 setState(ATTACK, true);
                 if (!isEmpty())
-                    _actionList.pop_front();
+                    _actionList.clear();
 
+                _isFixed = true;
                 setAction("ATTACK_JUMP");
                 _actionList.push_back("ATTACK_JUMP");
                 if (_isLeft)
@@ -461,10 +477,11 @@ void Player::playerAction(void)
                    else
                    {
                        _plState.reset();
-                       _isFixed = false;
+                       _isFixed = _parry = false;
                        setAction("IDLE");
                    }
                }
+
                if (!_actionList.empty())
                     IMAGEMANAGER->findImage(_actionList.front().c_str())->setFrameX(_idx_x);
                
@@ -487,7 +504,7 @@ void Player::playerAction(void)
                    else
                    {
                        _plState.reset();
-                       _isFixed = false;
+                       _isFixed = _parry = false;
                        _respawn = true;
                        setAction("IDLE");
                    }

@@ -22,11 +22,11 @@ struct tagBoss
 class Isidora
 {
 private:
-	POINTF _pos, _test;
+	POINTF _pos, _test, _plPos;
 	deque<char*> _pattern;
 	map<char*, tagBoss> _sync;
 
-	RECT _isidora;
+	RECT _isidora, _box;
 	int _cnt, _idx, _hp, _patternNum;
 	int _idx_x, _idx_y;
 	char _strSkill[128];
@@ -55,6 +55,8 @@ public:
 	inline bool getFin() { return _finIntro; }
 	inline bool getDo() { return _doNothing; }
 	inline void setDo(int state) { _doNothing = state; }
+
+	inline void setPattern(int pattern) { _patternNum = pattern; }
 
 	inline RECT getBoss() { return _isidora; }
 

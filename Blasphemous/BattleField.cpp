@@ -4,13 +4,13 @@
 HRESULT BattleField::init(void)
 {
     IMAGEMANAGER->addImage("church-bg", "Resources/Image/BackGround/churches-field-map-bg.bmp",
-        WINSIZE_X, WINSIZE_Y, true, MAGENTA);
+        2000, WINSIZE_Y, true, MAGENTA);
     IMAGEMANAGER->addImage("churches-field-bg", "Resources/Image/BackGround/churches-field-bg.bmp",
-        WINSIZE_X, WINSIZE_Y, true, MAGENTA);
+        2000, WINSIZE_Y, true, MAGENTA);
     IMAGEMANAGER->addImage("churches-field-bg2", "Resources/Image/BackGround/churches-field-bg2.bmp",
-        1300, WINSIZE_Y, true, MAGENTA);
+        2000, WINSIZE_Y, true, MAGENTA);
     IMAGEMANAGER->addImage("churches-field-bg3", "Resources/Image/BackGround/churches-field-bg3.bmp",
-        1016, WINSIZE_Y, true, MAGENTA);
+        2000, WINSIZE_Y, true, MAGENTA);
     IMAGEMANAGER->addImage("church-field", "Resources/Image/BackGround/churches-field-map22(ladder).bmp",
         2000, 938, true, MAGENTA);
     IMAGEMANAGER->addImage("bg_collision", "Resources/Image/BackGround/churches-field-map_colision2.bmp",
@@ -35,8 +35,8 @@ void BattleField::render(HDC hdc)
 {
     IMAGEMANAGER->render("church-bg", hdc, 0, -100);
     IMAGEMANAGER->render("churches-field-bg", hdc, 0, 100);
-    IMAGEMANAGER->render("churches-field-bg3", hdc, 0, 0);
-    IMAGEMANAGER->render("churches-field-bg2", hdc, 0, 0);
+    IMAGEMANAGER->render("churches-field-bg3", hdc, 0, 50);
+    IMAGEMANAGER->render("churches-field-bg2", hdc, 0, 50);
     
     IMAGEMANAGER->render("church-field", hdc, 0, 0, _startPos_x, _startPos_y, WINSIZE_X, WINSIZE_Y);
 

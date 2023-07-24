@@ -54,8 +54,8 @@ void BaseMap::update(void)
             {
                 _itemList.pop_back();
                 INVENTORY->addItem(HERITAGE, { "Item2", "꿈결의 죄의 장막",
-                    {"열정적인 고해의 증거인", "노란색 직물. 고문당한 영혼", "앞에 다가가면 파르르 떨리며", "더 이상 말할 수 없는 자들의", "목소리를 들을 수 있게 된다." }, false
-            });
+                    {"열정적인 고해의 증거인", "노란색 직물. 고문당한 영혼", "앞에 다가가면 파르르 떨리며", 
+                    "더 이상 말할 수 없는 자들의", "목소리를 들을 수 있게 된다." }, false });
             }
         }
         else
@@ -64,6 +64,8 @@ void BaseMap::update(void)
             PLAYER->setCollect(false);
         }
     }
+    else
+        PLAYER->setCollect(false);
 
     if (PLAYER->getCenterX() > WINSIZE_X)
     {
@@ -226,7 +228,7 @@ void BaseMap::update(void)
             if (IntersectRect(&_rt, &PLAYER->getRect(), &_acolyteList[0]->getBoundary(i)))
             {
 
-                if (_ac->isEmpty())
+                if (_acolyteList[0]->isEmpty())
                 {
                     _acolyteList[0]->setAction("Acolyte_attack");
                     _acolyteList[0]->setState(IDLE_ENEMY, false);
@@ -259,9 +261,12 @@ void BaseMap::update(void)
         }
         else if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &PLAYER->getRect()) && PLAYER->getState()[PARRY])
         {
-            PLAYER->addAction("PARRY_SUCCESS");
+            //if (!PLAYER->getFixed())
+            PLAYER->setParry(true);
+            //PLAYER->addAction("PARRY_SUCCESS");
         }
 
+        cout << "enemy " << _acolyteList[0]->getHP() << endl;
         if (IntersectRect(&_rt, &_acolyteList[0]->getRect(), &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
         {
             if (!_acolyteList[0]->getState()[HIT_ENEMY])
@@ -270,8 +275,7 @@ void BaseMap::update(void)
                 //_ac->addAction("Acolyte_hit");
                 _acolyteList[0]->setHP(_acolyteList[0]->getHP() - 10);
             }
-        }
-        cout << "b" << _acolyteList[0]->getState()[DIE_ENEMY] << endl;
+        } 
         if (_acolyteList[0]->getHP() < 0 && !_acolyteList[0]->getState()[DIE_ENEMY])
         {
             

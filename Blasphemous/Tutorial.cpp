@@ -49,7 +49,7 @@ void Tutorial::update(void)
             if (PLAYER->getCollected())
             {
                 _itemList.pop_back();
-                INVENTORY->addItem(ROSARY, { "Item1", "비둘기 뼈", 
+                INVENTORY->addItem(ROSARY, { "Item1", "비둘기 뼈",
                     {"구멍이 뚫린 새의 두개골.", "부서지기 쉬운 이 두개골은", "참회자의 방어력을 약간 올려준다."}, false });
             }
         }
@@ -59,6 +59,8 @@ void Tutorial::update(void)
             PLAYER->setCollect(false);
         }
     }
+    else
+        PLAYER->setCollect(false);
     
     _tf->update();
     // 중력
