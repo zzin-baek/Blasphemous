@@ -41,15 +41,25 @@ HRESULT Isidora::init(void)
 	IMAGEMANAGER->addFrameImage("Isidora_slashToVanish", "Resources/Image/Isidora/Isidora-screenslash_vanish.bmp",
 		1872 * 2, 200 * 2, 12, 2, true, MAGENTA);
 
+	// ºÒ±âµÕ
+	IMAGEMANAGER->addFrameImage("Column_create", "Resources/Image/Isidora/FireColumnAnticipation.bmp",
+		410 * 2, 1300 * 2, 5, 4, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Column_create2", "Resources/Image/Isidora/FireColumnAnticipation2.bmp",
+		1394 * 2, 325 * 2, 17, 1, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Column_loop", "Resources/Image/Isidora/FireColumnLoop.bmp",
+		328 * 2, 975 * 2, 4, 3, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Column_out", "Resources/Image/Isidora/FireColumnOut.bmp",
+		328 * 2, 1300 * 2, 4, 4, true, MAGENTA);
+
 	IMAGEMANAGER->addImage("Circle_Mask", "Resources/Image/Sheet/Circle_Mask.bmp",
-		256 * 2, 256 * 2, true, MAGENTA);
+		256, 256, true, MAGENTA);
 	IMAGEMANAGER->addImage("Column_Mask", "Resources/Image/Sheet/Column_Mask.bmp", 
-		300 * 2, 1024 * 2, true, MAGENTA);
+		300, 1024, true, MAGENTA);
 	IMAGEMANAGER->addImage("Isidora_HP_Bar", "Resources/Image/Sheet/boss_healthBar.bmp",
 		346 * 2, 30 * 2, true, MAGENTA);
 	IMAGEMANAGER->addImage("Isidora_HP", "Resources/Image/Sheet/boss_healthBlood.bmp", 
 		289 * 2, 8 * 2, true, MAGENTA);
-	//_pos = { WINSIZE_X / 2 + 380, WINSIZE_Y / 2 - 400 };
+	
 	_pos = { WINSIZE_X / 2 + 380, WINSIZE_Y / 2 - 100};
 	_cnt = _idx = _idx_x = _idx_y = _patternNum = 0;
 	_test = { 1100.0f, 450.0f };
@@ -57,7 +67,7 @@ HRESULT Isidora::init(void)
 	_hp = 200;
 
 	_isLeft = true;
-	_finIntro = false;
+	_finIntro = _once = false;
 	
 	tempX = 500.0f; 
 	tempY = 450.0f;
@@ -150,17 +160,23 @@ void Isidora::update(void)
 		}
 	}
 	useSkill();
+
+	if (_cnt % 30 == 0)
+		columnCreate();
+
+	columnCycle();
+
 }
 
 void Isidora::useSkill(void)
 {
 	RECT _rt;
 	bool _fine = false;
-	if (_finIntro)
+	/*if (_finIntro)
 	{
 		if (_cnt % 2 == 0)
 		{
-			_test.x -= 4.0f;
+			_test.x -= 6.0f;
 			if (IntersectRect(&_rt, &PLAYER->getRect(), &_box) && !_fine)
 			{
 				tempX = PLAYER->getCenterX();
@@ -168,7 +184,7 @@ void Isidora::useSkill(void)
 			}
 			if (_test.x <= tempX)
 			{
-				_test.y = tempY - pow(M_E, (tempX - _test.x) / 20);
+				_test.y = tempY - pow(5, (tempX - _test.x) / 30);
 			}
 			
 			if (_test.y <= 100)
@@ -179,24 +195,100 @@ void Isidora::useSkill(void)
 
 			_pos = _test;
 		}
-	}
+	}*/
 	switch (_patternNum)
 	{
 	case 1:
+		if (!_once)
+		{
+			for (int i = 0; i < 6; i++)
+			{
+				_cl[i]._clPos = { float(WINSIZE_X / 7 * (i + 1)), 0 };
+				_cl[i]._idx = { 0, 0 };
+				_cl[i]._create = true;
+			}
+			_once = true;
+		}
 		break;
 	case 2:
-		if (!_pattern.empty())
+		if (!_once)
 		{
-
+			for (int i = 0; i < 3; i++)
+			{
+				_cl[i]._clPos = { float(WINSIZE_X / 2 - 180 + (180 * i)), 0 };
+				_cl[i]._idx = { 0, 0 };
+				_cl[i]._create = true;
+			}
+			_once = true;
 		}
 		break;
 	case 3:
+		if (_cnt % 10 == 0)
+		{
+			_fb.push_back({ { WINSIZE_X / 2, WINSIZE_Y / 2 }, 90.0f });
+
+		}
 		break;
 	case 4:
 		break;
 	}
 
 
+}
+
+void Isidora::columnCreate(void)
+{
+	for (int i = 0; i < 7; i++)
+	{
+		if (_cl[i]._create && !_cl[i]._fire)
+		{
+			_cl[i]._fire = true;
+			_cl[i]._cycle.push_back("Column_create2");
+			_cl[i]._cycle.push_back("Column_loop");
+			_cl[i]._cycle.push_back("Column_loop");
+			_cl[i]._cycle.push_back("Column_out");
+
+			break;
+		}
+	}
+}
+
+void Isidora::columnCycle(void)
+{
+	for (int i = 0; i < 7; i++)
+	{
+		if (_cl[i]._fire && !_cl[i]._cycle.empty() && _cnt % 3 == 0)
+		{
+			_cl[i]._cnt++;
+
+			_cl[i]._idx.x = _cl[i]._cnt % (IMAGEMANAGER->findImage(_cl[i]._cycle.front())->getMaxFrameX() + 1);
+			_cl[i]._idx.y = _cl[i]._cnt / (IMAGEMANAGER->findImage(_cl[i]._cycle.front())->getMaxFrameX() + 1);
+
+			if (_cl[i]._cnt > (IMAGEMANAGER->findImage(_cl[i]._cycle.front())->getMaxFrameX() + 1) *
+				(IMAGEMANAGER->findImage(_cl[i]._cycle.front())->getMaxFrameY() + 1) - 1)
+			{
+				_cl[i]._cnt = 0;
+				_cl[i]._cycle.pop_front();
+			}
+
+			if (!_cl[i]._cycle.empty())
+			{
+				IMAGEMANAGER->findImage(_cl[i]._cycle.front())->setFrameX(_cl[i]._idx.x);
+				IMAGEMANAGER->findImage(_cl[i]._cycle.front())->setFrameY(_cl[i]._idx.y);
+			}
+			else
+			{
+				_cl[i]._fire = false;
+				_cl[i]._create = false;
+				_cl[i]._clPos = { 0, 0 };
+				if ((_patternNum == 1 && i == 5) || (_patternNum == 2 && i == 2) || (i == 6))
+				{
+					_once = false;
+					_doNothing = true;
+				}
+			}
+		}
+	}
 }
 
 void Isidora::render(HDC hdc)
@@ -220,6 +312,14 @@ void Isidora::render(HDC hdc)
 		}
 	}
 
+	for (int i = 0; i < 7; i++)
+	{
+		if (_cl[i]._fire && !_cl[i]._cycle.empty())
+		{
+			IMAGEMANAGER->frameRender(_cl[i]._cycle.front(), hdc, 
+				_cl[i]._clPos.x - 82, _cl[i]._clPos.y, _cl[i]._idx.x, _cl[i]._idx.y);
+		}
+	}
 
 	if (_hp > 0)
 	{
@@ -229,7 +329,7 @@ void Isidora::render(HDC hdc)
 			0, RGB(171, 154, 63));
 	}
 	
-	RectangleMake(hdc, _test.x, _test.y, 50, 50);
+	//DrawRectMake(hdc, _box);
 
 	if (KEYMANAGER->isToggleKey(VK_TAB))
 	{

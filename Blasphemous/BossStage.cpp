@@ -99,43 +99,42 @@ void BossStage::update(void)
     {
         if (_boss->getDo())
         {
-            _pattern = 2; // RND->getFromIntTo(1, 4);
+            //_boss->setOnce(false);
+            _pattern = RND->getFromIntTo(1, 2);
             _boss->setPattern(_pattern);
             switch (_pattern)
             {
             case 1:
-                _boss->initPos(200, 200);
-                _boss->addPattern("Isidora_outToCast");
+                //_boss->initPos(200, 200);
+                //_boss->addPattern("Isidora_outToCast");
                 //_boss->addPattern("Isidora_slash");
                 //_boss->addPattern("Isidora_slashToVanish");
-                // idx x 초기화?
-
                 _boss->setDo(false);
                 break;
             case 2:
-                _boss->initPos(1000, 400);
-                _boss->addPattern("Isidora_outToRising");
-                _boss->addPattern("Isidora_scy_crop");
+                //_boss->initPos(1000, 400);
+                //_boss->addPattern("Isidora_outToRising");
+                //_boss->addPattern("Isidora_scy_crop");
                 //_boss->addPattern("Isidora_vanish");
                 _boss->setDo(false);
                 break;
             case 3:
-                _boss->initPos(400, 100);
-                _boss->addPattern("Isidora_outToTwirl");
-                _boss->addPattern("Isidora_twirl");
-                _boss->addPattern("Isidora_twirlToVanish");
+                //_boss->initPos(400, 100);
+                //_boss->addPattern("Isidora_outToTwirl");
+                //_boss->addPattern("Isidora_twirl");
+                //_boss->addPattern("Isidora_twirlToVanish");
                 _boss->setDo(false);
                 break;
             case 4:
-                _boss->initPos(WINSIZE_X/2, 300);
-                _boss->addPattern("Isidora_outToCast");
-                _boss->addPattern("Isidora_cast");
-                _boss->addPattern("Isidora_vanish");
+                //_boss->initPos(WINSIZE_X/2, 300);
+                //_boss->addPattern("Isidora_outToCast");
+                //_boss->addPattern("Isidora_cast");
+                //_boss->addPattern("Isidora_vanish");
                 _boss->setDo(false);
                 break;
             }
+            cout << "패턴 넘버" << _pattern << endl;
         }
-        //cout << "패턴 넘버" << _pattern << endl;
     }
 
     _boss->update();
@@ -163,9 +162,12 @@ void BossStage::update(void)
 void BossStage::render(void)
 {
     _bm->render(getMemDC());
-    PLAYER->renderPlayer(getMemDC());
-    PLAYER->renderProfile(getMemDC());
-
+    
     if (_intro || _mainStage)
         _boss->render(getMemDC());
+    
+    PLAYER->renderPlayer(getMemDC());
+    PLAYER->renderProfile(getMemDC());
 }
+
+// vector<tagColumn> _column;

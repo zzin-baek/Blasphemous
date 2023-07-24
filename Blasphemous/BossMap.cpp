@@ -32,7 +32,7 @@ void BossMap::movdRect(int x)
 void BossMap::update(void)
 {
     _cnt++;
-    if (_cnt % 5 == 0)
+    if (_cnt % 8 == 0)
     {
         _idx.x++;
         if (_idx.x > IMAGEMANAGER->findImage(_brazier)->getMaxFrameX())

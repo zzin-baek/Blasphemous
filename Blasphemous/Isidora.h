@@ -12,11 +12,29 @@ struct POINTF
 	float x;
 	float y;
 };
+
 struct tagBoss
 {
 	int timing;
 	POINT left;
 	POINT right;
+};
+
+struct tagFireBall
+{
+	POINTF center;
+	float angle;
+	bool visible = true;
+};
+
+struct tagColumn
+{
+	POINTF _clPos;
+	POINT _idx;
+	int _cnt;
+	bool _fire = false;
+	bool _create = false;
+	deque<char*> _cycle;
 };
 
 class Isidora
@@ -26,13 +44,16 @@ private:
 	deque<char*> _pattern;
 	map<char*, tagBoss> _sync;
 
+	tagColumn _cl[7];
+	vector<tagFireBall> _fb;
+
 	RECT _isidora, _box;
 	int _cnt, _idx, _hp, _patternNum;
 	int _idx_x, _idx_y;
 	char _strSkill[128];
 	float tempX, tempY;
 
-	bool _isLeft, _finIntro, _doNothing;
+	bool _isLeft, _finIntro, _doNothing, _once;
 	char _loc[128];
 
 public:
@@ -41,6 +62,10 @@ public:
 	void initPos(float x, float y) { _pos.x = x; _pos.y = y; }
 	void update(void);
 	void useSkill(void);
+
+	void columnCreate(void);
+	void columnCycle(void);
+
 	void render(HDC hdc);
 
 	inline float getX() { return _pos.x; }
@@ -55,6 +80,7 @@ public:
 	inline bool getFin() { return _finIntro; }
 	inline bool getDo() { return _doNothing; }
 	inline void setDo(int state) { _doNothing = state; }
+	inline void setOnce(bool state) { _once = state; }
 
 	inline void setPattern(int pattern) { _patternNum = pattern; }
 
