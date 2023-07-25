@@ -100,36 +100,41 @@ void BossStage::update(void)
         if (_boss->getDo())
         {
             //_boss->setOnce(false);
-            _pattern = RND->getFromIntTo(1, 2);
+            _pattern = RND->getFromIntTo(1, 3);
             _boss->setPattern(_pattern);
             switch (_pattern)
             {
             case 1:
-                //_boss->initPos(200, 200);
-                //_boss->addPattern("Isidora_outToCast");
-                //_boss->addPattern("Isidora_slash");
-                //_boss->addPattern("Isidora_slashToVanish");
-                _boss->setDo(false);
-                break;
             case 2:
-                //_boss->initPos(1000, 400);
-                //_boss->addPattern("Isidora_outToRising");
-                //_boss->addPattern("Isidora_scy_crop");
-                //_boss->addPattern("Isidora_vanish");
-                _boss->setDo(false);
-                break;
             case 3:
-                //_boss->initPos(400, 100);
-                //_boss->addPattern("Isidora_outToTwirl");
-                //_boss->addPattern("Isidora_twirl");
-                //_boss->addPattern("Isidora_twirlToVanish");
                 _boss->setDo(false);
                 break;
             case 4:
-                //_boss->initPos(WINSIZE_X/2, 300);
-                //_boss->addPattern("Isidora_outToCast");
-                //_boss->addPattern("Isidora_cast");
-                //_boss->addPattern("Isidora_vanish");
+                _boss->initPos(200, 200);
+                _boss->addPattern("Isidora_outToCast");
+                _boss->addPattern("Isidora_slash");
+                _boss->addPattern("Isidora_slashToVanish");
+                _boss->setDo(false);
+                break;
+            case 5:
+                _boss->initPos(1000, 400);
+                _boss->addPattern("Isidora_outToRising");
+                _boss->addPattern("Isidora_scy_crop");
+                _boss->addPattern("Isidora_vanish");
+                _boss->setDo(false);
+                break;
+            case 6:
+                _boss->initPos(400, 100);
+                _boss->addPattern("Isidora_outToTwirl");
+                _boss->addPattern("Isidora_twirl");
+                _boss->addPattern("Isidora_twirlToVanish");
+                _boss->setDo(false);
+                break;
+            case 7:
+                _boss->initPos(WINSIZE_X/2, 300);
+                _boss->addPattern("Isidora_outToCast");
+                _boss->addPattern("Isidora_cast");
+                _boss->addPattern("Isidora_vanish");
                 _boss->setDo(false);
                 break;
             }

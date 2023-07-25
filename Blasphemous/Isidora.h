@@ -22,9 +22,14 @@ struct tagBoss
 
 struct tagFireBall
 {
-	POINTF center;
-	float angle;
-	bool visible = true;
+	POINTF _center;
+	POINT _idx;
+	int _cnt;
+	float _angle;
+	bool _fire = false;
+	bool _create = false;
+	bool _visible = true;
+	deque<char*> _cycle;
 };
 
 struct tagColumn
@@ -41,15 +46,16 @@ class Isidora
 {
 private:
 	POINTF _pos, _test, _plPos;
+	POINT _idx;
 	deque<char*> _pattern;
 	map<char*, tagBoss> _sync;
 
 	tagColumn _cl[7];
-	vector<tagFireBall> _fb;
+	tagFireBall _fb[10];
 
-	RECT _isidora, _box;
-	int _cnt, _idx, _hp, _patternNum;
-	int _idx_x, _idx_y;
+	RECT _isidora, _box, _mask;
+	int _cnt, _hp, _patternNum;
+	int _interval;
 	char _strSkill[128];
 	float tempX, tempY;
 
@@ -66,6 +72,10 @@ public:
 	void columnCreate(void);
 	void columnCycle(void);
 
+	void fireBallCreate(void);
+	void fireBallMove(void);
+	void fireBallCycle(void);
+
 	void render(HDC hdc);
 
 	inline float getX() { return _pos.x; }
@@ -73,8 +83,8 @@ public:
 	inline void setX(float x) { _pos.x = x; }
 	inline void setY(float y) { _pos.y = y; }
 
-	inline void setIdxX(int x) { _idx_x = x; }
-	inline void setIdxY(int y) { _idx_y = y; }
+	inline void setIdxX(int x) { _idx.x = x; }
+	inline void setIdxY(int y) { _idx.y = y; }
 
 	inline bool getLeft() { return _isLeft; }
 	inline bool getFin() { return _finIntro; }
