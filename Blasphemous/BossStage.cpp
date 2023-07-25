@@ -67,13 +67,12 @@ void BossStage::update(void)
         _cnt++;
         if (_cnt == 1)
         {
-            //_ac = "Isidora_Intro2";
-            _boss->addPattern("Isidora_Intro2");
+            //_boss->addPattern("Isidora_Intro2");
             _boss->addPattern("Isidora_idle");
             _boss->addPattern("Isidora_vanish");
 
             if (_boss->getLeft())
-                _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_Intro2")->getMaxFrameX());
+                _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_idle")->getMaxFrameX());
             else
                 _boss->setIdxX(0);
         }
@@ -100,41 +99,90 @@ void BossStage::update(void)
         if (_boss->getDo())
         {
             //_boss->setOnce(false);
-            _pattern = RND->getFromIntTo(1, 3);
+            _pattern = 4;// RND->getFromIntTo(1, 5);
+            //_boss->setLeft(RND->getInt(2));
             _boss->setPattern(_pattern);
             switch (_pattern)
             {
             case 1:
             case 2:
-            case 3:
                 _boss->setDo(false);
                 break;
-            case 4:
-                _boss->initPos(200, 200);
+            case 3:
+                _boss->initPos(WINSIZE_X / 2 - 10, WINSIZE_Y / 2 + 100);
                 _boss->addPattern("Isidora_outToCast");
-                _boss->addPattern("Isidora_slash");
-                _boss->addPattern("Isidora_slashToVanish");
+                _boss->addPattern("Isidora_cast");
+                _boss->addPattern("Isidora_vanish");
+
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX() } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 1, { 11, IMAGEMANAGER->findImage("Isidora_cast")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_vanish")->getMaxFrameX() } });
+
+                _boss->setDo(false);
+                break;
+            case 4: // 올려치기
+                _boss->initPos(WINSIZE_X / 2 - 100, 400);
+                _boss->addPattern("Isidora_outToRising");
+                _boss->addPattern("Isidora_scy2");
+                _boss->addPattern("Isidora_twirl");
+                _boss->addPattern("Isidora_backToIdle");
+                _boss->addPattern("Isidora_vanish");
+
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_outToRising")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {20, IMAGEMANAGER->findImage("Isidora_scy2")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_backToIdle")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_vanish")->getMaxFrameX()} });
+
                 _boss->setDo(false);
                 break;
             case 5:
                 _boss->initPos(1000, 400);
-                _boss->addPattern("Isidora_outToRising");
-                _boss->addPattern("Isidora_scy_crop");
-                _boss->addPattern("Isidora_vanish");
+                _boss->addPattern("Isidora_outToTwirl");
+                _boss->addPattern("Isidora_backToIdle");
+                _boss->addPattern("Isidora_slash");
+                _boss->addPattern("Isidora_screen_slash");
+                _boss->addPattern("Isidora_screenslash_effect");
+                _boss->addPattern("Isidora_risingAppear");
+                _boss->addPattern("Isidora_screen_slash");
+                _boss->addPattern("Isidora_screenslash_effect");
+                _boss->addPattern("Isidora_risingAppear");
+                _boss->addPattern("Isidora_screen_slash");
+                _boss->addPattern("Isidora_screenslash_effect");
+                _boss->addPattern("Isidora_slashToVanish");
+
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_outToTwirl")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_backToIdle")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, 22 } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_screen_slash")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_screenslash_effect")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_risingAppear")->getMaxFrameX()} });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_screen_slash")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_screenslash_effect")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_risingAppear")->getMaxFrameX()} });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_screen_slash")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_screenslash_effect")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_slashToVanish")->getMaxFrameX()} });
+
                 _boss->setDo(false);
                 break;
             case 6:
-                _boss->initPos(400, 100);
+                //_boss->initPos(400, 100);
                 _boss->addPattern("Isidora_outToTwirl");
                 _boss->addPattern("Isidora_twirl");
                 _boss->addPattern("Isidora_twirlToVanish");
                 _boss->setDo(false);
                 break;
             case 7:
-                _boss->initPos(WINSIZE_X/2, 300);
-                _boss->addPattern("Isidora_outToCast");
-                _boss->addPattern("Isidora_cast");
-                _boss->addPattern("Isidora_vanish");
+                //_boss->initPos(WINSIZE_X/2, 300);
                 _boss->setDo(false);
                 break;
             }

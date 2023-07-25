@@ -11,6 +11,8 @@ HRESULT Isidora::init(void)
 		1484 * 2, 240 * 2, 14, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_vanish", "Resources/Image/Isidora/Isidora_idleToVanishFinal.bmp",
 		1339 * 2, 254 * 2, 13, 2, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Isidora_backToIdle", "Resources/Image/Isidora/Isidora_backToIdleFinal.bmp",
+		798 * 2, 240 * 2, 6, 2, true, MAGENTA);
 
 	IMAGEMANAGER->addFrameImage("Isidora_outToCast", "Resources/Image/Isidora/Isidora_outToCastFinal.bmp",
 		1463 * 2, 260 * 2, 11, 2, true, MAGENTA);
@@ -18,6 +20,8 @@ HRESULT Isidora::init(void)
 		1944 * 2, 294 * 2, 12, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_outToTwirl", "Resources/Image/Isidora/Isidora_outToTwirlFinal.bmp",
 		1958 * 2, 262 * 2, 11, 2, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Isidora_risingAppear", "Resources/Image/Isidora/Isidora_risingScyAppear.bmp",
+		528 * 2, 404 * 2, 3, 2, true, MAGENTA);
 
 	IMAGEMANAGER->addFrameImage("Isidora_scy", "Resources/Image/Isidora/Isidora_risingScytheSequence.bmp",
 		5516 * 2, 388 * 2, 28, 2, true, MAGENTA);
@@ -40,6 +44,9 @@ HRESULT Isidora::init(void)
 		2424 * 2, 268 * 2, 12, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_slashToVanish", "Resources/Image/Isidora/Isidora-screenslash_vanish.bmp",
 		1872 * 2, 200 * 2, 12, 2, true, MAGENTA);
+
+	IMAGEMANAGER->addFrameImage("Isidora_screenslash_effect", "Resources/Image/Isidora/Isidora_screenslash_effect2.bmp",
+		3647 * 2, 26 * 2, 7, 2, true, MAGENTA);
 
 	// ºÒ±âµÕ
 	IMAGEMANAGER->addFrameImage("Column_create", "Resources/Image/Isidora/FireColumnAnticipation.bmp",
@@ -89,23 +96,26 @@ HRESULT Isidora::init(void)
 
 void Isidora::initSync(void)
 {
-	_sync.insert({ "Isidora_Intro", { 7, {0, 0}, {0, 0} } });
+	_sync.insert({ "Isidora_Intro", { 6, {0, 0}, {0, 0} } });
 	_sync.insert({ "Isidora_Intro2", { 6, {0, 0}, {0, 0}} });
-	_sync.insert({ "Isidora_idle", { 7, {-12, 18}, {0, 0} } });
-	_sync.insert({ "Isidora_vanish", { 7, {-10, 10}, {0, 0} } });
-	_sync.insert({ "Isidora_outToCast", { 7, {-50, 20}, {0, 0} } });
-	_sync.insert({ "Isidora_outToRising", { 10, {20, 30}, {0, 30} } });
-	_sync.insert({ "Isidora_outToTwirl", { 7, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_scy", { 7, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_scy2", { 7, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_scy_crop", {10, {0, 0}, {0, 0}} });
-	_sync.insert({ "Isidora_slash", { 8, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_screen_slash", { 10, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_twirl", { 8, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_attackPattern", { 5, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_twirlToVanish", { 8, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_slashToVanish", { 8, {0, 0}, {0, 0} } });
-	_sync.insert({ "Isidora_cast", { 8, {0, 0}, {0, 0} } });
+	_sync.insert({ "Isidora_idle", { 5, {-12, 18}, {30, 18} } });
+	_sync.insert({ "Isidora_backToIdle", {5, {10, 20}, {10, 20}} });
+	_sync.insert({ "Isidora_vanish", { 4, {-10, 13}, {23, 13} } });
+	_sync.insert({ "Isidora_outToCast", { 4, {-50, 15}, {65, 15} } });
+	_sync.insert({ "Isidora_outToRising", { 4, {20, 30}, {0, 30} } });
+	_sync.insert({ "Isidora_outToTwirl", { 4, {40, 10}, {-20, 10} } });
+	_sync.insert({ "Isidora_risingAppear", { 5, {0, 0}, {0, 0}} });
+	_sync.insert({ "Isidora_scy", { 7, {20, 0}, {0, 0} } });
+	_sync.insert({ "Isidora_scy2", { 7, {-10, -30}, {30, -30} } });
+	_sync.insert({ "Isidora_scy_crop", { 7, {0, 0}, {0, 0}} });
+	_sync.insert({ "Isidora_slash", { 7, {0, -27}, {23, -27} } });
+	_sync.insert({ "Isidora_screen_slash", { 6, {30, -10}, {0, -10} } });
+	_sync.insert({ "Isidora_screenslash_effect", { 5, {0, 0}, {0, 0}} });
+	_sync.insert({ "Isidora_twirl", { 5, {10, 10}, {10, 10} } });
+	_sync.insert({ "Isidora_attackPattern", { 7, {10, -70}, {20, -80} } });
+	_sync.insert({ "Isidora_twirlToVanish", { 4, {-10, 10}, {30, 10} } });
+	_sync.insert({ "Isidora_slashToVanish", { 7, {0, 0}, {0, 0} } });
+	_sync.insert({ "Isidora_cast", { 6, {-45, 20}, {45, 20} } });
 }
 
 void Isidora::update(void)
@@ -116,54 +126,127 @@ void Isidora::update(void)
 	_cnt++;
 	if (!_pattern.empty())
 	{
-		if (_isLeft)
+		if (_seq.empty())
 		{
-			_idx.y = 1;
-			IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
-			if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
+			if (_isLeft)
 			{
-				_idx.x--; 
-				if (_idx.x < 1)
+				_idx.y = 1;
+				IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+				if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
 				{
-					_pattern.pop_front();
-					if (!_pattern.empty())
+					_idx.x--;
+					if (_idx.x < 1)
 					{
-						_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX();
-					}
-					else
-					{
-						if (!_finIntro) _finIntro = true;
+						_pattern.pop_front();
+						if (!_pattern.empty())
+						{
+							cout << _pattern.front() << endl;
+							_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX();
+						}
+						else
+						{
+							if (!_finIntro) _finIntro = true;
 
-						_doNothing = true;
+							_doNothing = true;
+						}
 					}
+					if (!_pattern.empty())
+						IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
 				}
-				if (!_pattern.empty())
-					IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+			}
+			else
+			{
+				_idx.y = 0;
+				IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+				if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
+				{
+					_idx.x++;
+					if (_idx.x > IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX())
+					{
+						_pattern.pop_front();
+						if (!_pattern.empty())
+						{
+							cout << _pattern.front() << endl;
+							_idx.x = 0;
+						}
+						else
+						{
+							if (!_finIntro) _finIntro = true;
+							_doNothing = true;
+						}
+					}
+					if (!_pattern.empty())
+						IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+				}
 			}
 		}
 		else
 		{
-			_idx.y = 0;
-			IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
-			if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
+			if (_isLeft)
 			{
-				_idx.x++;
-				if (_idx.x > IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX())
+				_idx.y = 1;
+				IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+				if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
 				{
-					_pattern.pop_front();
-					if (!_pattern.empty())
+					_idx.x--;
+					if (_idx.x < IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX() - _seq.begin()->_current.y + 1)
 					{
-						_idx.x = 0;
-					}
-					else
-					{
-						if (!_finIntro) _finIntro = true;
+						if (_seq.begin()->_pass)
+							_pattern.pop_front();
+						
+						_seq.erase(_seq.begin());
+						
+						if (!_pattern.empty())
+						{
+							//cout << _pattern.front() << endl;
+							_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX()
+								- _seq.begin()->_current.x;
 
-						_doNothing = true;
+							
+						}
+						else
+						{
+							if (!_finIntro) _finIntro = true;
+
+							_doNothing = true;
+							if (!_seq.empty())
+								_seq.clear();
+						}
 					}
+					if (!_pattern.empty())
+						IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
 				}
-				if (!_pattern.empty())
-					IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+			}
+			else
+			{
+				_idx.y = 0;
+				IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+				if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
+				{
+					_idx.x++;
+					if (_idx.x > _seq.begin()->_current.y - 1)
+					{
+						if (_seq.begin()->_pass)
+							_pattern.pop_front();
+
+						_seq.erase(_seq.begin());
+						if (!_pattern.empty())
+						{
+							//cout << _pattern.front() << endl;
+							_idx.x = _seq.begin()->_current.x;
+
+						}
+						else
+						{
+							if (!_finIntro) _finIntro = true;
+							_doNothing = true;
+							if (!_seq.empty())
+								_seq.clear();
+						}
+					}
+					if (!_pattern.empty())
+						IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+				}
 			}
 		}
 	}
@@ -252,6 +335,14 @@ void Isidora::useSkill(void)
 				_fb[i]._create = true;
 			}
 			_once = true;
+		}
+
+		if (!_pattern.empty())
+		{
+			if (!strcmp(_pattern.front(), "Isidora_cast") && _pos.y > 200)
+				_pos.y -= 0.5f;
+			if (!strcmp(_pattern.front(), "Isidora_vanish") && _pos.y < WINSIZE_Y / 2 + 100)
+				_pos.y += 3.0f;
 		}
 		break;
 	case 4:
@@ -448,6 +539,7 @@ void Isidora::render(HDC hdc)
 {
 	if (!_pattern.empty())
 	{
+		cout << _pattern.front()<< " idx "<<_idx.x << endl;
 		_isidora = RectMakeCenter(_pos.x, _pos.y,
 			IMAGEMANAGER->findImage(_pattern.front())->getFrameWidth(),
 			IMAGEMANAGER->findImage(_pattern.front())->getFrameHeight());

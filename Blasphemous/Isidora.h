@@ -42,6 +42,12 @@ struct tagColumn
 	deque<char*> _cycle;
 };
 
+struct tagSequence
+{
+	bool _pass;
+	POINT _current;
+};
+
 class Isidora
 {
 private:
@@ -49,6 +55,7 @@ private:
 	POINT _idx;
 	deque<char*> _pattern;
 	map<char*, tagBoss> _sync;
+	vector<tagSequence> _seq;
 
 	tagColumn _cl[7];
 	tagFireBall _fb[10];
@@ -56,7 +63,7 @@ private:
 	RECT _isidora, _box, _mask;
 	int _cnt, _hp, _patternNum;
 	int _interval;
-	char _strSkill[128];
+	//char _strSkill[128];
 	float tempX, tempY;
 
 	bool _isLeft, _finIntro, _doNothing, _once;
@@ -78,6 +85,7 @@ public:
 
 	void render(HDC hdc);
 
+public:
 	inline float getX() { return _pos.x; }
 	inline float getY() { return _pos.y; }
 	inline void setX(float x) { _pos.x = x; }
@@ -87,20 +95,18 @@ public:
 	inline void setIdxY(int y) { _idx.y = y; }
 
 	inline bool getLeft() { return _isLeft; }
+	inline void setLeft(bool state) { _isLeft = state; }
 	inline bool getFin() { return _finIntro; }
 	inline bool getDo() { return _doNothing; }
 	inline void setDo(int state) { _doNothing = state; }
 	inline void setOnce(bool state) { _once = state; }
 
 	inline void setPattern(int pattern) { _patternNum = pattern; }
+	inline void addSeq(tagSequence seq) { _seq.push_back(seq); }
 
 	inline RECT getBoss() { return _isidora; }
 
-	void addPattern(char* action) 
-	{ 
-		wsprintf(_strSkill, action);
-		_pattern.push_back(action); 
-	}
+	void addPattern(char* action) { _pattern.push_back(action); }
 
 	Isidora() {}
 	~Isidora() {}
