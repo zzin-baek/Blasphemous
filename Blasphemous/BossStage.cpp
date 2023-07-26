@@ -98,9 +98,11 @@ void BossStage::update(void)
     {
         if (_boss->getDo())
         {
+            int _temp;
             //_boss->setOnce(false);
-            _pattern = 4;// RND->getFromIntTo(1, 5);
+            _pattern = 4;//  RND->getFromIntTo(1, 6);
             //_boss->setLeft(RND->getInt(2));
+            _boss->setLeft(true);
             _boss->setPattern(_pattern);
             switch (_pattern)
             {
@@ -113,6 +115,11 @@ void BossStage::update(void)
                 _boss->addPattern("Isidora_outToCast");
                 _boss->addPattern("Isidora_cast");
                 _boss->addPattern("Isidora_vanish");
+
+                if (_boss->getLeft())
+                    _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX());
+                else
+                    _boss->setIdxX(0);
 
                 _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX() } });
                 _boss->addSeq({ 0, { 11, 21 } });
@@ -127,13 +134,23 @@ void BossStage::update(void)
                 _boss->setDo(false);
                 break;
             case 4: // 올려치기
-                _boss->initPos(WINSIZE_X / 2 - 100, 400);
+                _boss->initPos(1100, 600);
+
+                _boss->addPattern("Isidora_sparkAppear");
+                _boss->addPattern("Isidora_sparkLoop");
                 _boss->addPattern("Isidora_outToRising");
                 _boss->addPattern("Isidora_scy2");
                 _boss->addPattern("Isidora_twirl");
                 _boss->addPattern("Isidora_backToIdle");
                 _boss->addPattern("Isidora_vanish");
 
+                if (_boss->getLeft())
+                    _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_sparkAppear")->getMaxFrameX());
+                else
+                    _boss->setIdxX(0);
+
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_sparkAppear")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
                 _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_outToRising")->getMaxFrameX()} });
                 _boss->addSeq({ 1, {20, IMAGEMANAGER->findImage("Isidora_scy2")->getMaxFrameX()} });
                 _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
@@ -159,6 +176,11 @@ void BossStage::update(void)
                 _boss->addPattern("Isidora_screenslash_effect");
                 _boss->addPattern("Isidora_slashToVanish");
 
+                if (_boss->getLeft())
+                    _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_outToTwirl")->getMaxFrameX());
+                else
+                    _boss->setIdxX(0);
+
                 _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_outToTwirl")->getMaxFrameX() } });
                 _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_backToIdle")->getMaxFrameX() } });
                 _boss->addSeq({ 1, { 0, 22 } });
@@ -174,11 +196,46 @@ void BossStage::update(void)
 
                 _boss->setDo(false);
                 break;
-            case 6:
-                //_boss->initPos(400, 100);
+            case 6: // 회오리감자
+                _temp = RND->getFromIntTo(150, 1140);
+                _boss->initPos(_temp, 500);
+                if (_temp <= PLAYER->getRect().left)
+                    _boss->setLeft(false);
+                else
+                    _boss->setLeft(true);
+
                 _boss->addPattern("Isidora_outToTwirl");
+                _boss->addPattern("Isidora_backToIdle");
+                _boss->addPattern("Isidora_slash");
                 _boss->addPattern("Isidora_twirl");
-                _boss->addPattern("Isidora_twirlToVanish");
+                _boss->addPattern("Isidora_slash");
+                _boss->addPattern("Isidora_twirl");
+                _boss->addPattern("Isidora_backToIdle");
+                _boss->addPattern("Isidora_vanish");
+
+
+                if (_boss->getLeft())
+                    _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_outToTwirl")->getMaxFrameX());
+                else
+                    _boss->setIdxX(0);
+
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_outToTwirl")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_backToIdle")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_slash")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {8, IMAGEMANAGER->findImage("Isidora_slash")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_backToIdle")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_vanish")->getMaxFrameX()} });
+
                 _boss->setDo(false);
                 break;
             case 7:

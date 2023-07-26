@@ -28,6 +28,7 @@ struct tagFireBall
 	float _angle;
 	bool _fire = false;
 	bool _create = false;
+	bool _trace = false;
 	bool _visible = true;
 	deque<char*> _cycle;
 };
@@ -51,7 +52,7 @@ struct tagSequence
 class Isidora
 {
 private:
-	POINTF _pos, _test, _plPos;
+	POINTF _pos, _test, _plPos, _risingSpot[3];
 	POINT _idx;
 	deque<char*> _pattern;
 	map<char*, tagBoss> _sync;
@@ -66,7 +67,7 @@ private:
 	//char _strSkill[128];
 	float tempX, tempY;
 
-	bool _isLeft, _finIntro, _doNothing, _once;
+	bool _isLeft, _finIntro, _doNothing, _once, _once2;
 	char _loc[128];
 
 public:

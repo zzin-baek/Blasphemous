@@ -27,8 +27,6 @@ HRESULT Isidora::init(void)
 		5516 * 2, 388 * 2, 28, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_scy2", "Resources/Image/Isidora/Isidora_risingScySequence2.bmp",
 		6534 * 2, 432 * 2, 27, 2, true, MAGENTA);
-	IMAGEMANAGER->addFrameImage("Isidora_scy_crop", "Resources/Image/Isidora/Isidora_risingScySequence_crop.bmp",
-		1694 * 2, 432 * 2, 7, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_slash", "Resources/Image/Isidora/Isidora_slashSequence.bmp",
 		8277 * 2, 338 * 2, 31, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_screen_slash", "Resources/Image/Isidora/Isidora-screenslash.bmp",
@@ -45,8 +43,13 @@ HRESULT Isidora::init(void)
 	IMAGEMANAGER->addFrameImage("Isidora_slashToVanish", "Resources/Image/Isidora/Isidora-screenslash_vanish.bmp",
 		1872 * 2, 200 * 2, 12, 2, true, MAGENTA);
 
+	// 이펙트
 	IMAGEMANAGER->addFrameImage("Isidora_screenslash_effect", "Resources/Image/Isidora/Isidora_screenslash_effect2.bmp",
 		3647 * 2, 26 * 2, 7, 2, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Isidora_sparkAppear", "Resources/Image/Isidora/IsidoraSparkAppear.bmp",
+		864 * 2, 64 * 2, 9, 2, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Isidora_sparkLoop", "Resources/Image/Isidora/IsidoraSparkLoop.bmp",
+		576 * 2, 64 * 2, 6, 2, true, MAGENTA);
 
 	// 불기둥
 	IMAGEMANAGER->addFrameImage("Column_create", "Resources/Image/Isidora/FireColumnAnticipation.bmp",
@@ -67,9 +70,11 @@ HRESULT Isidora::init(void)
 		507 * 2, 39 * 2, 13, 1, true, MAGENTA);
 
 	IMAGEMANAGER->addImage("Circle_Mask", "Resources/Image/Sheet/Circle_Mask.bmp",
-		256, 256, true, MAGENTA);
+		130, 130, true, MAGENTA); //256  256
 	IMAGEMANAGER->addImage("Column_Mask", "Resources/Image/Sheet/Column_Mask.bmp", 
 		200, 680, true, MAGENTA); // 300, 1024
+
+	// hp
 	IMAGEMANAGER->addImage("Isidora_HP_Bar", "Resources/Image/Sheet/boss_healthBar.bmp",
 		346 * 2, 30 * 2, true, MAGENTA);
 	IMAGEMANAGER->addImage("Isidora_HP", "Resources/Image/Sheet/boss_healthBlood.bmp", 
@@ -79,12 +84,16 @@ HRESULT Isidora::init(void)
 	_idx = { 0, 0 };
 	_cnt = _patternNum = 0;
 	_interval = 10;
-	_test = { 1100.0f, 450.0f };
 
 	_hp = 200;
 
 	_isLeft = true;
-	_finIntro = _once = false;
+	_finIntro = _once = _once2 = false;
+
+	// 5번 패턴 위치
+	_risingSpot[0] = { 140, 500 };
+	_risingSpot[1] = { 1130, 500 };
+	_risingSpot[2] = { 600, 500 };
 	
 	tempX = 500.0f; 
 	tempY = 450.0f;
@@ -107,11 +116,12 @@ void Isidora::initSync(void)
 	_sync.insert({ "Isidora_risingAppear", { 5, {0, 0}, {0, 0}} });
 	_sync.insert({ "Isidora_scy", { 7, {20, 0}, {0, 0} } });
 	_sync.insert({ "Isidora_scy2", { 7, {-10, -30}, {30, -30} } });
-	_sync.insert({ "Isidora_scy_crop", { 7, {0, 0}, {0, 0}} });
-	_sync.insert({ "Isidora_slash", { 7, {0, -27}, {23, -27} } });
+	_sync.insert({ "Isidora_slash", { 5, {0, -27}, {23, -27} } });
 	_sync.insert({ "Isidora_screen_slash", { 6, {30, -10}, {0, -10} } });
 	_sync.insert({ "Isidora_screenslash_effect", { 5, {0, 0}, {0, 0}} });
-	_sync.insert({ "Isidora_twirl", { 5, {10, 10}, {10, 10} } });
+	_sync.insert({ "Isidora_sparkAppear", {5, {0, 0}, {0, 0}} });
+	_sync.insert({ "Isidora_sparkLoop", {5, {0, 0}, {0, 0}} });
+	_sync.insert({ "Isidora_twirl", { 4, {10, 8}, {10, 8} } });
 	_sync.insert({ "Isidora_attackPattern", { 7, {10, -70}, {20, -80} } });
 	_sync.insert({ "Isidora_twirlToVanish", { 4, {-10, 10}, {30, 10} } });
 	_sync.insert({ "Isidora_slashToVanish", { 7, {0, 0}, {0, 0} } });
@@ -121,7 +131,7 @@ void Isidora::initSync(void)
 void Isidora::update(void)
 {
 	_plPos = { PLAYER->getCenterX(), PLAYER->getCenterY() };
-	_box = RectMakeCenter(_test.x, _test.y, 50, 50);
+	_box = RectMakeCenter(_pos.x, _pos.y, 50, 50);
 
 	_cnt++;
 	if (!_pattern.empty())
@@ -140,7 +150,6 @@ void Isidora::update(void)
 						_pattern.pop_front();
 						if (!_pattern.empty())
 						{
-							cout << _pattern.front() << endl;
 							_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX();
 						}
 						else
@@ -166,7 +175,6 @@ void Isidora::update(void)
 						_pattern.pop_front();
 						if (!_pattern.empty())
 						{
-							cout << _pattern.front() << endl;
 							_idx.x = 0;
 						}
 						else
@@ -201,7 +209,7 @@ void Isidora::update(void)
 							//cout << _pattern.front() << endl;
 							_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX()
 								- _seq.begin()->_current.x;
-
+							_once2 = false;
 							
 						}
 						else
@@ -234,7 +242,7 @@ void Isidora::update(void)
 						{
 							//cout << _pattern.front() << endl;
 							_idx.x = _seq.begin()->_current.x;
-
+							_once2 = false;
 						}
 						else
 						{
@@ -269,30 +277,6 @@ void Isidora::useSkill(void)
 {
 	RECT _rt;
 	bool _fine = false;
-	/*if (_finIntro)
-	{
-		if (_cnt % 2 == 0)
-		{
-			_test.x -= 6.0f;
-			if (IntersectRect(&_rt, &PLAYER->getRect(), &_box) && !_fine)
-			{
-				tempX = PLAYER->getCenterX();
-				_fine = true;
-			}
-			if (_test.x <= tempX)
-			{
-				_test.y = tempY - pow(5, (tempX - _test.x) / 30);
-			}
-			
-			if (_test.y <= 100)
-			{
-				_test = { 1100, 450 };
-				tempX = 500;
-			}
-
-			_pos = _test;
-		}
-	}*/
 	switch (_patternNum)
 	{
 	case 1:
@@ -336,6 +320,8 @@ void Isidora::useSkill(void)
 			}
 			_once = true;
 		}
+		else
+			_doNothing = false;
 
 		if (!_pattern.empty())
 		{
@@ -346,10 +332,102 @@ void Isidora::useSkill(void)
 		}
 		break;
 	case 4:
+		if (_cnt % 2 == 0)
+		{
+
+			if (!strcmp(_pattern.front(), "Isidora_sparkLoop"))
+			{
+				_pos.x -= 15.0f;
+				if (_pos.x > 500)
+				{
+					_seq.insert(_seq.begin() + 1, 1, { 0, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
+					_seq.erase(_seq.begin());
+				}
+				else // 한 번만 되게
+				{
+					if (!_once2)
+					{
+						_once2 = true;
+						_seq.insert(_seq.begin() + 1, 1, { 1, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
+						//_seq.erase(_seq.begin() + 1);
+
+						if (_isLeft)
+							setIdxX(IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX());
+						else
+							setIdxX(0);
+					}
+				}
+			}
+		}
+		/*if (_cnt % 2 == 0)
+		{
+			_pos.x -= 6.0f;
+			if (IntersectRect(&_rt, &PLAYER->getRect(), &_box) && !_fine)
+			{
+				tempX = PLAYER->getCenterX();
+				_fine = true;
+			}
+			if (_pos.x <= tempX)
+			{
+				_pos.y = tempY - pow(3, (tempX - _pos.x) / 30);
+				if (!_fine)
+				{
+					_fine = true;
+					addPattern("Isidora_outToRising");
+					addPattern("Isidora_scy2");
+					addPattern("Isidora_twirl");
+					addPattern("Isidora_backToIdle");
+					addPattern("Isidora_vanish");
+
+					addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_outToRising")->getMaxFrameX()} });
+					addSeq({ 1, {20, IMAGEMANAGER->findImage("Isidora_scy2")->getMaxFrameX()} });
+					addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+					addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+					addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
+					addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_backToIdle")->getMaxFrameX()} });
+					addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_vanish")->getMaxFrameX()} });
+				}
+			}
+
+			if (_pos.y <= 100)
+			{
+				tempX = 500;
+			}
+		}*/
+		break;
+	case 5:
+		if (_isLeft) _pos = _risingSpot[1];
+		else _pos = _risingSpot[0];
+
+		if (!_pattern.empty())
+		{
+			if (!strcmp(_pattern.front(), "Isidora_risingAppear") && !_once2)
+			{
+				_isLeft = !_isLeft; 
+				_once2 = true;
+			}
+			if (!strcmp(_pattern.front(), "Isidora_screenslash_effect"))
+			{
+				_pos = _risingSpot[2];
+			}
+			if (!strcmp(_pattern.front(), "Isidora_slashToVanish"))
+			{
+				_pos = _risingSpot[!_isLeft];
+
+				if (!_once2)
+				{
+					for (int i = 0; i < 2; i++)
+					{
+						_cl[i]._clPos = { _risingSpot[!_isLeft].x - 60 + 50 * (i + 1), 0 };
+						_cl[i]._idx = { 0, 0 };
+						_cl[i]._create = true;
+					}
+					_once2 = true;
+				}
+			}
+		}
 		break;
 	}
-
-
 }
 
 void Isidora::columnCreate(void)
@@ -431,17 +509,10 @@ void Isidora::fireBallMove(void)
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			if (_fb[i]._fire)
+			if (_fb[i]._fire && _fb[i]._center.y <= 450)
 			{
-				if (_fb[i]._angle < 230)
-				{
-					center.x = _fb[i]._center.x + 3 * cos((_fb[i]._angle + 2) * PI / 180);
-					center.y = _fb[i]._center.y - 3 * sin((_fb[i]._angle + 2) * PI / 180);
-
-					_fb[i]._center = { center.x, center.y };
-					_fb[i]._angle += 2;
-				}
-				else
+				cout << _fb[i]._center.y << endl;
+				if (_fb[i]._trace)
 				{
 					ag = atan2((PLAYER->getCenterY() - _fb[i]._center.y),
 						(_fb[i]._center.x - PLAYER->getCenterX()));
@@ -452,7 +523,21 @@ void Isidora::fireBallMove(void)
 					center.y = _fb[i]._center.y - 3 * sin((ag - (180 * PI / 180)));
 
 					_fb[i]._center = { center.x, center.y };
-					_fb[i]._angle = ag * (180 / PI);
+					_fb[i]._angle = ag * 180 / PI - 180;
+
+				}
+				else
+				{
+					center.x = _fb[i]._center.x + 3 * cos((_fb[i]._angle + 2) * PI / 180);
+					center.y = _fb[i]._center.y - 3 * sin((_fb[i]._angle + 2) * PI / 180);
+
+					_fb[i]._center = { center.x, center.y };
+					_fb[i]._angle += 2;
+
+					if (_fb[i]._angle > 270)
+					{
+						_fb[i]._trace = true;
+					}
 				}
 			}
 		}
@@ -467,7 +552,6 @@ void Isidora::fireBallMove(void)
 				center.y = _fb[i]._center.y - 3 * sin((_fb[i]._angle * PI / 180));
 
 				_fb[i]._center = { center.x, center.y };
-
 				//cout << "angle" << _fb[i]._angle << endl;
 			}
 		}
@@ -501,8 +585,7 @@ void Isidora::fireBallCycle(void)
 				_fb[i]._cnt = 0;
 				if (!strcmp(_fb[i]._cycle.front(), "FireBall_out"))
 				{
-					_fb[i]._fire = false;
-					_fb[i]._create = false;
+					_fb[i]._fire = _fb[i]._create = _fb[i]._trace = false;
 					_fb[i]._center = { WINSIZE_X / 2, WINSIZE_Y / 2 };
 					_fb[i]._visible = true;
 
@@ -539,7 +622,7 @@ void Isidora::render(HDC hdc)
 {
 	if (!_pattern.empty())
 	{
-		cout << _pattern.front()<< " idx "<<_idx.x << endl;
+		//cout << _pattern.front()<< " idx "<<_idx.x << endl;
 		_isidora = RectMakeCenter(_pos.x, _pos.y,
 			IMAGEMANAGER->findImage(_pattern.front())->getFrameWidth(),
 			IMAGEMANAGER->findImage(_pattern.front())->getFrameHeight());
@@ -572,6 +655,8 @@ void Isidora::render(HDC hdc)
 	{
 		if (_fb[i]._fire && !_fb[i]._cycle.empty())
 		{
+			_mask = RectMake(_fb[i]._center.x - 23, _fb[i]._center.y - 23, 130, 130);
+			IMAGEMANAGER->alphaRender("Circle_Mask", hdc, _mask.left, _mask.top, 30);
 			IMAGEMANAGER->frameRender(_fb[i]._cycle.front(), hdc,
 				_fb[i]._center.x, _fb[i]._center.y, _fb[i]._idx.x, _fb[i]._idx.y);
 		}
