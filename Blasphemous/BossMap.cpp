@@ -5,7 +5,7 @@ HRESULT BossMap::init(void)
 {
     IMAGEMANAGER->addImage("BossMap_dark", "Resources/Image/BackGround/Isidora_map.bmp",
         1200 * 2, 360 * 2);
-    IMAGEMANAGER->addImage("BossMap_bright", "Resources/Image/BackGround/Isidora_map_bright",
+    IMAGEMANAGER->addImage("BossMap_bright", "Resources/Image/BackGround/Isidora_map_bright.bmp",
         640 * 2, 360 * 2);
 
     IMAGEMANAGER->addImage("BossMap_collision", "Resources/Image/BackGround/Isidora_map_collision.bmp",
@@ -49,6 +49,7 @@ void BossMap::update(void)
 void BossMap::render(HDC hdc)
 {
     IMAGEMANAGER->render("BossMap_dark", hdc, 0, 0, _pos.x, _pos.y, WINSIZE_X, WINSIZE_Y);
+    IMAGEMANAGER->render("BossMap_bright", hdc, 0, 0, WINSIZE_X/2, WINSIZE_Y/2, 0, 0);
     IMAGEMANAGER->frameRender("Brazier_dark", hdc, 1185 - _pos.x, 270 - _pos.y, _idx.x, _idx.y);
 
     if (KEYMANAGER->isToggleKey(VK_TAB))

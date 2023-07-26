@@ -41,4 +41,12 @@ public:
 
 		return (rnd * (toNum - fromNum) + fromNum);
 	}
+
+	int getIntArray(int* arr, int size)
+	{
+		//int size = sizeof(arr) / sizeof(int);
+
+		return arr[rand() % size];
+	}
+
 };

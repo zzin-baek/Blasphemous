@@ -85,9 +85,10 @@ HRESULT Isidora::init(void)
 	_cnt = _patternNum = 0;
 	_interval = 10;
 
-	_hp = 200;
+	_hp = 300;
+	_phase = 1;
 
-	_isLeft = true;
+	_isLeft = _doNothing = true;
 	_finIntro = _once = _once2 = false;
 
 	// 5번 패턴 위치
@@ -96,7 +97,7 @@ HRESULT Isidora::init(void)
 	_risingSpot[2] = { 600, 500 };
 	
 	tempX = 500.0f; 
-	tempY = 450.0f;
+	tempY = 500.0f;
 	
 	initSync();
 
@@ -111,7 +112,7 @@ void Isidora::initSync(void)
 	_sync.insert({ "Isidora_backToIdle", {5, {10, 20}, {10, 20}} });
 	_sync.insert({ "Isidora_vanish", { 4, {-10, 13}, {23, 13} } });
 	_sync.insert({ "Isidora_outToCast", { 4, {-50, 15}, {65, 15} } });
-	_sync.insert({ "Isidora_outToRising", { 4, {20, 30}, {0, 30} } });
+	_sync.insert({ "Isidora_outToRising", { 3, {20, 30}, {0, 30} } });
 	_sync.insert({ "Isidora_outToTwirl", { 4, {40, 10}, {-20, 10} } });
 	_sync.insert({ "Isidora_risingAppear", { 5, {0, 0}, {0, 0}} });
 	_sync.insert({ "Isidora_scy", { 7, {20, 0}, {0, 0} } });
@@ -132,6 +133,11 @@ void Isidora::update(void)
 {
 	_plPos = { PLAYER->getCenterX(), PLAYER->getCenterY() };
 	_box = RectMakeCenter(_pos.x, _pos.y, 50, 50);
+
+	if (_hp <= 200 && _hp > 100)
+		_phase = 2;
+	else if (_hp <= 100 && _hp > 0)
+		_phase = 3;
 
 	_cnt++;
 	if (!_pattern.empty())
@@ -206,7 +212,7 @@ void Isidora::update(void)
 						
 						if (!_pattern.empty())
 						{
-							//cout << _pattern.front() << endl;
+							cout << _pattern.front() << endl;
 							_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX()
 								- _seq.begin()->_current.x;
 							_once2 = false;
@@ -215,8 +221,8 @@ void Isidora::update(void)
 						else
 						{
 							if (!_finIntro) _finIntro = true;
-
-							_doNothing = true;
+							if (_patternNum != 3 && _patternNum != 5 && _patternNum != 4)
+								_doNothing = true;
 							if (!_seq.empty())
 								_seq.clear();
 						}
@@ -247,7 +253,8 @@ void Isidora::update(void)
 						else
 						{
 							if (!_finIntro) _finIntro = true;
-							_doNothing = true;
+							if (_patternNum != 3  && _patternNum != 5 && _patternNum != 4)
+								_doNothing = true;
 							if (!_seq.empty())
 								_seq.clear();
 						}
@@ -332,31 +339,86 @@ void Isidora::useSkill(void)
 		}
 		break;
 	case 4:
-		if (_cnt % 2 == 0)
+		if (!_pattern.empty())
 		{
-
 			if (!strcmp(_pattern.front(), "Isidora_sparkLoop"))
 			{
-				_pos.x -= 15.0f;
-				if (_pos.x > 500)
-				{
-					_seq.insert(_seq.begin() + 1, 1, { 0, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
-					_seq.erase(_seq.begin());
-				}
-				else // 한 번만 되게
-				{
-					if (!_once2)
-					{
-						_once2 = true;
-						_seq.insert(_seq.begin() + 1, 1, { 1, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
-						//_seq.erase(_seq.begin() + 1);
+				if (_isLeft)
+					_pos.x -= 10.0f;
+				else
+					_pos.x += 10.0f;
 
-						if (_isLeft)
-							setIdxX(IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX());
-						else
-							setIdxX(0);
+				tempX = _pos.x;
+				//if (_pos.x > 500 )
+				//{
+				//	_seq.insert(_seq.begin() + 1, 1, { 0, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
+				//	//_seq.erase(_seq.begin());
+				//}
+				//else // 한 번만 되게
+				//{
+				//	if (!_once2)
+				//	{
+				//		_once2 = true;
+				//		_seq.insert(_seq.begin() + 1, 1, { 1, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
+				//		//_seq.erase(_seq.begin() + 1);
+				//		if (_isLeft)
+				//			setIdxX(IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX());
+				//		else
+				//			setIdxX(0);
+				//	}
+				//}
+			}
+
+			if (!strcmp(_pattern.front(), "Isidora_scy2"))
+			{
+				if (_isLeft)
+				{
+					_pos.x -= 4.0f;
+					if (_pos.x <= tempX)
+					{
+						_pos.y = tempY - pow(3, (tempX - _pos.x) / 30);
+					}
+
+					if (!_once)
+					{
+						_interval = 20;
+						for (int i = 0; i < 3; i++)
+						{
+							_cl[i]._clPos = { float(tempX - 280 - (80 * i)), 0 };
+							_cl[i]._idx = { 0, 0 };
+							_cl[i]._create = true;
+						}
+						_once = true;
 					}
 				}
+				else
+				{
+					_pos.x += 4.0f;
+					if (_pos.x >= tempX)
+					{
+						_pos.y = tempY - pow(3, (_pos.x - tempX) / 30);
+					}
+
+					if (!_once)
+					{
+						_interval = 20;
+						for (int i = 0; i < 3; i++)
+						{
+							_cl[i]._clPos = { float(tempX + 280 + (80 * i)), 0 };
+							_cl[i]._idx = { 0, 0 };
+							_cl[i]._create = true;
+						}
+						_once = true;
+					}
+				}
+			}
+
+			if (!strcmp(_pattern.front(), "Isidora_outToRising"))
+				_pos.y = 500;
+
+			if (!strcmp(_pattern.front(), "Isidora_twirl"))
+			{
+				_pos.y += 3.0f;
 			}
 		}
 		/*if (_cnt % 2 == 0)
@@ -416,6 +478,7 @@ void Isidora::useSkill(void)
 
 				if (!_once2)
 				{
+					_interval = 1;
 					for (int i = 0; i < 2; i++)
 					{
 						_cl[i]._clPos = { _risingSpot[!_isLeft].x - 60 + 50 * (i + 1), 0 };
@@ -426,6 +489,9 @@ void Isidora::useSkill(void)
 				}
 			}
 		}
+		break;
+	case 6:
+
 		break;
 	}
 }
@@ -476,6 +542,11 @@ void Isidora::columnCycle(void)
 				_cl[i]._create = false;
 				_cl[i]._clPos = { 0, 0 };
 				if ((_patternNum == 1 && i == 4) || (_patternNum == 2 && i == 2) || (i == 6))
+				{
+					_once = false;
+					_doNothing = true;
+				}
+				else if ((_patternNum == 4 && i == 2) || (_patternNum == 5 && i == 1) || (i == 6))
 				{
 					_once = false;
 					_doNothing = true;
@@ -572,6 +643,7 @@ void Isidora::fireBallMove(void)
 
 void Isidora::fireBallCycle(void)
 {
+	
 	for (int i = 0; i < 7; i++)
 	{
 		if (_fb[i]._fire && !_fb[i]._cycle.empty() && _cnt % 3 == 0)
@@ -589,7 +661,7 @@ void Isidora::fireBallCycle(void)
 					_fb[i]._center = { WINSIZE_X / 2, WINSIZE_Y / 2 };
 					_fb[i]._visible = true;
 
-					if (i == 3)
+					if (i >= 3)
 					{
 						_once = false;
 						_doNothing = true;
@@ -609,11 +681,12 @@ void Isidora::fireBallCycle(void)
 				{
 					if (_fb[i]._visible)
 						_fb[i]._cycle.push_back("FireBall_loop");
-
 					else
 						_fb[i]._cycle.push_back("FireBall_out");
 				}
 			}
+
+			
 		}
 	}
 }
@@ -664,7 +737,8 @@ void Isidora::render(HDC hdc)
 
 	if (_hp > 0)
 	{
-		IMAGEMANAGER->render("Isidora_HP", hdc, 348, 680);
+		IMAGEMANAGER->render("Isidora_HP", hdc, 348, 680, 0, 0, 
+			IMAGEMANAGER->findImage("Isidora_HP")->getWidth() * _hp / 300, IMAGEMANAGER->findImage("Isidora_HP")->getHeight());
 		IMAGEMANAGER->render("Isidora_HP_Bar", hdc, 290, 654);
 		FONTMANAGER->drawText(hdc, 360, 632, "Neo둥근모 Pro", 30, 1, L"죽은 자들을 위해 노래하는 성녀 이시도라",
 			0, RGB(171, 154, 63));

@@ -62,7 +62,7 @@ private:
 	tagFireBall _fb[10];
 
 	RECT _isidora, _box, _mask;
-	int _cnt, _hp, _patternNum;
+	int _cnt, _hp, _phase, _patternNum;
 	int _interval;
 	//char _strSkill[128];
 	float tempX, tempY;
@@ -101,6 +101,7 @@ public:
 	inline bool getDo() { return _doNothing; }
 	inline void setDo(int state) { _doNothing = state; }
 	inline void setOnce(bool state) { _once = state; }
+	inline int getPhase() { return _phase; }
 
 	inline void setPattern(int pattern) { _patternNum = pattern; }
 	inline void addSeq(tagSequence seq) { _seq.push_back(seq); }

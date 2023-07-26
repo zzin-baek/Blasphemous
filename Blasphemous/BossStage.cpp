@@ -13,6 +13,9 @@ HRESULT BossStage::init(void)
     _intro = _mainStage = _ending = false;
     _cnt = 0;
 
+    for (int i = 0; i < 6; i++)
+        _phase1[i] = i + 1;
+
     return S_OK;
 }
 
@@ -100,9 +103,15 @@ void BossStage::update(void)
         {
             int _temp;
             //_boss->setOnce(false);
-            _pattern = 4;//  RND->getFromIntTo(1, 6);
-            //_boss->setLeft(RND->getInt(2));
-            _boss->setLeft(true);
+            if (_boss->getPhase() == 1)
+                _pattern = RND->getIntArray(_phase1, 6);// RND->getFromIntTo(1, 6);
+            else if (_boss->getPhase() == 2)
+                _pattern = RND->getIntArray(_phase2, 4);
+            else
+                _pattern = RND->getIntArray(_phase3, 2);
+
+            _boss->setLeft(RND->getInt(2));
+            //_boss->setLeft(true);
             _boss->setPattern(_pattern);
             switch (_pattern)
             {
@@ -134,7 +143,10 @@ void BossStage::update(void)
                 _boss->setDo(false);
                 break;
             case 4: // 올려치기
-                _boss->initPos(1100, 600);
+                if (_boss->getLeft())
+                    _boss->initPos(1100, 600);
+                else
+                    _boss->initPos(200, 600);
 
                 _boss->addPattern("Isidora_sparkAppear");
                 _boss->addPattern("Isidora_sparkLoop");
@@ -150,7 +162,7 @@ void BossStage::update(void)
                     _boss->setIdxX(0);
 
                 _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_sparkAppear")->getMaxFrameX()} });
-                _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
+                _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
                 _boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_outToRising")->getMaxFrameX()} });
                 _boss->addSeq({ 1, {20, IMAGEMANAGER->findImage("Isidora_scy2")->getMaxFrameX()} });
                 _boss->addSeq({ 0, {0, IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX()} });
@@ -239,12 +251,17 @@ void BossStage::update(void)
                 _boss->setDo(false);
                 break;
             case 7:
-                //_boss->initPos(WINSIZE_X/2, 300);
+                if (_boss->getLeft())
+                    _boss->initPos(1100, 600);
+                else
+                    _boss->initPos(200, 600);
+
+
                 _boss->setDo(false);
                 break;
             }
             cout << "패턴 넘버" << _pattern << endl;
-        }
+        }        
     }
 
     _boss->update();
