@@ -1,5 +1,8 @@
 #pragma once
 
+#define MAX_COLUMN 12
+#define MAX_FIREBALL 15
+
 enum eSkill
 {
 	RISING,
@@ -52,14 +55,14 @@ struct tagSequence
 class Isidora
 {
 private:
-	POINTF _pos, _test, _plPos, _risingSpot[3];
+	POINTF _pos, _center, _test, _plPos, _risingSpot[3];
 	POINT _idx;
 	deque<char*> _pattern;
 	map<char*, tagBoss> _sync;
 	vector<tagSequence> _seq;
 
-	tagColumn _cl[7];
-	tagFireBall _fb[10];
+	tagColumn _cl[MAX_COLUMN];
+	tagFireBall _fb[MAX_FIREBALL];
 
 	RECT _isidora, _box, _mask;
 	int _cnt, _hp, _phase, _patternNum;
@@ -76,6 +79,8 @@ public:
 	void initPos(float x, float y) { _pos.x = x; _pos.y = y; }
 	void update(void);
 	void useSkill(void);
+
+	void switchPhase(void);
 
 	void columnCreate(void);
 	void columnCycle(void);

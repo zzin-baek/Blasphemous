@@ -14,7 +14,7 @@ private:
 	int _cnt, _pattern;
 	char* _ac;
 
-	int _phase1[6], _phase2[4], _phase3[2];
+	int _phase1[6], _phase2[3], _phase3[2];
 
 public:
 	HRESULT init(void);

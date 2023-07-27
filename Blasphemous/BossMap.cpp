@@ -55,6 +55,7 @@ void BossMap::render(HDC hdc)
     if (KEYMANAGER->isToggleKey(VK_TAB))
     {
         IMAGEMANAGER->render("BossMap_collision", hdc, 0, 0, _pos.x, _pos.y, WINSIZE_X, WINSIZE_Y);
+        IMAGEMANAGER->render("BossMap_bright", hdc, 0, 0, 0, 0, WINSIZE_X, WINSIZE_Y);
         DrawRectMake(hdc, _sceneStart);
     }
 }
