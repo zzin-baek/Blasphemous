@@ -7,7 +7,7 @@ private:
 	RECT _sceneStart;
 
 	char _brazier[128];
-	int _cnt;
+	int _cnt, _scene;
 
 public:
 	HRESULT init(void);
@@ -20,9 +20,12 @@ public:
 	inline int getPosX() { return _pos.x; }
 	inline int getPosY() { return _pos.y; }
 
+	inline void setScene(int scene) { _scene = scene; }
+	inline int getScene() { return _scene; }
+
 	RECT getRect() { return _sceneStart; }
+	void changeBrazier(char* brazier) { wsprintf(_brazier, brazier); }
 
 	BossMap() {}
 	~BossMap() {}
 };
-

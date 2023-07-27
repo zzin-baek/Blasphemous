@@ -46,6 +46,7 @@ struct tagColumn
 	deque<char*> _cycle;
 };
 
+// sequenceÀû¿ë
 struct tagSequence
 {
 	bool _pass;
@@ -55,8 +56,10 @@ struct tagSequence
 class Isidora
 {
 private:
-	POINTF _pos, _center, _test, _plPos, _risingSpot[3];
+	POINTF _pos, _center, _plPos;
+	POINTF _temp, _risingSpot[3];
 	POINT _idx;
+
 	deque<char*> _pattern;
 	map<char*, tagBoss> _sync;
 	vector<tagSequence> _seq;
@@ -64,13 +67,13 @@ private:
 	tagColumn _cl[MAX_COLUMN];
 	tagFireBall _fb[MAX_FIREBALL];
 
-	RECT _isidora, _box, _mask;
-	int _cnt, _hp, _phase, _patternNum;
-	int _interval;
-	//char _strSkill[128];
-	float tempX, tempY;
+private:
+	RECT _isidora, _hitBox, _mask;
+	int _cnt, _hp, _phase, _interval, _patternNum;
 
-	bool _isLeft, _finIntro, _doNothing, _once, _once2;
+	bool _isLeft, _finIntro, _isPhase2, _doNothing;
+	bool _once, _once2, _onceColumn, _onceFire;
+
 	char _loc[128];
 
 public:
@@ -82,6 +85,7 @@ public:
 
 	void switchPhase(void);
 
+	void columnInit(int num, int interval);
 	void columnCreate(void);
 	void columnCycle(void);
 
@@ -118,4 +122,3 @@ public:
 	Isidora() {}
 	~Isidora() {}
 };
-

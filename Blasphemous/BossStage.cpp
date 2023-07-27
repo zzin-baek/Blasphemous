@@ -104,16 +104,15 @@ void BossStage::update(void)
         if (_boss->getDo())
         {
             int _temp;
-            //_boss->setOnce(false);
+     
             if (_boss->getPhase() == 1)
-                _pattern = RND->getIntArray(_phase1, 6);// RND->getFromIntTo(1, 6);
+                _pattern = RND->getIntArray(_phase1, 6);
             else if (_boss->getPhase() == 2)
-                _pattern = 7;// RND->getIntArray(_phase2, 3);
+                _pattern = RND->getIntArray(_phase2, 3);
             else
-                _pattern = RND->getIntArray(_phase3, 2);
+                _pattern = 10;
 
             _boss->setLeft(RND->getInt(2));
-            //_boss->setLeft(true);
             _boss->setPattern(_pattern);
             switch (_pattern)
             {
@@ -213,6 +212,7 @@ void BossStage::update(void)
             case 6: // 회오리감자
                 _temp = RND->getFromIntTo(150, 1140);
                 _boss->initPos(_temp, 500);
+
                 if (_temp <= PLAYER->getRect().left)
                     _boss->setLeft(false);
                 else
@@ -352,6 +352,18 @@ void BossStage::update(void)
             cout << "패턴 넘버" << _pattern << endl;
         }        
     }
+
+    /*if (_boss->getPhase() == 2 && _bm->getScene() < WINSIZE_X / 2)
+    {
+        _bm->setScene(_bm->getScene() + 2);
+        if (_bm->getScene() > 100)
+            _bm->changeBrazier("Brazier_HalfLoop");
+        if (_bm->getScene() > 200)
+            _bm->changeBrazier("Brazier_HalfToFull");
+        if (_bm->getScene() > 230)
+            _bm->changeBrazier("Brazier_FullLoop");
+
+    }*/
 
     _boss->update();
     _bm->update();
