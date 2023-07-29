@@ -18,6 +18,12 @@ HRESULT BossStage::init(void)
     for (int i = 0; i < 3; i++)
         _phase2[i] = i + 7;
 
+    _sq.push_back(11);
+    _sq.push_back(12);
+    _sq.push_back(11);
+    _sq.push_back(12);
+    _sq.push_back(13);
+
     return S_OK;
 }
 
@@ -36,14 +42,14 @@ void BossStage::update(void)
         if (!PLAYER->getFixed())
             PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
 
-        if (PLAYER->getRect().left <= 0)
+        if (PLAYER->getHitBox().left <= 0)
             PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
     }
 
     if ((!_intro || _ending) && !_mainStage)
     {
         // Ä«¸Þ¶ó
-        if (PLAYER->getRect().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 2400)
+        if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 2400)
         {
             _bm->setPosX(_bm->getPosX() + 4);
             PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
@@ -105,8 +111,13 @@ void BossStage::update(void)
         {
             int _temp;
      
-            if (_boss->getPhase() == 1)
+            if (_boss->getPhase() == 1 && _boss->getHP() > 200)
                 _pattern = RND->getIntArray(_phase1, 6);
+            else if (_boss->getHP() <= 200 && !_boss->getIsPhase())
+            {
+                _pattern = _sq[0];
+                _sq.erase(_sq.begin());
+            }
             else if (_boss->getPhase() == 2)
                 _pattern = RND->getIntArray(_phase2, 3);
             else
@@ -213,7 +224,7 @@ void BossStage::update(void)
                 _temp = RND->getFromIntTo(150, 1140);
                 _boss->initPos(_temp, 500);
 
-                if (_temp <= PLAYER->getRect().left)
+                if (_temp <= PLAYER->getHitBox().left)
                     _boss->setLeft(false);
                 else
                     _boss->setLeft(true);
@@ -285,7 +296,7 @@ void BossStage::update(void)
                 _temp = RND->getFromIntTo(150, 1140);
                 _boss->initPos(_temp, 500);
 
-                if (_temp <= PLAYER->getRect().left)
+                if (_temp <= PLAYER->getHitBox().left)
                     _boss->setLeft(false);
                 else
                     _boss->setLeft(true);
@@ -312,7 +323,7 @@ void BossStage::update(void)
                 _temp = RND->getFromIntTo(150, 1100);
                 _boss->initPos(_temp, 500);
 
-                if (_temp <= PLAYER->getRect().left)
+                if (_temp <= PLAYER->getHitBox().left)
                     _boss->setLeft(false);
                 else
                     _boss->setLeft(true);
@@ -345,6 +356,39 @@ void BossStage::update(void)
                 _boss->setDo(false);
                 break;
             case 10:
+                _boss->initPos(WINSIZE_X / 2 - 10, WINSIZE_Y / 2 + 100);
+                _boss->setLeft(true);
+
+                _boss->addPattern("Isidora_cast");
+
+                _boss->addSeq({ 0, { 11, 21 } });
+
+                _boss->setDo(false);
+                break;
+            case 11:
+            case 12:
+                _boss->setDo(false);
+                break;
+            case 13:
+                _boss->initPos(WINSIZE_X / 2 - 10, WINSIZE_Y / 2 + 100);
+                _boss->addPattern("Isidora_outToCast");
+                _boss->addPattern("Isidora_cast");
+                _boss->addPattern("Isidora_vanish");
+
+                if (_boss->getLeft())
+                    _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX());
+                else
+                    _boss->setIdxX(0);
+
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX() } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 1, { 11, IMAGEMANAGER->findImage("Isidora_cast")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_vanish")->getMaxFrameX() } });
 
                 _boss->setDo(false);
                 break;
@@ -353,22 +397,21 @@ void BossStage::update(void)
         }        
     }
 
-    /*if (_boss->getPhase() == 2 && _bm->getScene() < WINSIZE_X / 2)
+    if (_boss->getIsPhase() && _bm->getScene() < WINSIZE_X / 2)
     {
-        _bm->setScene(_bm->getScene() + 2);
+        _bm->setScene(_bm->getScene() + 1);
         if (_bm->getScene() > 100)
             _bm->changeBrazier("Brazier_HalfLoop");
         if (_bm->getScene() > 200)
             _bm->changeBrazier("Brazier_HalfToFull");
         if (_bm->getScene() > 230)
             _bm->changeBrazier("Brazier_FullLoop");
-
-    }*/
+    }
 
     _boss->update();
     _bm->update();
 
-    for (int i = PLAYER->getRect().left; i <= PLAYER->getRect().right; i++)
+    for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("BossMap_collision")->getMemDC(),
             i, PLAYER->getRect().bottom);

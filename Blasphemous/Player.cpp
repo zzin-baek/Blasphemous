@@ -5,7 +5,7 @@ HRESULT Player::init(void)
 {
     initImage();
 
-    _cnt = _idx_x = _idx_y = _hitCool = 0;
+    _cnt = _idx_x = _idx_y = 0;
     _isLeft = _isGround = _isFixed = _hold = _collect = false;
 
     _centerX = _centerY = 0.0f;
@@ -14,7 +14,7 @@ HRESULT Player::init(void)
     _hp = 100; 
     _score = 0;
     _portion = 5;
-    _collected = _respawn = _parry = false;
+    _collected = _respawn = _hit = _parry = false;
 
     wsprintf(_strAction, "IDLE");
     initTiming();
@@ -127,7 +127,7 @@ void Player::initTiming(void)
     _sync["ATTACK_COMBO_3"] = { 4, {-310 + 50, -8}, {60, -8} };
     _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
     _sync["PARRY_SUCCESS"] = { 4, {-85, -65}, {-15, -65} };
-    _sync["PUSHBACK"] = { 4, {-20 + 50, 10}, {0, 10} };
+    _sync["PUSHBACK"] = { 4, {-20 + 50, 10}, {-30, 10} };
     _sync["DODGE"] = { 2, {0 + 50, 0}, {0, 0} };
     _sync["CROUCH_DOWN"] = { 3, {0 + 50, 10}, {-25, 10} };
     _sync["CROUCH_UP"] = { 3, {0 + 50, 0}, {-25, 0} };
@@ -144,6 +144,26 @@ void Player::playerAction(void)
 
     _centerX = _plPos_x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2;
     _centerY = _plPos_y + IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2;
+
+    // 히트박스 설정
+    if (_isLeft)
+    {
+        if (getState()[ATTACK])
+            _hitBox = RectMake(_player.right - 150, _player.bottom - 150, 100, 150);
+        else if (getState()[PORTION])
+            _hitBox = RectMakeCenter(_centerX, _player.bottom - 75, 100, 150);
+        else
+            _hitBox = RectMake(_player.left, _player.bottom - 150, 100, 150);
+    }
+    else
+    {
+        if (getState()[ATTACK])
+            _hitBox = RectMake(_player.left + 50, _player.bottom - 150, 100, 150);
+        else if (getState()[PORTION])
+            _hitBox = RectMakeCenter(_centerX, _player.bottom - 75, 100, 150);
+        else
+            _hitBox = RectMake(_player.right - 100, _player.bottom - 150, 100, 150);
+    }
 
     if (_isGround)
     {
@@ -402,24 +422,18 @@ void Player::playerAction(void)
         else
             _comboTime.push_back(clock());
     }
-    if (_plState[HIT] && isEmpty())
+    if (!_plState[HIT] && _hit && isEmpty())
     {
-        if (!_hitCool)
-        {
-            cout << "pushback" << endl;
-            _actionList.push_back("PUSHBACK");
-            _actionList.push_back("CROUCH_UP");
-            setAction("PUSHBACK");
+        setState(HIT, true);
+        //_hit = true;
+        _actionList.push_back("PUSHBACK");
+        _actionList.push_back("CROUCH_UP");
+        setAction("PUSHBACK");
 
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
-            else
-                _idx_x = 0;
-        }
-        _hitCool++;
-        cout << _hitCool << endl;
-        if (_hitCool > 50)
-            _hitCool = 0;
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
+        else
+            _idx_x = 0;
     }
    _cnt++;
    if (_actionList.empty())
@@ -476,6 +490,8 @@ void Player::playerAction(void)
                    }
                    else
                    {
+                       if (getState()[HIT])
+                           _hit = false;
                        _plState.reset();
                        _isFixed = _parry = false;
                        setAction("IDLE");
@@ -503,6 +519,8 @@ void Player::playerAction(void)
                    }
                    else
                    {
+                       if (getState()[HIT])
+                           _hit = false;
                        _plState.reset();
                        _isFixed = _parry = false;
                        _respawn = true;
@@ -581,12 +599,12 @@ void Player::playerMove(void)
     {
         if (_isLeft)
         {
-            if (_idx_x > getMaxFrameX() - 6)
+            if (_idx_x > getMaxFrameX() - 9)
                 _plPos_x += 6.0f;
         }
         else
         {
-            if (_idx_x < 6)
+            if (_idx_x < 9)
                 _plPos_x -= 6.0f;
         }
     }
@@ -713,7 +731,7 @@ void Player::renderPlayer(HDC hdc)
         HPEN myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
         HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
         
-        DrawRectMake(hdc, _player);
+        DrawRectMake(hdc, _hitBox);
         _stprintf_s(_loc, "x: %.2f y: %.2f", _plPos_x, _plPos_y);
         TextOut(hdc, _plPos_x, _plPos_y, _loc, strlen(_loc));
         TextOut(hdc, _plPos_x, _plPos_y + 20, _strAction, strlen(_strAction));

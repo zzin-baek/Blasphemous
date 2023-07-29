@@ -14,7 +14,7 @@ private:
 	POINT _acolytePos;
 	RECT _acolyte, _attack;
 	RECT _attackBoundary[2];
-	deque<string> _acList;
+	deque<char*> _acList;
 	bitset<4> _acState;
 	map<string, acImageInfo> _sync;
 
@@ -60,7 +60,7 @@ public:
 	int getMaxFrame() { return IMAGEMANAGER->findImage(_strAction)->getMaxFrameX(); }
 
 	bool isEmpty() { return _acList.empty(); }
-	void addAction(string _action) { _acList.push_back(_action); }
+	void addAction(char* _action) { _acList.push_back(_action); }
 
 	Acolyte() {}
 	~Acolyte() {}

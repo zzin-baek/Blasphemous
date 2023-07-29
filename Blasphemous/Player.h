@@ -36,12 +36,11 @@ private:
 	map<string, plImageInfo> _sync;
 	vector<int> _attackTime, _comboTime;
 	
-	RECT _player;
+	RECT _player, _hitBox;
 	POINT _plPos;
 	float _plPos_x, _plPos_y, _centerX, _centerY;
-	bool _isLeft, _isGround, _isFixed, _hold, _collect, _parry;
+	bool _isLeft, _isGround, _isFixed, _hold, _collect, _hit, _parry;
 
-	int _hitCool;
 	int _cnt, _idx_x, _idx_y;
 	POINT _center;
 	float _tempX, _tempY;
@@ -64,7 +63,6 @@ public:
 
 	inline void setPosX(float x) { _plPos_x = x; }
 	inline void setPosY(float y) { _plPos_y = y; }
-
 	inline float getPosX() { return _plPos_x; }
 	inline float getPosY() { return _plPos_y; }
 
@@ -76,10 +74,13 @@ public:
 	inline void setHold(bool state) { _hold = state; }
 	inline void setRespawn(bool state) { _respawn = state; }
 	inline bool getRespawn() { return _respawn; }
+
 	inline void setCollect(bool state) { _collect = state; }
 	inline bool getCollected() { return _collected; }
 	inline bool getParry() { return _parry; }
 	inline void setParry(bool state) { _parry = true; }
+	inline void setHit(bool state) { _hit = state; }
+	inline bool getHit() { return _hit; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
 	inline void addAction(string _action) { _actionList.push_back(_action); }
@@ -92,6 +93,7 @@ public:
 	bool isEmpty() { return _actionList.empty(); }
 
 	inline RECT getRect() { return _player; }
+	inline RECT getHitBox() { return _hitBox; }
 	inline float getCenterX() { return _centerX; }
 	inline float getCenterY() { return _centerY; }
 

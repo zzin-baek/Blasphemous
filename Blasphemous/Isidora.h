@@ -69,7 +69,7 @@ private:
 
 private:
 	RECT _isidora, _hitBox, _mask;
-	int _cnt, _hp, _phase, _interval, _patternNum;
+	int _cnt, _hp, _phase, _intervalC, _intervalF, _patternNum;
 
 	bool _isLeft, _finIntro, _isPhase2, _doNothing;
 	bool _once, _once2, _onceColumn, _onceFire;
@@ -88,6 +88,7 @@ public:
 	void columnInit(int num, int interval);
 	void columnCreate(void);
 	void columnCycle(void);
+	void columnCycle(bool phase);
 
 	void fireBallCreate(void);
 	void fireBallMove(void);
@@ -109,8 +110,10 @@ public:
 	inline bool getFin() { return _finIntro; }
 	inline bool getDo() { return _doNothing; }
 	inline void setDo(int state) { _doNothing = state; }
-	inline void setOnce(bool state) { _once = state; }
+
 	inline int getPhase() { return _phase; }
+	inline bool getIsPhase() { return _isPhase2; }
+	inline int getHP() { return _hp; }
 
 	inline void setPattern(int pattern) { _patternNum = pattern; }
 	inline void addSeq(tagSequence seq) { _seq.push_back(seq); }

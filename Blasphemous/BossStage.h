@@ -15,6 +15,7 @@ private:
 	char* _ac;
 
 	int _phase1[6], _phase2[3];
+	vector<int> _sq;
 
 public:
 	HRESULT init(void);

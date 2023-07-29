@@ -48,10 +48,10 @@ HRESULT Isidora::init(void)
 		576 * 2, 64 * 2, 6, 2, true, MAGENTA);
 
 	// 불기둥
-	IMAGEMANAGER->addFrameImage("Column_create", "Resources/Image/Isidora/FireColumnAnticipation.bmp",
-		410 * 2, 1300 * 2, 5, 4, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Column_create2", "Resources/Image/Isidora/FireColumnAnticipation2.bmp",
 		1394 * 2, 325 * 2, 17, 1, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Column_create3", "Resources/Image/Isidora/FireColumnAnticipation_phase3.bmp",
+		2542 * 2, 325 * 2, 31, 1, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Column_loop", "Resources/Image/Isidora/FireColumnLoop.bmp",
 		328 * 2, 975 * 2, 4, 3, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Column_out", "Resources/Image/Isidora/FireColumnOut.bmp",
@@ -79,10 +79,10 @@ HRESULT Isidora::init(void)
 	_pos = { WINSIZE_X / 2 + 380, WINSIZE_Y / 2 - 100};
 	_idx = { 0, 0 };
 	_cnt = _patternNum = 0;
-	_interval = 10;
+	_intervalC = _intervalF = 10;
 
 	_hp = 300;
-	_phase = 1;
+	_phase = 3;
 
 	_isLeft = _doNothing = true;
 	_finIntro = _isPhase2 = _once = _once2 = false;
@@ -140,7 +140,7 @@ void Isidora::update(void)
 	if (KEYMANAGER->isOnceKeyDown(VK_F4))
 		_hp -= 100;
 	
-	if (_hp <= 200 && _hp > 100 && _pattern.empty() && _isPhase2)
+	if (_hp <= 200 && _hp > 100 && _isPhase2)
 		_phase = 2;
 	else if (_hp <= 100 && _hp > 0)
 		_phase = 3;
@@ -271,17 +271,56 @@ void Isidora::update(void)
 		}
 	}
 
-	if (_hp <= 200 && !_isPhase2 && _pattern.empty())
-	{
-	}
-	else
-		useSkill();
+	useSkill();
 
-	if (_cnt % _interval == 0)
+	if (_phase == 2 && _patternNum != 13)
 	{
-		columnCreate();
-		fireBallCreate();
+		_intervalF = 200;
+
+		if (_cnt % 200 == 0)
+		{
+			for (int i = 0; i < MAX_FIREBALL; i++)
+			{
+				if (_fb[i]._create) continue;
+
+				_fb[i]._center = { WINSIZE_X / 2 - 30, WINSIZE_Y / 2 };
+				_fb[i]._idx = { 0, 0 };
+				_fb[i]._cnt = 0;
+
+				_fb[i]._angle = 90.0f;
+				_fb[i]._create = true;
+
+				break;
+			}
+		}
 	}
+
+	else if (_phase == 3 && !_onceFire)
+	{
+		_intervalF == 20;
+
+		if (_cnt % 20 == 0)
+		{
+			for (int i = 0; i < MAX_FIREBALL; i++)
+			{
+				if (_fb[i]._create) continue;
+
+				_fb[i]._center = { WINSIZE_X / 2 - 30, WINSIZE_Y / 2 };
+				_fb[i]._idx = { 0, 0 };
+				_fb[i]._cnt = 0;
+
+				_fb[i]._angle = RND->getFromFloatTo(270.0f, 450.0f);
+				_fb[i]._create = true;
+			}
+		}
+		_onceFire = true;
+	}
+
+	if (_cnt % _intervalC == 0)
+		columnCreate();
+
+	if (_cnt % _intervalF == 0)
+		fireBallCreate();
 
 	columnCycle();
 
@@ -306,7 +345,7 @@ void Isidora::useSkill(void)
 	case 2:
 		if (!_onceColumn)
 		{
-			_interval = 1;
+			_intervalC = 1;
 			for (int i = 0; i < 3; i++)
 			{
 				_cl[i]._clPos = { float(WINSIZE_X / 2 - 180 + (180 * i)), 0 };
@@ -319,7 +358,7 @@ void Isidora::useSkill(void)
 	case 3:
 		if (!_onceFire)
 		{
-			_interval = 100;
+			_intervalF = 100;
 			for (int i = 0; i < 4; i++)
 			{
 				_fb[i]._center = { WINSIZE_X / 2 - 30, WINSIZE_Y / 2 };
@@ -385,7 +424,7 @@ void Isidora::useSkill(void)
 
 					if (!_onceColumn)
 					{
-						_interval = 15;
+						_intervalC = 15;
 						for (int i = 0; i < 3; i++)
 						{
 							_cl[i]._clPos = { float(_temp.x - 280 - (80 * i)), 0 };
@@ -405,7 +444,7 @@ void Isidora::useSkill(void)
 
 					if (!_onceColumn)
 					{
-						_interval = 15;
+						_intervalC = 15;
 						for (int i = 0; i < 3; i++)
 						{
 							_cl[i]._clPos = { float(_temp.x + 280 + (80 * i)), 0 };
@@ -482,7 +521,7 @@ void Isidora::useSkill(void)
 
 				if (!_once)
 				{
-					_interval = 1;
+					_intervalC = 1;
 					for (int i = 0; i < 2; i++)
 					{
 						_cl[i]._clPos = { _risingSpot[!_isLeft].x - 60 + 50 * (i + 1), 0 };
@@ -545,7 +584,7 @@ void Isidora::useSkill(void)
 					{
 						if (!_onceColumn)
 						{
-							_interval = 1;
+							_intervalC = 1;
 
 							_cl[0]._clPos = { float(_hitBox.right) + 20, 0 };
 							_cl[0]._idx = { 0, 0 };
@@ -570,7 +609,7 @@ void Isidora::useSkill(void)
 
 					if (_idx.x == 5)
 					{
-						_interval = 15;
+						_intervalC = 15;
 						for (int i = 1; i < 4; i++)
 						{
 							_cl[i]._clPos = { float(_temp.x - 280 - (80 * i)), 0 };
@@ -585,7 +624,7 @@ void Isidora::useSkill(void)
 					{
 						if (!_onceColumn)
 						{
-							_interval = 1;
+							_intervalC = 1;
 
 							_cl[0]._clPos = { float(_hitBox.left), 0 };
 							_cl[0]._idx = { 0, 0 };
@@ -609,7 +648,7 @@ void Isidora::useSkill(void)
 
 					if (_idx.x == 21)
 					{
-						_interval = 15;
+						_intervalC = 15;
 						for (int i = 1; i < 4; i++)
 						{
 							_cl[i]._clPos = { float(_temp.x + 280 + (80 * i)), 0 };
@@ -726,9 +765,26 @@ void Isidora::useSkill(void)
 				_pos.y += 3.0f;
 		}
 		break;
-	case 10:
-		break;
+	case 10: // 플레이어 위치 기준 불기둥
+		if (!_onceColumn)
+		{
+			_intervalC = 1;
+			for (int i = 0; i < 3; i++)
+			{
+				_cl[i]._clPos = { PLAYER->getCenterX() - 162 + 162 * i, 0 };
+				_cl[i]._idx = { 0, 0 };
+				_cl[i]._create = true;
+			}
+			_onceColumn = true;
+		}
 
+		if (!_seq.empty())
+		{
+			if (_seq.size() == 1)
+				_seq.push_back({ 0, { 11, 21 } });
+		}
+
+		break;
 	// 2페이즈 변할 떄
 	case 11:
 		if (!_onceColumn)
@@ -743,6 +799,33 @@ void Isidora::useSkill(void)
 			columnInit(7, 15);
 			_onceColumn = true;
 		}
+		break;
+	case 13:
+		if (!_isPhase2) _isPhase2 = true;
+
+		if (!_onceColumn)
+		{
+			_intervalC = 40;
+			for (int i = 0; i < 12; i += 2)
+			{
+				_cl[i]._clPos = { float(40 * i + 90), 0 };
+				_cl[i]._idx = { 0, 0 };
+				_cl[i]._create = true;
+
+				_cl[i + 1]._clPos = { float(WINSIZE_X - 40 * i - 90), 0 };
+				_cl[i + 1]._idx = { 0, 0 };
+				_cl[i + 1]._create = true;
+			}
+			_onceColumn = true;
+		}
+		else
+			_doNothing = false;
+
+		if (!_pattern.empty())
+		{
+			if (!strcmp(_pattern.front(), "Isidora_cast") && _pos.y > 180)
+				_pos.y -= 1.0f;
+		}
 	}
 }
 
@@ -754,7 +837,7 @@ void Isidora::switchPhase(void)
 // 일정 간격, 갯수의 불기둥 생성
 void Isidora::columnInit(int num, int interval)
 {
-	_interval = interval;
+	_intervalC = interval;
 
 	for (int i = 0; i < num; i++)
 	{
@@ -766,22 +849,93 @@ void Isidora::columnInit(int num, int interval)
 
 void Isidora::columnCreate(void)
 {
-	for (int i = 0; i < MAX_COLUMN; i++)
+	if (_phase == 3)
 	{
-		if (_cl[i]._create && !_cl[i]._fire)
+		for (int i = 0; i < MAX_COLUMN; i++)
 		{
-			_cl[i]._fire = true;
-			_cl[i]._cycle.push_back("Column_create2");
-			_cl[i]._cycle.push_back("Column_loop");
-			_cl[i]._cycle.push_back("Column_loop");
-			_cl[i]._cycle.push_back("Column_out");
+			if (_cl[i]._create && !_cl[i]._fire)
+			{
+				_cl[i]._fire = true;
+				_cl[i]._cycle.push_back("Column_create3");
+				_cl[i]._cycle.push_back("Column_loop");
+				_cl[i]._cycle.push_back("Column_loop");
+				_cl[i]._cycle.push_back("Column_out");
 
-			break;
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < MAX_COLUMN; i++)
+		{
+			if (_cl[i]._create && !_cl[i]._fire)
+			{
+				_cl[i]._fire = true;
+				_cl[i]._cycle.push_back("Column_create2");
+				_cl[i]._cycle.push_back("Column_loop");
+				_cl[i]._cycle.push_back("Column_loop");
+				_cl[i]._cycle.push_back("Column_out");
+
+				break;
+			}
 		}
 	}
 }
 
 void Isidora::columnCycle(void)
+{
+	int _timing = 0;
+	if (_phase == 3)
+		_timing = 3;
+	else
+		_timing = 2;
+	for (int i = 0; i < MAX_COLUMN; i++)
+	{
+		if (_cl[i]._fire && !_cl[i]._cycle.empty() && _cnt % _timing == 0)
+		{
+			_cl[i]._cnt++;
+
+			_cl[i]._idx.x = _cl[i]._cnt % (IMAGEMANAGER->findImage(_cl[i]._cycle.front())->getMaxFrameX() + 1);
+			_cl[i]._idx.y = _cl[i]._cnt / (IMAGEMANAGER->findImage(_cl[i]._cycle.front())->getMaxFrameX() + 1);
+
+			if (_cl[i]._cnt > (IMAGEMANAGER->findImage(_cl[i]._cycle.front())->getMaxFrameX() + 1) *
+				(IMAGEMANAGER->findImage(_cl[i]._cycle.front())->getMaxFrameY() + 1) - 1)
+			{
+				_cl[i]._cnt = 0;
+				_cl[i]._cycle.pop_front();
+			}
+
+			if (!_cl[i]._cycle.empty())
+			{
+				IMAGEMANAGER->findImage(_cl[i]._cycle.front())->setFrameX(_cl[i]._idx.x);
+				IMAGEMANAGER->findImage(_cl[i]._cycle.front())->setFrameY(_cl[i]._idx.y);
+			}
+			else
+			{
+				_cl[i]._fire = false;
+				_cl[i]._create = false;
+				_cl[i]._clPos = { 0, 0 };
+				if ((_patternNum == 1 && i == 4) || (_patternNum == 2 && i == 2) || (_patternNum == 10 && i == 2))
+				{
+					_onceColumn = false;
+					_doNothing = true;
+				}
+				else if ((_patternNum == 5 && i == 1) || (i == 11) ||
+					(_patternNum == 11 && i == 4) || (_patternNum == 12 && i == 6))
+				{
+					_onceColumn = false;
+					_doNothing = true;
+				}
+				else if ((_patternNum == 7 && i == 3) || (_patternNum == 4 && i == 2))
+					_onceColumn = false;
+			}
+		}
+
+	}
+}
+
+void Isidora::columnCycle(bool phase)
 {
 	for (int i = 0; i < MAX_COLUMN; i++)
 	{
@@ -814,13 +968,13 @@ void Isidora::columnCycle(void)
 					_onceColumn = false;
 					_doNothing = true;
 				}
-				else if ((_patternNum == 5 && i == 1))
+				else if ((_patternNum == 5 && i == 1) || (i == 11) ||
+					(_patternNum == 11 && i == 4) || (_patternNum == 12 && i == 6))
 				{
 					_onceColumn = false;
 					_doNothing = true;
 				}
-				else if ((_patternNum == 7 && i == 3) || (_patternNum == 4 && i == 2) ||
-					(_patternNum == 11 && i == 4) || (_patternNum == 12 && i == 6))
+				else if ((_patternNum == 7 && i == 3) || (_patternNum == 4 && i == 2))
 					_onceColumn = false;
 			}
 		}

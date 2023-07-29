@@ -41,7 +41,7 @@ void Tutorial::update(void)
         _itemList[0]->update();
 
         RECT _rt;
-        if (IntersectRect(&_rt, &PLAYER->getRect(), &_item->getRect()))
+        if (IntersectRect(&_rt, &PLAYER->getHitBox(), &_item->getRect()))
         {
             _itemList[0]->setPick(true);
             PLAYER->setCollect(true);
@@ -67,15 +67,15 @@ void Tutorial::update(void)
     //if (!PLAYER->getGround())
     PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
 
-    if (PLAYER->getRect().left <= 0)
+    if (PLAYER->getHitBox().left <= 0)
     {
         PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
     }
 
-    for (int i = PLAYER->getRect().left; i <= PLAYER->getRect().right; i++)
+    for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
-            i, PLAYER->getRect().bottom);
+            i, PLAYER->getHitBox().bottom);
 
         int r = GetRValue(color);
         int g = GetGValue(color);

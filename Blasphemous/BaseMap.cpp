@@ -45,7 +45,7 @@ void BaseMap::update(void)
         _itemList[0]->update();
 
         RECT _rt;
-        if (IntersectRect(&_rt, &PLAYER->getRect(), &_item->getRect()))
+        if (IntersectRect(&_rt, &PLAYER->getHitBox(), &_item->getRect()))
         {
             _itemList[0]->setPick(true);
             PLAYER->setCollect(true);
@@ -103,7 +103,7 @@ void BaseMap::update(void)
         if (!_itemList.empty())
             _itemList[0]->setPosX(_item->getPosX() + 4);
     }
-    if (PLAYER->getRect().top < WINSIZE_Y / 2 && _bf->getY() > 0)
+    if (PLAYER->getHitBox().top < WINSIZE_Y / 2 && _bf->getY() > 0)
     {
         PLAYER->setPosY(PLAYER->getPosY() + 2.0f);
         _bf->setY(_bf->getY() - 2.0f);
@@ -113,7 +113,7 @@ void BaseMap::update(void)
         if (!_itemList.empty())
             _itemList[0]->setPosY(_item->getPosY() + 2);
     }
-    if (PLAYER->getRect().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 720 < 938))
+    if (PLAYER->getHitBox().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 720 < 938))
     {
         PLAYER->setPosY(PLAYER->getPosY() - 2.0f);
         _bf->setY(_bf->getY() + 2.0f);
@@ -127,8 +127,8 @@ void BaseMap::update(void)
     _bf->rectMove();
 
     RECT _rt;
-    if (PtInRect(&_bf->getLadder(), { (PLAYER->getRect().left + PLAYER->getRect().right) / 2,
-        PLAYER->getRect().bottom - 20 }))
+    if (PtInRect(&_bf->getLadder(), { (PLAYER->getHitBox().left + PLAYER->getHitBox().right) / 2,
+        PLAYER->getHitBox().bottom - 20 }))
     {
         PLAYER->setHold(true);
     }
@@ -139,10 +139,10 @@ void BaseMap::update(void)
     }
 
     // 픽셀 충돌
-    for (int i = PLAYER->getRect().left; i <= PLAYER->getRect().right; i++)
+    for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + i, _bf->getY() + PLAYER->getRect().bottom);
+            _bf->getX() + i, _bf->getY() + PLAYER->getHitBox().bottom);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
@@ -157,10 +157,10 @@ void BaseMap::update(void)
         PLAYER->setGround(false);
     }
 
-    for (int i = PLAYER->getRect().top; i < PLAYER->getRect().bottom - 40; i++)
+    for (int i = PLAYER->getHitBox().top; i < PLAYER->getHitBox().bottom - 40; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + PLAYER->getRect().left, _bf->getY() + i);
+            _bf->getX() + PLAYER->getHitBox().left, _bf->getY() + i);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
@@ -173,10 +173,10 @@ void BaseMap::update(void)
         } 
     }
 
-    for (int i = PLAYER->getRect().top; i < PLAYER->getRect().bottom - 40; i++)
+    for (int i = PLAYER->getHitBox().top; i < PLAYER->getHitBox().bottom - 40; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + PLAYER->getRect().right, _bf->getY() + i);
+            _bf->getX() + PLAYER->getHitBox().right, _bf->getY() + i);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
@@ -225,7 +225,7 @@ void BaseMap::update(void)
         // 전투
         for (int i = 0; i < 2; i++)
         {
-            if (IntersectRect(&_rt, &PLAYER->getRect(), &_acolyteList[0]->getBoundary(i)))
+            if (IntersectRect(&_rt, &PLAYER->getHitBox(), &_acolyteList[0]->getBoundary(i)))
             {
 
                 if (_acolyteList[0]->isEmpty())
@@ -250,16 +250,17 @@ void BaseMap::update(void)
                 }
             }
         }
-        if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &PLAYER->getRect())
+        if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &PLAYER->getHitBox())
             && _acolyteList[0]->getState()[ATTACK_ENEMY] && !PLAYER->getState()[PARRY])
         {
-            if (!PLAYER->getState()[HIT] && _acolyteList[0]->canAttack())
+            if (!PLAYER->getState()[HIT] && !PLAYER->getHit() && _acolyteList[0]->canAttack())
             {
-                PLAYER->setState(HIT, true);
+                //PLAYER->setState(HIT, true);
+                PLAYER->setHit(true);
                 PLAYER->setHP(PLAYER->getHP() - 5);
             }
         }
-        else if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &PLAYER->getRect()) && PLAYER->getState()[PARRY])
+        else if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &PLAYER->getHitBox()) && PLAYER->getState()[PARRY])
         {
             //if (!PLAYER->getFixed())
             PLAYER->setParry(true);
@@ -276,9 +277,8 @@ void BaseMap::update(void)
                 _acolyteList[0]->setHP(_acolyteList[0]->getHP() - 10);
             }
         } 
-        if (_acolyteList[0]->getHP() < 0 && !_acolyteList[0]->getState()[DIE_ENEMY])
+        if (_acolyteList[0]->getHP() < 0 && _acolyteList[0]->getDie())
         {
-            
             _acolyteList.pop_back();
         }
     }
