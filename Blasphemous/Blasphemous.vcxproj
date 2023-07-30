@@ -166,6 +166,7 @@
     <ClInclude Include="SingletonBase.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Stdafx.h" />
+    <ClInclude Include="Stoner.h" />
     <ClInclude Include="Tutorial.h" />
     <ClInclude Include="TutorialField.h" />
   </ItemGroup>
@@ -190,6 +191,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stdafx.cpp" />
+    <ClCompile Include="Stoner.cpp" />
     <ClCompile Include="Tutorial.cpp" />
     <ClCompile Include="TutorialField.cpp" />
     <ClCompile Include="WinMain.cpp" />

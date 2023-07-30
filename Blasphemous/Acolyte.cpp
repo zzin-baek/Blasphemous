@@ -16,7 +16,7 @@ HRESULT Acolyte::init(void)
     IMAGEMANAGER->addFrameImage("Acolyte_death", "Resources/Image/Enemy/acolyte_death_anim.bmp",
         3960 * 2, 266 * 2, 22, 2, true, MAGENTA);
 
-    _acolytePos = { WINSIZE_X / 2 + 500, WINSIZE_Y / 2 + 325 };
+    _acolytePos = { WINSIZE_X / 2 + 500, WINSIZE_Y / 2 + 330 };
     _isLeft = _canAttack = _hit = _die = false;
     _cnt = _idx_x = _idx_y = 0;
     _acState.reset();

@@ -110,6 +110,9 @@
     <ClInclude Include="Item.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Stoner.h">
+      <Filter>Battle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -174,6 +177,9 @@
     </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Stoner.cpp">
+      <Filter>Battle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

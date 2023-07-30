@@ -1,13 +1,20 @@
 #pragma once
 #include "SingletonBase.h"
 
-#define MAX_STATE 11
+#define MAX_STATE 12
+
+struct POINTF
+{
+	float x;
+	float y;
+};
 
 // bitset: 기본, 걷기, 점프, 앉기, 매달리기
 enum eState
 {
 	WALK = 0,
 	JUMP,
+	UP,
 	ATTACK,
 	CROUCH,
 	CLIMB,
@@ -32,21 +39,18 @@ class Player : public SingletonBase <Player>
 private:
 	char _strAction[128];
 	bitset<MAX_STATE> _plState;
-	deque<string> _actionList;
+	deque<char*> _actionList;
 	map<string, plImageInfo> _sync;
 	vector<int> _attackTime, _comboTime;
 	
 	RECT _player, _hitBox;
-	POINT _plPos;
-	float _plPos_x, _plPos_y, _centerX, _centerY;
+	POINTF _plPos, _center, _temp;
+
 	bool _isLeft, _isGround, _isFixed, _hold, _collect, _hit, _parry;
+	bool _collected, _respawn;
 
 	int _cnt, _idx_x, _idx_y;
-	POINT _center;
-	float _tempX, _tempY;
-
 	int _hp, _score, _portion;
-	bool _collected, _respawn;
 
 	char _loc[128], _action[128];
 
@@ -61,10 +65,10 @@ public:
 	void renderPlayer(HDC hdc);
 	void renderProfile(HDC hdc);
 
-	inline void setPosX(float x) { _plPos_x = x; }
-	inline void setPosY(float y) { _plPos_y = y; }
-	inline float getPosX() { return _plPos_x; }
-	inline float getPosY() { return _plPos_y; }
+	inline void setPosX(float x) { _plPos.x = x; }
+	inline void setPosY(float y) { _plPos.y = y; }
+	inline float getPosX() { return _plPos.x; }
+	inline float getPosY() { return _plPos.y; }
 
 	inline void setGround(bool state) { _isGround = state; }
 	inline bool getGround() { return _isGround; }
@@ -83,7 +87,7 @@ public:
 	inline bool getHit() { return _hit; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
-	inline void addAction(string _action) { _actionList.push_back(_action); }
+	inline void addAction(char* _action) { _actionList.push_back(_action); }
 
 	int getMaxFrameX();
 
@@ -94,8 +98,8 @@ public:
 
 	inline RECT getRect() { return _player; }
 	inline RECT getHitBox() { return _hitBox; }
-	inline float getCenterX() { return _centerX; }
-	inline float getCenterY() { return _centerY; }
+	inline float getCenterX() { return _center.x; }
+	inline float getCenterY() { return _center.y; }
 
 	void setHP(int hp) { _hp = hp; }
 	int getHP() { return _hp; }

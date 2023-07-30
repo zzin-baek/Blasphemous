@@ -82,7 +82,7 @@ void BaseMap::update(void)
         PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
 
     // 카메라 이동
-    if (PLAYER->getCenterX() > WINSIZE_X / 2 && _bf->getX() + 1280 < 2000)
+    if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bf->getX() + 1280 < 3760) //2000
     {
         _bf->setX(_bf->getX() + 4.0f);
         PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
@@ -93,7 +93,7 @@ void BaseMap::update(void)
             _itemList[0]->setPosX(_item->getPosX() - 4);
 
     }
-    if (PLAYER->getLeft() && PLAYER->getCenterX() < WINSIZE_X / 2 + 10 && (_bf->getX() > 0))
+    if (PLAYER->getLeft() && PLAYER->getHitBox().left < WINSIZE_X / 2 && (_bf->getX() > 0))
     {
         _bf->setX(_bf->getX() - 4.0f);
         PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
@@ -113,7 +113,7 @@ void BaseMap::update(void)
         if (!_itemList.empty())
             _itemList[0]->setPosY(_item->getPosY() + 2);
     }
-    if (PLAYER->getHitBox().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 720 < 938))
+    if (PLAYER->getHitBox().top > WINSIZE_Y / 2 + 50 && (_bf->getY() + 720 < 940)) //938
     {
         PLAYER->setPosY(PLAYER->getPosY() - 2.0f);
         _bf->setY(_bf->getY() + 2.0f);
@@ -311,6 +311,8 @@ void BaseMap::render(void)
 
     PLAYER->renderPlayer(getMemDC());
     PLAYER->renderProfile(getMemDC());
+
+    _bf->renderDoor(getMemDC());
 
     if (_isInven)
     {

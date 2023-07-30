@@ -10,6 +10,7 @@ private:
 public:
 	HRESULT init(void);
 	void rectMove(void);
+	void renderDoor(HDC hdc);
 	void render(HDC hdc);
 
 	void setX(float x) { _startPos_x = x; }

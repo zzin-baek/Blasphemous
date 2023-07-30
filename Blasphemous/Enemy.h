@@ -11,9 +11,9 @@ enum tagEnemy
 class Enemy
 {
 public:
-	HRESULT init(void);
-	void move(void);
-	void render(HDC hdc);
+	virtual HRESULT init(void);
+	virtual void move(void);
+	virtual void render(HDC hdc);
 
 	Enemy() {}
 	~Enemy() {}

@@ -9,13 +9,6 @@ enum eSkill
 	TWIRL,
 	SLASH
 };
-
-struct POINTF
-{
-	float x;
-	float y;
-};
-
 struct tagBoss
 {
 	int timing;

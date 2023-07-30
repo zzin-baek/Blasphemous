@@ -82,7 +82,7 @@ HRESULT Isidora::init(void)
 	_intervalC = _intervalF = 10;
 
 	_hp = 300;
-	_phase = 3;
+	_phase = 1;
 
 	_isLeft = _doNothing = true;
 	_finIntro = _isPhase2 = _once = _once2 = false;
