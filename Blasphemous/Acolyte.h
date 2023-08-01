@@ -33,6 +33,7 @@ public:
 	
 	void render(HDC hdc);
 
+public:
 	void setPosX(int x) { _acolytePos.x = x; }
 	void setPosY(int y) { _acolytePos.y = y; }
 	int getPosX() { return _acolytePos.x; }

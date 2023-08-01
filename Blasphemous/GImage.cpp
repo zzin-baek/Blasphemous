@@ -692,7 +692,6 @@ void GImage::frameRender(HDC hdc, int destX, int destY, int destWidth, int destH
 
     if (currentFrameX > _imageInfo->maxFrameX)
     {
-
         _imageInfo->currentFrameX = _imageInfo->maxFrameX;
     }
     if (currentFrameY > _imageInfo->maxFrameY)

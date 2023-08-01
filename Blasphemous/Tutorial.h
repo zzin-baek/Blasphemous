@@ -1,6 +1,5 @@
 #pragma once
 #include "GameNode.h"
-//#include "Player.h"
 #include "TutorialField.h"
 #include "Item.h"
 
@@ -14,7 +13,7 @@ private:
 	vector<Item*> _itemList;
 
 	int _nextStage;
-	bool _isInven, _isRespawn;
+	bool _isInven, _isRespawn, _once;
 
 public:
 	HRESULT init(void);

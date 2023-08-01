@@ -19,6 +19,7 @@ HRESULT Acolyte::init(void)
     _acolytePos = { WINSIZE_X / 2 + 500, WINSIZE_Y / 2 + 330 };
     _isLeft = _canAttack = _hit = _die = false;
     _cnt = _idx_x = _idx_y = 0;
+
     _acState.reset();
     _hp = 50;
 
@@ -294,7 +295,8 @@ void Acolyte::render(HDC hdc)
         DrawRectMake(hdc, _acolyte);
         
         _stprintf_s(_loc, "x: %d y: %d", _acolytePos.x, _acolytePos.y);
-        TextOut(hdc, _acolytePos.x + 50, _acolytePos.y - 20, _loc, strlen(_loc));
+        TextOut(hdc, _acolyte.left, _acolyte.top, _loc, strlen(_loc));
+        TextOut(hdc, _acolyte.left, _acolyte.top + 20, _strAction, strlen(_strAction));
         
         if (_acState[ATTACK_ENEMY])
         {

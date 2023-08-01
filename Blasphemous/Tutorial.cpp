@@ -3,9 +3,6 @@
 
 HRESULT Tutorial::init(void)
 {
-    /*PLAYER = new Player();
-    PLAYER->init(88, 484);*/
-
     //PLAYER->init(88, 484);
 
     _tf = new TutorialField();
@@ -61,7 +58,7 @@ void Tutorial::update(void)
     }
     else
         PLAYER->setCollect(false);
-    
+
     _tf->update();
     // ม฿ทย
     //if (!PLAYER->getGround())

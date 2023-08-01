@@ -12,14 +12,34 @@ HRESULT BaseMap::init(void)
     _ac = new Acolyte;
     _ac->init();
 
+    _sh = new Shielder;
+    _sh->init();
+
+    _acolyteList.push_back(_ac);
+    // stoner 2마리 생성
+    for (int i = 0; i < 2; i++)
+    {
+        _st = new Stoner;
+        _st->init();
+
+        _stonerList.push_back(_st);
+    }
+    _shielderList.push_back(_sh);
+
     _item = new Item;
     _item->init(1050, 135);
 
-    _acolyteList.push_back(_ac);
     _itemList.push_back(_item);
+
+    // stoner위치 초기화
+    _stonerList[0]->init(WINSIZE_X + 50, WINSIZE_Y / 2 - 45);
+    _stonerList[1]->init(2626, WINSIZE_Y / 2 - 138);
+
+    _shielderList[0]->init(100, 410);
 
     _nextStage = _preStage = _cnt = _term = 0;
     _isInven = false;
+
     return S_OK;
 }
 
@@ -27,6 +47,7 @@ void BaseMap::release(void)
 {
     SAFE_DELETE(_bf);
     SAFE_DELETE(_ac);
+    SAFE_DELETE(_st);
     SAFE_DELETE(_item);
 }
 
@@ -38,6 +59,13 @@ void BaseMap::update(void)
         PLAYER->playerMove();
         if(!_acolyteList.empty())
             _acolyteList[0]->move();
+        if (!_stonerList.empty())
+        {
+            for (int i = 0; i < _stonerList.size(); i++)
+                _stonerList[i]->move();
+        }
+        if (!_shielderList.empty())
+            _shielderList[0]->move();
     }
     
     if (!_itemList.empty())
@@ -67,6 +95,7 @@ void BaseMap::update(void)
     else
         PLAYER->setCollect(false);
 
+    // 스테이지 이동
     if (PLAYER->getCenterX() > WINSIZE_X)
     {
         _nextStage = 1;
@@ -80,7 +109,7 @@ void BaseMap::update(void)
     // 중력
     if (!PLAYER->getFixed())
         PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
-
+    
     // 카메라 이동
     if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bf->getX() + 1280 < 3760) //2000
     {
@@ -88,7 +117,17 @@ void BaseMap::update(void)
         PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
 
         if (!_acolyteList.empty())
-            _acolyteList[0]->setPosX(_ac->getPosX() - 4);
+            _acolyteList[0]->setPosX(_acolyteList[0]->getPosX() - 4);
+        if (!_stonerList.empty())
+        {
+            for (int i = 0; i < _stonerList.size(); i++)
+            {
+                _stonerList[i]->setPosX(_stonerList[i]->getPosX() - 4);
+                _stonerList[i]->setRockPos(-4, 0);
+            }
+        }
+        if (!_shielderList.empty())
+            _shielderList[0]->setPosX(_shielderList[0]->getPosX() - 4);
         if (!_itemList.empty())
             _itemList[0]->setPosX(_item->getPosX() - 4);
 
@@ -99,7 +138,17 @@ void BaseMap::update(void)
         PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
 
         if (!_acolyteList.empty())
-            _acolyteList[0]->setPosX(_ac->getPosX() + 4);
+            _acolyteList[0]->setPosX(_acolyteList[0]->getPosX() + 4);
+        if (!_stonerList.empty())
+        {
+            for (int i = 0; i < _stonerList.size(); i++)
+            {
+                _stonerList[i]->setPosX(_stonerList[i]->getPosX() + 4);
+                _stonerList[i]->setRockPos(4, 0);
+            }
+        }
+        if (!_shielderList.empty())
+            _shielderList[0]->setPosX(_shielderList[0]->getPosX() + 4);
         if (!_itemList.empty())
             _itemList[0]->setPosX(_item->getPosX() + 4);
     }
@@ -109,7 +158,17 @@ void BaseMap::update(void)
         _bf->setY(_bf->getY() - 2.0f);
 
         if (!_acolyteList.empty())
-            _acolyteList[0]->setPosY(_ac->getPosY() + 2);
+            _acolyteList[0]->setPosY(_acolyteList[0]->getPosY() + 2);
+        if (!_stonerList.empty())
+        {
+            for (int i = 0; i < _stonerList.size(); i++)
+            {
+                _stonerList[i]->setPosY(_stonerList[i]->getPosY() + 2);
+                _stonerList[i]->setRockPos(0, 2);
+            }
+        }
+        if (!_shielderList.empty())
+            _shielderList[0]->setPosY(_shielderList[0]->getPosY() + 2);
         if (!_itemList.empty())
             _itemList[0]->setPosY(_item->getPosY() + 2);
     }
@@ -119,13 +178,44 @@ void BaseMap::update(void)
         _bf->setY(_bf->getY() + 2.0f);
 
         if (!_acolyteList.empty())
-            _acolyteList[0]->setPosY(_ac->getPosY() - 2);
+            _acolyteList[0]->setPosY(_acolyteList[0]->getPosY() - 2);
+        if (!_stonerList.empty())
+        {
+            for (int i = 0; i < _stonerList.size(); i++)
+            {
+                _stonerList[i]->setPosY(_stonerList[i]->getPosY() - 2);
+                _stonerList[i]->setRockPos(0, -2);
+            }
+        }
+        if (!_shielderList.empty())
+            _shielderList[0]->setPosY(_shielderList[0]->getPosY() - 2);
         if (!_itemList.empty())
             _itemList[0]->setPosY(_item->getPosY() - 2);
     }
 
     _bf->rectMove();
 
+    if (!_stonerList.empty())
+    {
+        for (int i = 0; i < _stonerList.size(); i++)
+        {
+            RECT _rt;
+            if (IntersectRect(&_rt, &PLAYER->getHitBox(), &_stonerList[i]->getBoundary()))
+            {
+                if (!_once[i])
+                {
+                    _stonerList[i]->setRising(true);
+                    _stonerList[i]->addAction("Stoner_rising");
+                    _once.set(i, true);
+                }
+                else
+                {
+                    _stonerList[i]->setState(ATTACK_ENEMY, true);
+                }
+
+            }
+        }
+    }
     RECT _rt;
     if (PtInRect(&_bf->getLadder(), { (PLAYER->getHitBox().left + PLAYER->getHitBox().right) / 2,
         PLAYER->getHitBox().bottom - 20 }))
@@ -189,7 +279,7 @@ void BaseMap::update(void)
         }
     }
 
-    if (!_acolyteList.empty())
+    if (!_acolyteList.empty()) // acolyte전투
     {
         // acolyte 픽셀충돌
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
@@ -201,7 +291,14 @@ void BaseMap::update(void)
 
         if (!(r == 255 && g == 0 && b == 255))
         {
-            _acolyteList[0]->setLeft(true);
+            if (!_acolyteList[0]->getState()[ATTACK_ENEMY])
+                _acolyteList[0]->setLeft(true);
+            else if (_acolyteList[0]->getState()[ATTACK_ENEMY])
+            {
+                // 멈추기
+                _acolyteList[0]->setState(ATTACK_ENEMY, false);
+                _acolyteList[0]->addAction("Acolyte_idle");
+            }
         }
 
         color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
@@ -213,8 +310,14 @@ void BaseMap::update(void)
 
         if ((r == 255 && g == 0 && b == 255))
         {
-            if (!_acolyteList[0]->getState()[ATTACK])
+            if (!_acolyteList[0]->getState()[ATTACK_ENEMY])
                 _acolyteList[0]->setLeft(false);
+            else if (_acolyteList[0]->getState()[ATTACK_ENEMY])
+            {
+                // 멈추기
+                _acolyteList[0]->setState(ATTACK_ENEMY, false);
+                _acolyteList[0]->addAction("Acolyte_idle");
+            }
             else
             {
                 _acolyteList[0]->setPosX(_acolyteList[0]->getRect().left);
@@ -277,9 +380,64 @@ void BaseMap::update(void)
                 _acolyteList[0]->setHP(_acolyteList[0]->getHP() - 10);
             }
         } 
-        if (_acolyteList[0]->getHP() < 0 && _acolyteList[0]->getDie())
+        if (_acolyteList[0]->getHP() <= 0 && _acolyteList[0]->getDie())
         {
             _acolyteList.pop_back();
+        }
+    }
+
+    if (!_stonerList.empty())
+    {
+        for (int i = 0; i < _stonerList.size(); i++)
+        {
+            _stonerList[i]->rockCollision();
+
+            cout << "돌"<<_stonerList[i]->getHP() << endl;
+            if (IntersectRect(&_rt, &_stonerList[i]->getRect(), &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
+            {
+                if (!_stonerList[i]->getState()[HIT_ENEMY])
+                {
+                    _stonerList[i]->setState(HIT_ENEMY, true);
+                    _stonerList[i]->setHP(_stonerList[i]->getHP() - 10);
+                }
+            }
+            if (_stonerList[i]->getHP() <= 0 && _stonerList[i]->getDie())
+            {
+                _stonerList.erase(_stonerList.begin() + i);
+            }
+        }
+    }
+
+    if (!_shielderList.empty())
+    {
+        COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
+            _bf->getX() + _shielderList[0]->getRect().right, _bf->getY() + _shielderList[0]->getRect().bottom);
+
+        int r = GetRValue(color);
+        int g = GetGValue(color);
+        int b = GetBValue(color);
+
+        if (!(r == 255 && g == 0 && b == 255))
+        {
+            _shielderList[0]->setLeft(!_shielderList[0]->getLeft());
+        }
+
+        color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
+            _bf->getX() + _acolyteList[0]->getPosX() + 30, _bf->getY() + _acolyteList[0]->getPosY() - 50);
+
+        r = GetRValue(color);
+        g = GetGValue(color);
+        b = GetBValue(color);
+
+        if ((r == 255 && g == 0 && b == 255))
+        {
+            if (!_acolyteList[0]->getState()[ATTACK_ENEMY])
+                _acolyteList[0]->setLeft(false);          
+            else
+            {
+                _acolyteList[0]->setPosX((_acolyteList[0]->getRect().left + _acolyteList[0]->getRect().right) / 2);
+                _acolyteList[0]->setPosY((_acolyteList[0]->getRect().bottom + _acolyteList[0]->getRect().top) / 2);
+            }
         }
     }
 
@@ -308,6 +466,15 @@ void BaseMap::render(void)
         _itemList[0]->showItem(getMemDC());
     if (!_acolyteList.empty())
         _acolyteList[0]->render(getMemDC());
+    if (!_stonerList.empty())
+    {
+        for (int i = 0; i < _stonerList.size(); i++)
+        {
+            _stonerList[i]->render(getMemDC());
+        }
+    }
+    if (!_shielderList.empty())
+        _shielderList[0]->render(getMemDC());
 
     PLAYER->renderPlayer(getMemDC());
     PLAYER->renderProfile(getMemDC());
