@@ -428,6 +428,32 @@ void BossStage::update(void)
         }
         PLAYER->setGround(false);
     }
+
+    if (IntersectRect(&_rt, &_boss->getHitBox(), &PLAYER->getHitBox())
+        && PLAYER->getState()[PARRY])// && _boss->isAttack())
+    {
+        PLAYER->setParry(true);
+
+    }
+    else if (IntersectRect(&_rt, &_boss->getHitBox(), &PLAYER->getHitBox())
+        && !PLAYER->getState()[PARRY])
+    {
+        if (!PLAYER->getState()[HIT] && !PLAYER->getHit())// && _shielderList[0]->isAttack())
+        {
+            PLAYER->setHit(true);
+            PLAYER->setHP(PLAYER->getHP() - 5);
+        }
+    }
+
+    if (IntersectRect(&_rt, &_boss->getHitBox(), &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
+    {
+        if (!_boss->getState()[HIT_BOSS])
+        {
+            _boss->setState(HIT_BOSS, true);
+
+            _boss->setHP(_boss->getHP() - 10);
+        }
+    }
 }
 
 void BossStage::render(void)
@@ -440,5 +466,3 @@ void BossStage::render(void)
     PLAYER->renderPlayer(getMemDC());
     PLAYER->renderProfile(getMemDC());
 }
-
-// vector<tagColumn> _column;

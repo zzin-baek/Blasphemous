@@ -1,7 +1,7 @@
 #pragma once
 #include "SingletonBase.h"
 
-#define MAX_STATE 12
+#define MAX_STATE 14
 
 struct POINTF
 {
@@ -23,7 +23,9 @@ enum eState
 	HANGON,
 	PARRY,
 	HIT,
-	PORTION
+	PORTION,
+	DEATH,
+	DEATH_FALL
 };
 
 struct plImageInfo
@@ -87,6 +89,7 @@ public:
 	inline bool getHit() { return _hit; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
+	inline char* getAction() { return _strAction; }
 	inline void addAction(char* _action) { _actionList.push_back(_action); }
 
 	int getMaxFrameX();

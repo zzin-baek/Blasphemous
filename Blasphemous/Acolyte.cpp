@@ -35,12 +35,11 @@ void Acolyte::initSync(void)
 {
     _sync.insert({ "Acolyte_idle", { 4, {-5, 0}, {10, 0} } });
     _sync.insert({ "Acolyte_walk", { 5, {0, 0}, {0, 0} } });
-    _sync.insert({ "Acolyte_attack", { 7, {-180, 20}, {-150, 20} } });
-    _sync.insert({ "Acolyte_hit", { 7, {10, 0}, {-120, 0} } });
-    _sync.insert({ "Acolyte_parry", { 7, {0, 0}, {0, 0} } });
+    _sync.insert({ "Acolyte_attack", { 7, {-190, 20}, {-150, 20} } });
+    _sync.insert({ "Acolyte_hit", { 7, {-20, 0}, {-120, 0} } });
+    _sync.insert({ "Acolyte_parry", { 7, {-190, 0}, {-20, 0} } });
     _sync.insert({ "Acolyte_death", { 7, {-150, 0}, {-130, 0} } });
 }
-
 
 void Acolyte::move(void)
 {
@@ -69,7 +68,8 @@ void Acolyte::move(void)
     if (_acState[HIT_ENEMY] && !_hit)
     {
         _acList.clear();
-        _acState.reset();
+        //_acState.reset();
+        setState(ATTACK_ENEMY, false);
         _hit = true;
         _acList.push_back("Acolyte_hit");
 
@@ -79,7 +79,7 @@ void Acolyte::move(void)
             _idx_x = 0;
     }
 
-    if (_hp < 0 && !getState()[DIE_ENEMY])
+    if (_hp <= 0 && !getState()[DIE_ENEMY])
     {
         setState(IDLE_ENEMY, false);
         setState(DIE_ENEMY, true);
@@ -93,6 +93,10 @@ void Acolyte::move(void)
         else
             _idx_x = 0;
     }
+
+    if (!isEmpty())
+        if (!strcmp(_acList.front(), "Acolyte_parry"))
+            _canAttack = false;
 
     _cnt++;
     if (isEmpty())
@@ -144,15 +148,15 @@ void Acolyte::move(void)
                     {
                         _idx_x = IMAGEMANAGER->findImage(_acList.front())->getMaxFrameX();
                         setAction(_acList.front());
-                        _acState.reset();
+                        //_acState.reset();
                     }
                     else
                     {
                         if (getState()[DIE_ENEMY])                      
                             _die = true;
+                        _hit = false;
 
                         _acState.reset();
-                        _hit = false;
                         
                         setState(IDLE_ENEMY, true);
                         setAction("Acolyte_walk");
@@ -180,14 +184,15 @@ void Acolyte::move(void)
                     {
                         _idx_x = 0;
                         setAction(_acList.front());
-                        _acState.reset();
+                        //_acState.reset();
                     }
                     else
                     {
                         if (getState()[DIE_ENEMY])
                             _die = true;
+                        
+                        _hit = false;   
                         _acState.reset();
-                        _hit = false;
                         
                         setState(IDLE_ENEMY, true);
                         setAction("Acolyte_walk");
@@ -206,7 +211,7 @@ void Acolyte::move(void)
 
 void Acolyte::attack(void)
 {
-    if (_acState[ATTACK_ENEMY])
+    if (_acState[ATTACK_ENEMY] && !strcmp(_strAction, "Acolyte_attack"))
     {
         if (_isLeft)
         {
@@ -242,6 +247,7 @@ void Acolyte::render(HDC hdc)
             _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2 + _sync[_strAction].leftMove.x,
                 _acolytePos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2 + _sync[_strAction].leftMove.y,
                 80, 250);
+
         }
         else
         {
@@ -253,6 +259,7 @@ void Acolyte::render(HDC hdc)
             _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2 + _sync[_strAction].rightMove.x,
                 _acolytePos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2 + _sync[_strAction].rightMove.y,
                 80, 250);
+
         }
     }
     else
@@ -267,6 +274,7 @@ void Acolyte::render(HDC hdc)
             _acolyte = RectMakeCenter(_acolytePos.x + IMAGEMANAGER->findImage(_acList.front())->getFrameWidth() / 2 + _sync[_acList.front()].leftMove.x,
                 _acolytePos.y - IMAGEMANAGER->findImage(_acList.front())->getFrameHeight() / 2 + _sync[_acList.front()].leftMove.y,
                 80, 250);
+
         }
         else
         {
@@ -280,6 +288,10 @@ void Acolyte::render(HDC hdc)
                 80, 250);
         }
     }
+
+    IMAGEMANAGER->render("ENEMY_HP_BAR", hdc, _acolyte.left, _acolyte.top + 50);
+    IMAGEMANAGER->render("ENEMY_HP", hdc, _acolyte.left + 2, _acolyte.top + 52, 0, 0,
+        IMAGEMANAGER->findImage("ENEMY_HP")->getWidth() * _hp / 50, IMAGEMANAGER->findImage("ENEMY_HP")->getHeight());
     
     _attackBoundary[0] = RectMake(_acolyte.left - 150, _acolytePos.y - 80, 150, 80);
     _attackBoundary[1] = RectMake(_acolyte.right, _acolytePos.y - 80, 150, 80);
@@ -290,7 +302,6 @@ void Acolyte::render(HDC hdc)
         HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, myBrush);
         HPEN myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
         HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
-
 
         DrawRectMake(hdc, _acolyte);
         
@@ -313,6 +324,4 @@ void Acolyte::render(HDC hdc)
         SelectObject(hdc, oldPen);
         DeleteObject(myPen);
     }
-
-    cout << "a" << getState()[DIE_ENEMY] << endl;
 }

@@ -11,6 +11,8 @@ HRESULT Isidora::init(void)
 		1339 * 2, 254 * 2, 13, 2, true, MAGENTA);
 	IMAGEMANAGER->addFrameImage("Isidora_backToIdle", "Resources/Image/Isidora/Isidora_backToIdleFinal.bmp",
 		798 * 2, 240 * 2, 6, 2, true, MAGENTA);
+	IMAGEMANAGER->addFrameImage("Isidora_death", "Resources/Image/Isidora/Isidora_deathV3.bmp",
+		3400 * 2, 3072 * 2, 10, 12, true, MAGENTA);
 
 	IMAGEMANAGER->addFrameImage("Isidora_outToCast", "Resources/Image/Isidora/Isidora_outToCastFinal.bmp",
 		1463 * 2, 260 * 2, 11, 2, true, MAGENTA);
@@ -105,6 +107,7 @@ void Isidora::initSync(void)
 	_sync.insert({ "Isidora_Intro2", { 6, {0, 0}, {0, 0}} });
 	_sync.insert({ "Isidora_idle", { 5, {-12, 18}, {30, 18} } });
 	_sync.insert({ "Isidora_backToIdle", {5, {10, 20}, {10, 20}} });
+	_sync.insert({ "Isidora_death", {5, {0, 0}, {0, 0}} });
 
 	_sync.insert({ "Isidora_outToCast", { 4, {-50, 15}, {65, 15} } });
 	_sync.insert({ "Isidora_outToRising", { 3, {20, 30}, {0, 30} } });
@@ -144,6 +147,16 @@ void Isidora::update(void)
 		_phase = 2;
 	else if (_hp <= 100 && _hp > 0)
 		_phase = 3;
+
+
+	if (_hp <= 0 && !getState()[DIE_BOSS])
+	{
+		setState(DIE_BOSS, true);
+		//_die = true;
+
+		_pattern.clear();
+		bossDeath();
+	}
 
 	_cnt++;
 	if (!_pattern.empty())
@@ -827,6 +840,11 @@ void Isidora::useSkill(void)
 				_pos.y -= 1.0f;
 		}
 	}
+}
+
+void Isidora::bossDeath(void)
+{
+
 }
 
 void Isidora::switchPhase(void)

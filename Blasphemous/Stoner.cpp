@@ -25,7 +25,7 @@ HRESULT Stoner::init(void)
     _die = _hit = _isAttack = false;
 
 	_stState.reset();
-	_hp = 10;
+	_hp = 30;
 
     wsprintf(_strAction, "Stoner_idle");
 
@@ -83,20 +83,14 @@ void Stoner::move(void)
             }
         }
 
-        if (_hp < 0 && !getState()[DIE_ENEMY])
-        {
-            setState(IDLE_ENEMY, false);
-            setState(DIE_ENEMY, true);
-            //_die = true;
+        //if (_stState[HIT_ENEMY] && !_hit)
+        //{
+        //    _stList.clear();
+        //    //_acState.reset();
+        //    setState(ATTACK_ENEMY, false);
+        //    _hit = true;
+        //}
 
-            _stList.clear();
-            _stList.push_back("Stoner_death");
-
-            if (_isLeft)
-                _idx.x = IMAGEMANAGER->findImage("Stoner_death")->getMaxFrameX();
-            else
-                _idx.x = 0;
-        }
 
         if (getState()[ATTACK_ENEMY])
         {
@@ -171,6 +165,21 @@ void Stoner::move(void)
 
         rockMove();
         rockCycle();
+
+        if (_hp <= 0 && !getState()[DIE_ENEMY])
+        {
+            setState(IDLE_ENEMY, false);
+            setState(DIE_ENEMY, true);
+            //_die = true;
+
+            _stList.clear();
+            _stList.push_back("Stoner_death");
+
+            if (_isLeft)
+                _idx.x = IMAGEMANAGER->findImage("Stoner_death")->getMaxFrameX();
+            else
+                _idx.x = 0;
+        }
 
         if (isEmpty())
         {
@@ -262,6 +271,7 @@ void Stoner::move(void)
                         {
                             if (getState()[DIE_ENEMY])
                                 _die = true;
+
                             _stState.reset();
                             _hit = false;
 
@@ -302,10 +312,8 @@ void Stoner::rockMove(void)
     for (int i = 0; i < MAX_ROCK; i++)
     {
         if (_rock[i].shoot)
-        {
-            if (PtInRect(&PLAYER->getRect(), { int(_rock[i].pos.x), int(_rock[i].pos.y) }))
-                _rock[i].broke = true;
-            else if (_rock[i].pos.y > 600 || _rock[i].pos.y < -30)
+        {   // 픽셀충돌로 바꾸기
+            if (_rock[i].pos.y > 600 || _rock[i].pos.y < -30)
                 _rock[i].broke = true;
         }
     }
@@ -358,7 +366,13 @@ void Stoner::rockCollision(void)
     RECT _rt;
     for (int i = 0; i < MAX_ROCK; i++)
     {
-        if (!_rock[i].shoot && _rock[i].broke) continue;
+        if (!_rock[i].shoot) continue;
+        if (_rock[i].broke) continue;
+
+        if (IntersectRect(&_rt, &_rock[i].rock, &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
+        {
+                _rock[i].broke = true;            
+        }
 
         if (IntersectRect(&_rt, &_rock[i].rock, &PLAYER->getHitBox()) && !PLAYER->getState()[ATTACK])
         {
@@ -441,6 +455,11 @@ void Stoner::render(HDC hdc)
         }
     }
 
+    IMAGEMANAGER->render("ENEMY_HP_BAR", hdc, _stonerPos.x -30, _stonerPos.y - 70);
+    IMAGEMANAGER->render("ENEMY_HP", hdc, _stonerPos.x -30 + 2, _stonerPos.y - 68, 0, 0,
+        IMAGEMANAGER->findImage("ENEMY_HP")->getWidth() * _hp / 30, IMAGEMANAGER->findImage("ENEMY_HP")->getHeight());
+
+
     for (int i = 0; i < MAX_ROCK; i++)
     {
         if (_rock[i].shoot && !_rock[i].cycle.empty())
@@ -459,19 +478,20 @@ void Stoner::render(HDC hdc)
         HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
 
         DrawRectMake(hdc, _attackBoundary);
-        _stprintf_s(_loc, "x: %.2f y: %.2f", _stonerPos.x, _stonerPos.y);
-        TextOut(hdc, _stonerPos.x, _stonerPos.y, _loc, strlen(_loc));
-        TextOut(hdc, _stonerPos.x, _stonerPos.y + 20, _strAction, strlen(_strAction));
-
-        myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-        oldPen = (HPEN)SelectObject(hdc, myPen);
-
-        DrawRectMake(hdc, _stoner);
         for (int i = 0; i < MAX_ROCK; i++)
         {
             if (!_rock[i].shoot) continue;
             DrawRectMake(hdc, _rock[i].rock);
         }
+
+        _stprintf_s(_loc, "x: %.2f y: %.2f", _stonerPos.x, _stonerPos.y);
+        TextOut(hdc, _stonerPos.x, _stonerPos.y, _loc, strlen(_loc));
+        TextOut(hdc, _stonerPos.x, _stonerPos.y + 20, _strAction, strlen(_strAction));
+        
+        myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
+        oldPen = (HPEN)SelectObject(hdc, myPen);
+
+        DrawRectMake(hdc, _stoner);
 
         SelectObject(hdc, oldBrush);
         DeleteObject(myBrush);

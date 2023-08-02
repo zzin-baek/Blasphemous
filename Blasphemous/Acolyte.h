@@ -61,6 +61,7 @@ public:
 	int getMaxFrame() { return IMAGEMANAGER->findImage(_strAction)->getMaxFrameX(); }
 
 	bool isEmpty() { return _acList.empty(); }
+	void clearAll() { _acList.clear(); }
 	void addAction(char* _action) { _acList.push_back(_action); }
 
 	Acolyte() {}

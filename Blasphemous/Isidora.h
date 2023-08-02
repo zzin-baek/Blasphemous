@@ -3,11 +3,11 @@
 #define MAX_COLUMN 12
 #define MAX_FIREBALL 15
 
-enum eSkill
+enum eBossState
 {
-	RISING,
-	TWIRL,
-	SLASH
+	ATTACK_BOSS = 0,
+	HIT_BOSS,
+	DIE_BOSS
 };
 struct tagBoss
 {
@@ -56,6 +56,7 @@ private:
 	deque<char*> _pattern;
 	map<char*, tagBoss> _sync;
 	vector<tagSequence> _seq;
+	bitset<3> _idState;
 
 	tagColumn _cl[MAX_COLUMN];
 	tagFireBall _fb[MAX_FIREBALL];
@@ -64,7 +65,7 @@ private:
 	RECT _isidora, _hitBox, _mask;
 	int _cnt, _hp, _phase, _intervalC, _intervalF, _patternNum;
 
-	bool _isLeft, _finIntro, _isPhase2, _doNothing;
+	bool _isLeft, _finIntro, _isPhase2, _isAttack, _doNothing;
 	bool _once, _once2, _onceColumn, _onceFire;
 
 	char _loc[128];
@@ -76,6 +77,7 @@ public:
 	void update(void);
 	void useSkill(void);
 
+	void bossDeath(void);
 	void switchPhase(void);
 
 	void columnInit(int num, int interval);
@@ -107,11 +109,16 @@ public:
 	inline int getPhase() { return _phase; }
 	inline bool getIsPhase() { return _isPhase2; }
 	inline int getHP() { return _hp; }
+	inline void setHP(int hp) { _hp = hp; }
 
 	inline void setPattern(int pattern) { _patternNum = pattern; }
 	inline void addSeq(tagSequence seq) { _seq.push_back(seq); }
 
 	inline RECT getBoss() { return _isidora; }
+	inline RECT getHitBox() { return _hitBox; }
+	inline bitset<3> getState() { return _idState; }
+	inline void setState(int num, bool state) { _idState.set(num, state); }
+	inline bool isAttack() { return _isAttack; }
 
 	void addPattern(char* action) { _pattern.push_back(action); }
 

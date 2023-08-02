@@ -90,6 +90,8 @@ void Player::initImage(void)
         740 * 2, 144 * 2, 10, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("PARRY_SUCCESS", "Resources/Image/Penitent/penitent_parry_anim.bmp",
         1617 * 2, 216 * 2, 11, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("COUNTER", "Resources/Image/Penitent/penitent_parry_counter.bmp",
+        3154 * 2, 212 * 2, 19, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("PORTION", "Resources/Image/Penitent/penitent_healthposion_anim.bmp",
         3330 * 2, 280 * 2, 37, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("COLLECT", "Resources/Image/Penitent/penitent_collecting_object_anim.bmp",
@@ -104,6 +106,11 @@ void Player::initImage(void)
     IMAGEMANAGER->addImage("Score", "Resources/Image/Sheet/score.bmp", 83 * 2, 48 * 2, true, MAGENTA);
     IMAGEMANAGER->addImage("HP", "Resources/Image/Sheet/HealthBar.bmp",
         136 * 2, 4 * 2, true, MAGENTA);
+
+    IMAGEMANAGER->addImage("ENEMY_HP_BAR", "Resources/Image/Sheet/enemy_health_bar.bmp",
+        34 * 2, 4 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("ENEMY_HP", "Resources/Image/Sheet/enemy_health_blood.bmp",
+        32 * 2, 2 * 2, true, MAGENTA);
 
     IMAGEMANAGER->addImage("flask_full", "Resources/Image/Sheet/flask2_full.bmp",
         14 * 2, 21 * 2, true, MAGENTA);
@@ -129,13 +136,14 @@ void Player::initTiming(void)
     _sync["ATTACK_JUMP1"] = { 4, {-100 + 50, -80}, {-20, -80} };
     _sync["ATTACK_JUMP2"] = { 6, {-100 + 50, -80}, {0, -80} };
     _sync["ATTACK_UPWARD"] = { 4, {-30 + 50, -92}, {8, -92} };
-    _sync["ATTACK_UPWARD_JUMP"] = { 4, {0 + 50, 0}, {0, 0} };
+    _sync["ATTACK_UPWARD_JUMP"] = { 4, {0 + 50, -190}, {0, -190} };
     _sync["ATTACK_CROUCH"] = { 4, {-80 + 50, 20}, {-15, 20} };
     _sync["ATTACK_DODGE"] = { 3, {-240 + 50, -55}, {-5, -55} };
     _sync["ATTACK_COMBO_2"] = { 4, {-130 + 50, 10}, {-20, 10} };
     _sync["ATTACK_COMBO_3"] = { 4, {-310 + 50, -8}, {60, -8} };
     _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
-    _sync["PARRY_SUCCESS"] = { 4, {-85, -65}, {-15, -65} };
+    _sync["PARRY_SUCCESS"] = { 4, {-85, -60}, {-15, -60} };
+    _sync["COUNTER"] = { 4, {-180 + 50, -58}, {0, -58} };
     _sync["PUSHBACK"] = { 4, {-20 + 50, 10}, {-30, 10} };
     _sync["DODGE"] = { 2, {0 + 50, 0}, {0, 0} };
     _sync["CROUCH_DOWN"] = { 3, {0 + 50, 10}, {-25, 10} };
@@ -159,7 +167,7 @@ void Player::playerAction(void)
     // 히트박스 설정
     if (_isLeft)
     {
-        if (getState()[ATTACK])
+        if (getState()[ATTACK] || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
             _hitBox = RectMake(_player.right - 130, _player.bottom - 130, 80, 130);
         else if (getState()[PORTION])
             _hitBox = RectMakeCenter(_center.x, _player.bottom - 75, 80, 130);
@@ -168,7 +176,7 @@ void Player::playerAction(void)
     }
     else
     {
-        if (getState()[ATTACK])
+        if (getState()[ATTACK] || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
             _hitBox = RectMake(_player.left + 70, _player.bottom - 130, 80, 130);
         else if (getState()[PORTION])
             _hitBox = RectMakeCenter(_center.x, _player.bottom - 75, 80, 130);
@@ -189,6 +197,13 @@ void Player::playerAction(void)
         if (_plState.none())
             setAction("FALLING");
     }
+
+    if (_plState[DEATH_FALL])
+    {
+        _actionList.clear();
+        _actionList.push_back("DEATH_FALL");
+    }
+
     //cout << "hold"<<_hold << endl;
     if (KEYMANAGER->isStayKeyDown('A') && !strstr("ATTACK", _strAction) 
         && !_plState[DODGE] && !_plState[PARRY])
@@ -281,7 +296,9 @@ void Player::playerAction(void)
         if (!isEmpty())
             _actionList.pop_front();
 
+        setAction("PARRY_SUCCESS");
         _actionList.push_back("PARRY_SUCCESS");
+        _actionList.push_back("COUNTER");
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("PARRY_SUCCESS")->getMaxFrameX();
         else
@@ -356,14 +373,17 @@ void Player::playerAction(void)
     {
         setState(UP, true);
 
-        //if (!isEmpty())
-        //    _actionList.pop_front();
+        /*if (!isEmpty())
+            _actionList.pop_front();*/
 
-        //_isFixed = true;
-        ////_hold = false;
-        //setState(LADDER, true);
-        //setAction("LADDER");
-        //_plPos.y -= 3.0f;
+        if (_hold)
+        {
+            _isFixed = true;
+            //_hold = false;
+            setState(LADDER, true);
+            setAction("LADDER");
+            _plPos.y -= 3.0f;
+        }
        /* _actionList.push_back("HANGON");
         _actionList.push_back("CLIMB");
         if (_isLeft)
@@ -394,6 +414,7 @@ void Player::playerAction(void)
             if (_plState[JUMP])
             {
                 setState(ATTACK, true);
+                
                 if (!isEmpty())
                     _actionList.clear();
 
@@ -461,12 +482,16 @@ void Player::playerAction(void)
         else
             _comboTime.push_back(clock());
     }
-    if (!_plState[HIT] && _hit && isEmpty())
+    if (!_plState[HIT] && _hit)
     {
         setState(HIT, true);
+        setAction("PUSHBACK");
+
+        if (!isEmpty())
+            _actionList.clear();
+
         _actionList.push_back("PUSHBACK");
         _actionList.push_back("CROUCH_UP");
-        setAction("PUSHBACK");
 
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
@@ -524,11 +549,13 @@ void Player::playerAction(void)
                    if (!_actionList.empty())
                    {
                        _idx_x = IMAGEMANAGER->findImage(_actionList.front())->getMaxFrameX();
-                       setAction((char*)_actionList.front());
+                       if (!strcmp(_actionList.front(), "COUNTER"))
+                           setState(ATTACK, true);
+                       setAction(_actionList.front());
                    }
                    else
                    {
-                       if (getState()[HIT])
+                       if (getState()[HIT] && _hit)
                            _hit = false;
                        _plState.reset();
                        _isFixed = _parry = false;
@@ -553,11 +580,13 @@ void Player::playerAction(void)
                    if (!_actionList.empty())
                    {
                        _idx_x = 0;
-                       setAction((char*)_actionList.front());
+                       if (!strcmp(_actionList.front(), "COUNTER"))
+                           setState(ATTACK, true);
+                       setAction(_actionList.front());
                    }
                    else
                    {
-                       if (getState()[HIT])
+                       if (getState()[HIT] && _hit)
                            _hit = false;
                        _plState.reset();
                        _isFixed = _parry = false;
@@ -582,12 +611,12 @@ void Player::playerMove(void)
             if (!strcmp(_strAction, "JUMP_FORWARD"))
             {
                 if (_idx_x > getMaxFrameX() - 6)
-                    _plPos.y -= 8.0f;
+                    _plPos.y -= 9.0f;
             }
             if (!strcmp(_strAction, "JUMP"))
             {
-                if (_temp.y - _plPos.y < 120)
-                    _plPos.y -= 8.0f;
+                if (_temp.y - _plPos.y < 150)
+                    _plPos.y -= 7.0f;
                 else if (_temp.y <= _plPos.y)
                     setAction("IDLE");
                 else
@@ -596,16 +625,15 @@ void Player::playerMove(void)
                     setState(JUMP, false);
                 }
             }
-
         }
         else
         {
             if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 6)
-                _plPos.y -= 8.0f;
+                _plPos.y -= 9.0f;
             if (!strcmp(_strAction, "JUMP"))
             {
-                if (_temp.y - _plPos.y < 120)
-                    _plPos.y -= 8.0f;
+                if (_temp.y - _plPos.y < 150)
+                    _plPos.y -= 7.0f;
                 else
                 {
                     setAction("FALLING");
@@ -648,12 +676,12 @@ void Player::playerMove(void)
         if (_isLeft)
         {
             if (_idx_x > getMaxFrameX() - 9)
-                _plPos.x += 6.0f;
+                _plPos.x += 5.0f;
         }
         else
         {
             if (_idx_x < 9)
-                _plPos.x -= 6.0f;
+                _plPos.x -= 5.0f;
         }
     }
 }
