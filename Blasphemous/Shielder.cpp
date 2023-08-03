@@ -46,7 +46,7 @@ void Shielder::initSync(void)
     _sync.insert({ "Shielder_attack", {5, {0, -12}, {-8, -12}} });
     _sync.insert({ "Shielder_parry", {8, {0, -12}, {0, -12}} });
     _sync.insert({ "Shielder_parryToIdle", {8, {0, 0}, {0, 0}} });
-    _sync.insert({ "Shielder_death", {7, {-20, -30}, {-20, -30}} });
+    _sync.insert({ "Shielder_death", {7, {0, -30}, {-20, -30}} });
 }
 
 void Shielder::move(void)

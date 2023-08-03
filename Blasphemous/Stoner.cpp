@@ -323,7 +323,7 @@ void Stoner::rockCycle(void)
 {
     for (int i = 0; i < MAX_ROCK; i++)
     {
-        if (_rock[i].shoot && !_rock[i].cycle.empty() && _cnt % 2 == 0)
+        if (_rock[i].shoot && !_rock[i].cycle.empty() && _cnt % 10 == 0)
         {
             _rock[i].cnt++;
 
@@ -369,12 +369,14 @@ void Stoner::rockCollision(void)
         if (!_rock[i].shoot) continue;
         if (_rock[i].broke) continue;
 
-        if (IntersectRect(&_rt, &_rock[i].rock, &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
+        if (IntersectRect(&_rt, &_rock[i].rock, &PLAYER->getRect()) 
+            && (PLAYER->getState()[ATTACK] || PLAYER->getAttack()))
         {
                 _rock[i].broke = true;            
         }
 
-        if (IntersectRect(&_rt, &_rock[i].rock, &PLAYER->getHitBox()) && !PLAYER->getState()[ATTACK])
+        if (IntersectRect(&_rt, &_rock[i].rock, &PLAYER->getHitBox()) && 
+            (!PLAYER->getState()[ATTACK] || !PLAYER->getAttack()))
         {
             if (!PLAYER->getState()[HIT] && !PLAYER->getHit())
             {

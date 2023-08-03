@@ -23,6 +23,8 @@ HRESULT BattleField::init(void)
     IMAGEMANAGER->addImage("church-door", "Resources/Image/BackGround/churches_door.bmp",
         3760, 940, true, MAGENTA);
     
+    _shake = { 0.0f, 0.0f };
+
     _startPos_x = 0.0f;
     _startPos_y = 70.0f;
 
@@ -38,6 +40,45 @@ void BattleField::rectMove(void)
         245 - (_startPos_y - _copyPos_y), 55, 300);
 }
 
+void BattleField::cameraShake(void)
+{
+    int _dir = RND->getInt(8);
+
+    switch (_dir)
+    {
+    case 0:
+        _shake.x += 5;
+        break;
+    case 1:
+        _shake.y += 5;
+        break;
+    case 2:
+        _shake.x -= 5;
+        break;
+    case 3:
+        _shake.y -= 5;
+        break;
+    case 4:
+        _shake.x += 5;
+        _shake.y += 5;
+        break;
+    case 5:
+        _shake.x += 5;
+        _shake.y -= 5;
+        break;
+    case 6:
+        _shake.x -= 5;
+        _shake.y += 5;
+        break;
+    case 7:
+        _shake.x -= 5;
+        _shake.y -= 5;
+        break;
+    }
+
+    cout << "shake" << _shake.x << " " << _shake.y << endl;
+}
+
 void BattleField::renderDoor(HDC hdc)
 {
     IMAGEMANAGER->render("church-door", hdc, 0, 0, _startPos_x, _startPos_y, WINSIZE_X, WINSIZE_Y);
@@ -50,7 +91,8 @@ void BattleField::render(HDC hdc)
     IMAGEMANAGER->render("churches-field-bg3", hdc, 0, 50);
     IMAGEMANAGER->render("churches-field-bg2", hdc, 0, 50);
     
-    IMAGEMANAGER->render("church-field", hdc, 0, 0, _startPos_x, _startPos_y, WINSIZE_X, WINSIZE_Y);
+    IMAGEMANAGER->render("church-field", hdc, 0 + _shake.x, 0 + _shake.y, 
+        _startPos_x, _startPos_y, WINSIZE_X, WINSIZE_Y);
 
     if (KEYMANAGER->isToggleKey(VK_TAB))
     {

@@ -62,8 +62,9 @@ private:
 	tagFireBall _fb[MAX_FIREBALL];
 
 private:
-	RECT _isidora, _hitBox, _mask;
+	RECT _isidora, _attack, _hitBox, _mask;
 	int _cnt, _hp, _phase, _intervalC, _intervalF, _patternNum;
+	float _isidoraAngle;
 
 	bool _isLeft, _finIntro, _isPhase2, _isAttack, _doNothing;
 	bool _once, _once2, _onceColumn, _onceFire;
@@ -88,6 +89,8 @@ public:
 	void fireBallCreate(void);
 	void fireBallMove(void);
 	void fireBallCycle(void);
+
+	void attack(void);
 
 	void render(HDC hdc);
 

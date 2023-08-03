@@ -13,6 +13,8 @@ HRESULT BossStage::init(void)
     _intro = _mainStage = _ending = false;
     _cnt = 0;
 
+    _once = false;
+
     for (int i = 0; i < 6; i++)
         _phase1[i] = i + 1;
     for (int i = 0; i < 3; i++)
@@ -356,11 +358,17 @@ void BossStage::update(void)
                 _boss->setDo(false);
                 break;
             case 10:
-                _boss->initPos(WINSIZE_X / 2 - 10, WINSIZE_Y / 2 + 100);
+                if (!_once)
+                {
+                    _boss->initPos(WINSIZE_X / 2 - 100, WINSIZE_Y / 2);
+                    _once = true;
+                }            
                 _boss->setLeft(true);
 
+                //_boss->addPattern("Isidora_outToCast");
                 _boss->addPattern("Isidora_cast");
 
+                //_boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX() } });
                 _boss->addSeq({ 0, { 11, 21 } });
 
                 _boss->setDo(false);

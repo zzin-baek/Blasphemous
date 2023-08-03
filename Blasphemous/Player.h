@@ -48,7 +48,8 @@ private:
 	RECT _player, _hitBox;
 	POINTF _plPos, _center, _temp;
 
-	bool _isLeft, _isGround, _isFixed, _hold, _collect, _hit, _parry;
+	bool _isLeft, _isGround, _isFixed, _isAttack;
+	bool _hold, _collect, _hit, _parry;
 	bool _collected, _respawn;
 
 	int _cnt, _idx_x, _idx_y;
@@ -103,6 +104,8 @@ public:
 	inline RECT getHitBox() { return _hitBox; }
 	inline float getCenterX() { return _center.x; }
 	inline float getCenterY() { return _center.y; }
+
+	inline bool getAttack() { return _isAttack; }
 
 	void setHP(int hp) { _hp = hp; }
 	int getHP() { return _hp; }

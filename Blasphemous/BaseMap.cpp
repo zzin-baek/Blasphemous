@@ -54,6 +54,8 @@ void BaseMap::release(void)
 
 void BaseMap::update(void)
 {
+    _bf->initCamera();
+
     if (!_isInven)
     {
         PLAYER->playerAction();
@@ -368,6 +370,7 @@ void BaseMap::update(void)
             {
                 //PLAYER->setState(HIT, true);
                 PLAYER->setHit(true);
+                _bf->cameraShake();
                 PLAYER->setHP(PLAYER->getHP() - 5);
             }
         }
@@ -375,6 +378,7 @@ void BaseMap::update(void)
             && PLAYER->getState()[PARRY] && _acolyteList[0]->canAttack())
         {
             PLAYER->setParry(true);
+            _bf->cameraShake();
             _acolyteList[0]->clearAll();
             _acolyteList[0]->setAction("Acolyte_parry");
 
@@ -387,11 +391,14 @@ void BaseMap::update(void)
                 _acolyteList[0]->setX(0);
         }
 
-        if (IntersectRect(&_rt, &_acolyteList[0]->getRect(), &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
+        if (IntersectRect(&_rt, &_acolyteList[0]->getRect(), &PLAYER->getRect()) 
+            && (PLAYER->getAttack() || PLAYER->getState()[ATTACK]))
         {
             if (!_acolyteList[0]->getState()[HIT_ENEMY])
             {
                 _acolyteList[0]->setState(HIT_ENEMY, true);
+
+                _bf->cameraShake();
 
                 if (!strcmp(PLAYER->getAction(), "COUNTER"))
                     _acolyteList[0]->setHP(_acolyteList[0]->getHP() - 20);
@@ -411,11 +418,13 @@ void BaseMap::update(void)
         {
             _stonerList[i]->rockCollision();
 
-            if (IntersectRect(&_rt, &_stonerList[i]->getRect(), &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
+            if (IntersectRect(&_rt, &_stonerList[i]->getRect(), &PLAYER->getRect()) 
+                && (PLAYER->getAttack() || PLAYER->getState()[ATTACK]))
             {
                 if (!_stonerList[i]->getState()[HIT_ENEMY])
                 {
                     _stonerList[i]->setState(HIT_ENEMY, true);
+                    _bf->cameraShake();
                     _stonerList[i]->setHP(_stonerList[i]->getHP() - 10);
                 }
             }
@@ -478,7 +487,7 @@ void BaseMap::update(void)
             if (IntersectRect(&_rt, &PLAYER->getHitBox(), &_shielderList[0]->getBoundary(i)))
             {
 
-                if (_shielderList[0]->isEmpty() && !PLAYER->getState()[ATTACK])
+                if (_shielderList[0]->isEmpty() && (!PLAYER->getState()[ATTACK] || !PLAYER->getAttack()))
                 {
                     _shielderList[0]->setAction("Shielder_idle");
                     _shielderList[0]->setState(IDLE_ENEMY, false);
@@ -501,17 +510,18 @@ void BaseMap::update(void)
             }
         }
 
-        if (IntersectRect(&_rt, &_shielderList[0]->getAttack(), &PLAYER->getHitBox()) 
+        if (IntersectRect(&_rt, &_shielderList[0]->getAttack(), &PLAYER->getHitBox())
             && PLAYER->getState()[PARRY] && _shielderList[0]->isAttack())
-        {         
+        {
             PLAYER->setParry(true);
+            _bf->cameraShake();
             _shielderList[0]->clearAll();
 
             _shielderList[0]->setAction("Shielder_parry");
             _shielderList[0]->addAction("Shielder_parry");
             _shielderList[0]->addAction("Shielder_parryToIdle");
 
-            if(_shielderList[0]->getLeft())
+            if (_shielderList[0]->getLeft())
                 _shielderList[0]->setX(_shielderList[0]->getMaxFrame());
             else
                 _shielderList[0]->setX(0);
@@ -523,17 +533,18 @@ void BaseMap::update(void)
             if (!PLAYER->getState()[HIT] && !PLAYER->getHit() && _shielderList[0]->isAttack())
             {
                 PLAYER->setHit(true);
+                _bf->cameraShake();
                 PLAYER->setHP(PLAYER->getHP() - 5);
             }
         }
 
-        if (IntersectRect(&_rt, &_shielderList[0]->getRect(), &PLAYER->getRect()) 
-            && PLAYER->getState()[ATTACK])
+        if (IntersectRect(&_rt, &_shielderList[0]->getRect(), &PLAYER->getRect())
+            && (PLAYER->getState()[ATTACK] || PLAYER->getAttack()))
         {
             if (!_shielderList[0]->getState()[HIT_ENEMY])
             {
                 _shielderList[0]->setState(HIT_ENEMY, true);
-
+                _bf->cameraShake();
                 if (!strcmp(PLAYER->getAction(), "COUNTER"))
                     _shielderList[0]->setHP(_shielderList[0]->getHP() - 20);
                 else
@@ -565,6 +576,8 @@ void BaseMap::update(void)
             _isInven = false;
         }
     }
+
+    //_bf->initCamera();
 }
 
 void BaseMap::render(void)

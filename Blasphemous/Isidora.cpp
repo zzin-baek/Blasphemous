@@ -85,6 +85,7 @@ HRESULT Isidora::init(void)
 
 	_hp = 300;
 	_phase = 1;
+	_isidoraAngle = 45.0f;
 
 	_isLeft = _doNothing = true;
 	_finIntro = _isPhase2 = _once = _once2 = false;
@@ -285,7 +286,9 @@ void Isidora::update(void)
 	}
 
 	useSkill();
+	attack();
 
+	// 불기둥 파이어볼 관련 //
 	if (_phase == 2 && _patternNum != 13)
 	{
 		_intervalF = 200;
@@ -797,6 +800,24 @@ void Isidora::useSkill(void)
 				_seq.push_back({ 0, { 11, 21 } });
 		}
 
+		if (_center.x > 750)
+			_isidoraAngle -= 1;
+		else if (_center.x == 750 && _center.y > 260)
+		{
+			float ag = atan2((150 - _center.y), (_center.x - 450));
+			_isidoraAngle = ag * 180 / PI - 180;
+		}
+		else if (_center.x < 450)
+			_isidoraAngle += 1;
+		else if (_center.y > 260 && _center.x == 450)
+		{
+			float ag = atan2((150 - _center.y), (_center.x - 750));
+			_isidoraAngle = ag * 180 / PI - 180;
+		}
+		
+		_pos.x += cos(_isidoraAngle * PI / 180) * 3;
+		_pos.y += -sin(_isidoraAngle * PI / 180) * 3;
+
 		break;
 	// 2페이즈 변할 떄
 	case 11:
@@ -1131,6 +1152,76 @@ void Isidora::fireBallCycle(void)
 	}
 }
 
+void Isidora::attack(void)
+{
+	if (!_pattern.empty())
+	{
+		if (!strcmp(_pattern.front(), "Isidora_scy"))
+		{
+			_attack = RectMakeCenter(_pos.x, _pos.y - 50, 330, 170);
+
+			if (!_isLeft)
+			{
+				if (_idx.x > 9 && _idx.x < 26)
+					_isAttack = true;
+			}
+			else
+			{
+				if (_idx.x < IMAGEMANAGER->findImage("Isidora_scy")->getMaxFrameX() - 9 
+					&& _idx.x > IMAGEMANAGER->findImage("Isidora_scy")->getMaxFrameX() - 26)
+					_isAttack = true;
+			}
+		}
+		if (!strcmp(_pattern.front(), "Isidora_scy2"))
+		{
+			_attack = RectMakeCenter(_pos.x, _pos.y - 50, 330, 170);
+			if (!_isLeft)
+			{
+				if (_idx.x > 8 && _idx.x < 25)
+					_isAttack = true;
+			}
+			else
+			{
+				if (_idx.x < IMAGEMANAGER->findImage("Isidora_scy2")->getMaxFrameX() - 8
+					&& _idx.x > IMAGEMANAGER->findImage("Isidora_scy2")->getMaxFrameX() - 25)
+					_isAttack = true;
+			}
+		}
+		if (!strcmp(_pattern.front(), "Isidora_slash"))
+		{
+			_attack = RectMakeCenter(_pos.x, _pos.y - 50, 330, 170);
+			if (!_isLeft)
+			{
+				if (_idx.x > 24 && _idx.x < 30)
+					_isAttack = true;
+			}
+			else
+			{
+				if (_idx.x < IMAGEMANAGER->findImage("Isidora_slash")->getMaxFrameX() - 24 
+					&& _idx.x > IMAGEMANAGER->findImage("Isidora_slash")->getMaxFrameX() - 30)
+					_isAttack = true;
+			}
+		}
+
+		if (!strcmp(_pattern.front(), "Isidora_twirl"))
+		{
+			_attack = RectMakeCenter(_pos.x, _pos.y - 50, 330, 170);
+			_isAttack = true;
+		}
+
+		if (!strcmp(_pattern.front(), "Isidora_screenslash_effect"))
+		{
+			_attack = RectMakeCenter(_pos.x, _pos.y, 
+				IMAGEMANAGER->findImage("Isidora_screenslash_effect")->getFrameWidth(),
+				IMAGEMANAGER->findImage("Isidora_screenslash_effect")->getFrameHeight());
+			_isAttack = true;
+		}
+
+
+
+	}
+}
+
 void Isidora::render(HDC hdc)
 {
 	if (!_pattern.empty())
@@ -1194,9 +1285,15 @@ void Isidora::render(HDC hdc)
 		HPEN oldPen = (HPEN)SelectObject(hdc, myPen);
 
 		DrawRectMake(hdc, _hitBox);
+
 		_stprintf_s(_loc, "x: %.2f y: %.2f", _pos.x, _pos.y);
 		TextOut(hdc, _pos.x, _pos.y, _loc, strlen(_loc));
+
+		myPen = (HPEN)CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
+		oldPen = (HPEN)SelectObject(hdc, myPen);
 		
+		DrawRectMake(hdc, _attack);
+
 		SelectObject(hdc, oldBrush);
 		DeleteObject(myBrush);
 		SelectObject(hdc, oldPen);
