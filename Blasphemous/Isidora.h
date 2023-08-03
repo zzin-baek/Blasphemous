@@ -66,7 +66,7 @@ private:
 	int _cnt, _hp, _phase, _intervalC, _intervalF, _patternNum;
 	float _isidoraAngle;
 
-	bool _isLeft, _finIntro, _isPhase2, _isAttack, _doNothing;
+	bool _isLeft, _finIntro, _isPhase2, _isPhase3, _isAttack, _doNothing, _hit;
 	bool _once, _once2, _onceColumn, _onceFire;
 
 	char _loc[128];
@@ -87,7 +87,7 @@ public:
 	void columnCycle(bool phase);
 
 	void fireBallCreate(void);
-	void fireBallMove(void);
+	void fireBallMove(bool _temporal);
 	void fireBallCycle(void);
 
 	void attack(void);
@@ -110,7 +110,8 @@ public:
 	inline void setDo(int state) { _doNothing = state; }
 
 	inline int getPhase() { return _phase; }
-	inline bool getIsPhase() { return _isPhase2; }
+	inline bool getIsPhase2() { return _isPhase2; }
+	inline bool getIsPhase3() { return _isPhase3; }
 	inline int getHP() { return _hp; }
 	inline void setHP(int hp) { _hp = hp; }
 
@@ -119,6 +120,8 @@ public:
 
 	inline RECT getBoss() { return _isidora; }
 	inline RECT getHitBox() { return _hitBox; }
+	inline RECT getAttack() { return _attack; }
+
 	inline bitset<3> getState() { return _idState; }
 	inline void setState(int num, bool state) { _idState.set(num, state); }
 	inline bool isAttack() { return _isAttack; }

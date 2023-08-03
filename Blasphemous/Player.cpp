@@ -7,12 +7,12 @@ HRESULT Player::init(void)
 
     _cnt = _idx_x = _idx_y = 0;
     _isLeft = _isGround = _isFixed = _hold = _collect = false;
-    _isAttack = _collected = _respawn = _hit = _parry = false;
+    _isAttack = _collected = _respawn = _hit = _parrying =false;
 
     _center = _temp = { 0.0f, 0.0f };
 
     _hp = 100; 
-    _score = 0;
+    _score, _parry = 0;
     _portion = 5;
 
     wsprintf(_strAction, "IDLE");
@@ -145,7 +145,7 @@ void Player::initTiming(void)
     _sync["ATTACK_COMBO_3"] = { 4, {-310 + 50, -8}, {60, -8} };
     _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
     _sync["PARRY_SUCCESS"] = { 4, {-85, -60}, {-15, -60} };
-    _sync["PARRY_SLIDE"] = { 3, {-42 + 50, -18}, {-29, -18} };
+    _sync["PARRY_SLIDE"] = { 3, {-42 + 50, -18}, {-29, -18} }; // -18
     _sync["COUNTER"] = { 4, {-180 + 50, -58}, {0, -58} };
     _sync["PUSHBACK"] = { 4, {-20 + 50, 10}, {-30, 10} };
     _sync["DODGE"] = { 2, {0 + 50, 0}, {0, 0} };
@@ -303,20 +303,33 @@ void Player::playerAction(void)
     }
 
     // 패링 성공
-    if (_parry && !_isFixed)
+    if (_parry && !_isFixed && !_parrying)
     { 
-        _parry = false;
-        _isFixed = true;
         if (!isEmpty())
             _actionList.pop_front();
 
-        setAction("PARRY_SUCCESS");
-        _actionList.push_back("PARRY_SUCCESS");
-        _actionList.push_back("COUNTER");
-        if (_isLeft)
-            _idx_x = IMAGEMANAGER->findImage("PARRY_SUCCESS")->getMaxFrameX();
-        else
-            _idx_x = 0;
+        if (_parry == 1)
+        {
+            _isFixed = true;
+            setAction("PARRY_SUCCESS");
+            _actionList.push_back("PARRY_SUCCESS");
+            _actionList.push_back("COUNTER");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("PARRY_SUCCESS")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+        else if (_parry == 2)
+        {
+            _parrying = true;
+            setAction("PARRY_SLIDE");
+            _actionList.push_back("PARRY_SLIDE");
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("PARRY_SLIDE")->getMaxFrameX();
+            else
+                _idx_x = 0;
+        }
+        _parry = 0;
     }
     if (KEYMANAGER->isOnceKeyDown('F') && isEmpty() && _portion > 0)
     {
@@ -572,8 +585,8 @@ void Player::playerAction(void)
                    {
                        if (getState()[HIT] && _hit)
                            _hit = false;
+                       _isFixed = _isAttack = _parrying = false;
                        _plState.reset();
-                       _isFixed = _isAttack = _parry = false;
                        setAction("IDLE");
                    }
                }
@@ -603,8 +616,8 @@ void Player::playerAction(void)
                    {
                        if (getState()[HIT] && _hit)
                            _hit = false;
+                       _isFixed = _isAttack = _parrying = false;
                        _plState.reset();
-                       _isFixed = _isAttack = _parry = false;
                        _respawn = true;
                        setAction("IDLE");
                    }
@@ -705,12 +718,12 @@ void Player::playerMove(void)
         if (_isLeft)
         {
             if (_idx_x > getMaxFrameX() - 7)
-                _plPos.x += 5.0f;
+                _plPos.x += 7.0f;
         }
         else
         {
             if (_idx_x < 7)
-                _plPos.x -= 5.0f;
+                _plPos.x -= 7.0f;
         }
     }
 }

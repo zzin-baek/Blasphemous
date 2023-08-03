@@ -377,7 +377,7 @@ void BaseMap::update(void)
         else if (IntersectRect(&_rt, &_acolyteList[0]->getAttack(), &PLAYER->getHitBox()) 
             && PLAYER->getState()[PARRY] && _acolyteList[0]->canAttack())
         {
-            PLAYER->setParry(true);
+            PLAYER->setParry(1);
             _bf->cameraShake();
             _acolyteList[0]->clearAll();
             _acolyteList[0]->setAction("Acolyte_parry");
@@ -513,7 +513,7 @@ void BaseMap::update(void)
         if (IntersectRect(&_rt, &_shielderList[0]->getAttack(), &PLAYER->getHitBox())
             && PLAYER->getState()[PARRY] && _shielderList[0]->isAttack())
         {
-            PLAYER->setParry(true);
+            PLAYER->setParry(1);
             _bf->cameraShake();
             _shielderList[0]->clearAll();
 

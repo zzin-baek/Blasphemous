@@ -115,13 +115,17 @@ void BossStage::update(void)
      
             if (_boss->getPhase() == 1 && _boss->getHP() > 200)
                 _pattern = RND->getIntArray(_phase1, 6);
-            else if (_boss->getHP() <= 200 && !_boss->getIsPhase())
+            else if (_boss->getHP() <= 200 && !_boss->getIsPhase2())
             {
                 _pattern = _sq[0];
                 _sq.erase(_sq.begin());
             }
-            else if (_boss->getPhase() == 2)
+            else if (_boss->getPhase() == 2 && _boss->getHP() > 100)
                 _pattern = RND->getIntArray(_phase2, 3);
+            else if (_boss->getHP() <= 100 && !_boss->getIsPhase3())
+            {
+                _pattern = 14;
+            }
             else
                 _pattern = 10;
 
@@ -360,9 +364,9 @@ void BossStage::update(void)
             case 10:
                 if (!_once)
                 {
-                    _boss->initPos(WINSIZE_X / 2 - 100, WINSIZE_Y / 2);
+                    _boss->initPos(WINSIZE_X / 2 - 50, WINSIZE_Y / 2);
                     _once = true;
-                }            
+                }          
                 _boss->setLeft(true);
 
                 //_boss->addPattern("Isidora_outToCast");
@@ -400,12 +404,34 @@ void BossStage::update(void)
 
                 _boss->setDo(false);
                 break;
+            case 14:
+                _boss->initPos(WINSIZE_X - 300, 240);
+                _boss->addPattern("Isidora_outToCast");
+                _boss->addPattern("Isidora_cast");
+
+                if (_boss->getLeft())
+                    _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX());
+                else
+                    _boss->setIdxX(0);
+
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX() } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 0, { 11, 21 } });
+                _boss->addSeq({ 1, { 11, IMAGEMANAGER->findImage("Isidora_cast")->getMaxFrameX() } });
+                _boss->addSeq({ 1, { 0, IMAGEMANAGER->findImage("Isidora_vanish")->getMaxFrameX() } });
+
+                _boss->setDo(false);
+                break;
             }
             cout << "패턴 넘버" << _pattern << endl;
         }        
     }
 
-    if (_boss->getIsPhase() && _bm->getScene() < WINSIZE_X / 2)
+    if (_boss->getIsPhase2() && _bm->getScene() < WINSIZE_X / 2)
     {
         _bm->setScene(_bm->getScene() + 1);
         if (_bm->getScene() > 100)
@@ -437,28 +463,27 @@ void BossStage::update(void)
         PLAYER->setGround(false);
     }
 
-    if (IntersectRect(&_rt, &_boss->getHitBox(), &PLAYER->getHitBox())
-        && PLAYER->getState()[PARRY])// && _boss->isAttack())
+    if (IntersectRect(&_rt, &_boss->getAttack(), &PLAYER->getRect())
+        && PLAYER->getState()[PARRY] && _boss->isAttack())
     {
-        PLAYER->setParry(true);
-
+        PLAYER->setParry(2);
     }
-    else if (IntersectRect(&_rt, &_boss->getHitBox(), &PLAYER->getHitBox())
-        && !PLAYER->getState()[PARRY])
+    else if (IntersectRect(&_rt, &_boss->getAttack(), &PLAYER->getHitBox())
+        && !PLAYER->getState()[PARRY] && _boss->isAttack())
     {
-        if (!PLAYER->getState()[HIT] && !PLAYER->getHit())// && _shielderList[0]->isAttack())
+        if (!PLAYER->getState()[HIT] && !PLAYER->getHit())
         {
             PLAYER->setHit(true);
-            PLAYER->setHP(PLAYER->getHP() - 5);
+            PLAYER->setHP(PLAYER->getHP() - 10);
         }
     }
 
-    if (IntersectRect(&_rt, &_boss->getHitBox(), &PLAYER->getRect()) && PLAYER->getState()[ATTACK])
+    if (IntersectRect(&_rt, &_boss->getHitBox(), &PLAYER->getRect())
+        && (PLAYER->getState()[ATTACK] || PLAYER->getAttack()))
     {
         if (!_boss->getState()[HIT_BOSS])
         {
             _boss->setState(HIT_BOSS, true);
-
             _boss->setHP(_boss->getHP() - 10);
         }
     }

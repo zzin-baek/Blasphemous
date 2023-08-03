@@ -49,11 +49,11 @@ private:
 	POINTF _plPos, _center, _temp;
 
 	bool _isLeft, _isGround, _isFixed, _isAttack;
-	bool _hold, _collect, _hit, _parry;
+	bool _hold, _collect, _hit, _parrying;
 	bool _collected, _respawn;
 
 	int _cnt, _idx_x, _idx_y;
-	int _hp, _score, _portion;
+	int _hp, _score, _portion, _parry;
 
 	char _loc[128], _action[128];
 
@@ -84,8 +84,10 @@ public:
 
 	inline void setCollect(bool state) { _collect = state; }
 	inline bool getCollected() { return _collected; }
-	inline bool getParry() { return _parry; }
-	inline void setParry(bool state) { _parry = true; }
+
+	inline int getParry() { return _parry; }
+	inline void setParry(int parry) { _parry = parry; }
+
 	inline void setHit(bool state) { _hit = state; }
 	inline bool getHit() { return _hit; }
 
