@@ -14,45 +14,45 @@ HRESULT KeyManager::init(void)
 
 bool KeyManager::isOnceKeyDown(int key)
 {
-    if (GetAsyncKeyState(key) & 0x8000)
-    {
-        if (!this->getKeyDown()[key])
+        if (GetAsyncKeyState(key) & 0x8000)
         {
-            this->setKeyDown(key, true);
-            return true;
+            if (!this->getKeyDown()[key])
+            {
+                this->setKeyDown(key, true);
+                return true;
+            }
         }
-    }
-    else
-    {
-        this->setKeyDown(key, false);
-    }
-    return false;
+        else
+        {
+            this->setKeyDown(key, false);
+        }
+        return false;
 }
 
 bool KeyManager::isOnceKeyUp(int key)
 {
-    if (GetAsyncKeyState(key) & 0x8000)
-    {
-        this->setKeyUp(key, true);
-    }
-    else
-    {
-        if (this->getKeyUp()[key])
+        if (GetAsyncKeyState(key) & 0x8000)
         {
-            this->setKeyUp(key, false);
-            return true;
+            this->setKeyUp(key, true);
         }
-    }
-    return false;
+        else
+        {
+            if (this->getKeyUp()[key])
+            {
+                this->setKeyUp(key, false);
+                return true;
+            }
+        }
+        return false;
 }
 
 bool KeyManager::isStayKeyDown(int key)
 {
-    if (GetAsyncKeyState(key) & 0x8000)
-    {
-        return true;
-    }
-    return false;
+        if (GetAsyncKeyState(key) & 0x8000)
+        {
+            return true;
+        }
+        return false;
 }
 
 bool KeyManager::isToggleKey(int key)

@@ -9,10 +9,13 @@ private:
 	BossMap2* _bm;
 	Pietat* _boss;
 
+	int _cnt;
+	bool _once;
+
 public:
 	HRESULT init(void);
 	void release(void);
-	void update(void); 
+	void update(void);
 	void render(void);
 
 	BossStage2() {}

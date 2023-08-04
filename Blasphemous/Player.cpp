@@ -15,6 +15,8 @@ HRESULT Player::init(void)
     _score, _parry = 0;
     _portion = 5;
 
+    _press = true;
+
     wsprintf(_strAction, "IDLE");
     initTiming();
 
@@ -98,6 +100,8 @@ void Player::initImage(void)
         3330 * 2, 280 * 2, 37, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("COLLECT", "Resources/Image/Penitent/penitent_collecting_object_anim.bmp",
         2470 * 2, 164 * 2, 26, 2, true, MAGENTA);
+    IMAGEMANAGER->addFrameImage("KNEE", "Resources/Image/Penitent/penitent_kneeled.bmp",
+        1080 * 2, 164 * 2, 15, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("DEATH", "Resources/Image/Penitent/penitent_death_anim.bmp",
         2760 * 2, 172 * 2, 24, 2, true, MAGENTA);
     IMAGEMANAGER->addFrameImage("DEATH_FALL", "Resources/Image/Penitent/penitent_death_by_fall_anim.bmp",
@@ -138,7 +142,7 @@ void Player::initTiming(void)
     _sync["ATTACK_JUMP1"] = { 4, {-100 + 50, -80}, {-20, -80} };
     _sync["ATTACK_JUMP2"] = { 6, {-100 + 50, -80}, {0, -80} };
     _sync["ATTACK_UPWARD"] = { 4, {-30 + 50, -92}, {8, -92} };
-    _sync["ATTACK_UPWARD_JUMP"] = { 4, {0 + 50, -190}, {0, -190} };
+    _sync["ATTACK_UPWARD_JUMP"] = { 3, {0 + 50, -190}, {0, -190} };
     _sync["ATTACK_CROUCH"] = { 4, {-80 + 50, 20}, {-15, 20} };
     _sync["ATTACK_DODGE"] = { 3, {-240 + 50, -55}, {-5, -55} };
     _sync["ATTACK_COMBO_2"] = { 4, {-130 + 50, 10}, {-20, 10} };
@@ -153,6 +157,7 @@ void Player::initTiming(void)
     _sync["CROUCH_UP"] = { 3, {0 + 50, 0}, {-25, 0} };
     _sync["PORTION"] = { 4, {-50 + 50, -125}, {0, -125} };
     _sync["COLLECT"] = { 5, {0, -6}, {-1, -6} };
+    _sync["KNEE"] = { 5, {0, 0}, {0, 0} };
     _sync["DEATH"] = { 5, {-23, -10}, {-12, -10} };
     _sync["DEATH_FALL"] = { 7, {-30, 60}, {-20, 60} };
 }
@@ -176,7 +181,7 @@ void Player::playerAction(void)
             _hitBox = RectMake(_player.right - 130, _player.bottom - 130, 80, 130);
         else if (getState()[PORTION])
             _hitBox = RectMakeCenter(_center.x, _player.bottom - 75, 80, 130);
-        else if (getState()[JUMP] && getState()[ATTACK])
+        else if (getState()[JUMP] && getState()[ATTACK] && getState()[UP])
             _hitBox = RectMake(_player.left, _player.bottom - 180, 80, 130);
         else
             _hitBox = RectMake(_player.left, _player.bottom - 130, 80, 130);
@@ -187,6 +192,8 @@ void Player::playerAction(void)
             _hitBox = RectMake(_player.left + 70, _player.bottom - 130, 80, 130);
         else if (getState()[PORTION])
             _hitBox = RectMakeCenter(_center.x, _player.bottom - 75, 80, 130);
+        else if (getState()[JUMP] && getState()[ATTACK] && getState()[UP])
+            _hitBox = RectMake(_player.left, _player.bottom - 180, 80, 130);
         else
             _hitBox = RectMake(_player.right - 80, _player.bottom - 130, 80, 130);
     }
@@ -220,7 +227,7 @@ void Player::playerAction(void)
 
     //cout << "hold"<<_hold << endl;
     if (KEYMANAGER->isStayKeyDown('A') && !strstr("ATTACK", _strAction) 
-        && !_plState[DODGE] && !_plState[PARRY])
+        && !_plState[DODGE] && !_plState[PARRY] && _press && _respawn)
     {
         
         if (!_plState[JUMP])
@@ -243,7 +250,7 @@ void Player::playerAction(void)
             _plPos.x -= 4.0f;
     }
     if (KEYMANAGER->isStayKeyDown('D') && !strstr("ATTACK", _strAction)
-        && !_plState[DODGE] && !_plState[PARRY])
+        && !_plState[DODGE] && !_plState[PARRY] && _press && _respawn)
     {
         if (!_plState[JUMP])
             setAction("RUNNING");
@@ -264,7 +271,7 @@ void Player::playerAction(void)
         if (!_plState[CROUCH] && !_plState[HIT])
             _plPos.x += 4.0f;
     }
-    if (KEYMANAGER->isStayKeyDown('S') && isEmpty())
+    if (KEYMANAGER->isStayKeyDown('S') && isEmpty() && _press)
     {
         setState(CROUCH, true);
         if (!_plState.none())
@@ -281,7 +288,7 @@ void Player::playerAction(void)
         else
             _idx_x = 0;*/
     }
-    if (KEYMANAGER->isOnceKeyUp('S') && isEmpty())
+    if (KEYMANAGER->isOnceKeyUp('S') && isEmpty() && _press)
     {
         setState(CROUCH, false);
         setAction("CROUCH_UP");
@@ -291,7 +298,7 @@ void Player::playerAction(void)
         else
             _idx_x = 0;
     }
-    if (KEYMANAGER->isOnceKeyDown('J') && isEmpty())
+    if (KEYMANAGER->isOnceKeyDown('J') && isEmpty() && _press)
     {
         setState(PARRY, true);
         setAction("PARRY");
@@ -331,7 +338,7 @@ void Player::playerAction(void)
         }
         _parry = 0;
     }
-    if (KEYMANAGER->isOnceKeyDown('F') && isEmpty() && _portion > 0)
+    if (KEYMANAGER->isOnceKeyDown('F') && isEmpty() && _portion > 0 && _press)
     {
         setState(PORTION, true);
         _actionList.push_back("PORTION");
@@ -359,7 +366,7 @@ void Player::playerAction(void)
     if (KEYMANAGER->isOnceKeyUp('E'))
         _collected = false;
 
-    if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP])
+    if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP] && _press)
     {
         //_isFixed = true;
         _temp.y = _plPos.y;
@@ -419,10 +426,10 @@ void Player::playerAction(void)
         else
             _idx_x = 0;*/
     }
-    if (KEYMANAGER->isOnceKeyUp('W') && _hold)
+    if (KEYMANAGER->isOnceKeyUp('W') && !_hold)
         setState(UP, false);
 
-    if (KEYMANAGER->isOnceKeyDown(VK_SHIFT) && !_plState[DODGE] && isEmpty())
+    if (KEYMANAGER->isOnceKeyDown(VK_SHIFT) && !_plState[DODGE] && isEmpty() && _press)
     {
         _temp.x = _plPos.x;
         setState(DODGE, true);
@@ -435,7 +442,7 @@ void Player::playerAction(void)
             _idx_x = 0;
     }
 
-    if (KEYMANAGER->isOnceKeyDown('K'))
+    if (KEYMANAGER->isOnceKeyDown('K') && _press)
     {
         if (!_plState[ATTACK])
         {

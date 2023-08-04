@@ -31,7 +31,7 @@ HRESULT BossMap::init(void)
     return S_OK;
 }
 
-void BossMap::movdRect(int x)
+void BossMap::moveRect(int x)
 {
     _sceneStart.left -= x;
     _sceneStart.right -= x;

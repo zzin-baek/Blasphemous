@@ -724,6 +724,57 @@ void GImage::frameRender(HDC hdc, int destX, int destY, int destWidth, int destH
     }
 }
 
+void GImage::alphaFrameRender(HDC hdc, int destX, int destY, int currentFrameX, int currentFrameY, BYTE alpha)
+{
+    _imageInfo->currentFrameX = currentFrameX;
+    _imageInfo->currentFrameY = currentFrameY;
+    
+    if (currentFrameX > _imageInfo->maxFrameX)
+    { 
+        _imageInfo->currentFrameX = _imageInfo->maxFrameX; 
+    }     
+    if (currentFrameY > _imageInfo->maxFrameY) 
+    { 
+        _imageInfo->currentFrameY = _imageInfo->maxFrameY;
+    }      
+    
+    if (!_blendImage) this->initForAlphaBlend();
+    
+    if (alpha < 0) { _blendFunc.SourceConstantAlpha = 0; }
+    else if (alpha > 255) 
+    { 
+        _blendFunc.SourceConstantAlpha = 255; 
+    }
+    else 
+    { 
+        _blendFunc.SourceConstantAlpha = alpha; 
+    }     
+    
+    if (_isTrans) {
+        BitBlt(_blendImage->hMemDC, 0, 0, _imageInfo->frameWidth, _imageInfo->frameHeight, hdc, destX, destY, SRCCOPY);         
+        
+        GdiTransparentBlt(
+            _blendImage->hMemDC,
+            0, 0,
+            _imageInfo->frameWidth, 
+            _imageInfo->frameHeight,
+            _imageInfo->hMemDC,
+            _imageInfo->currentFrameX * _imageInfo->frameWidth,
+            _imageInfo->currentFrameY * _imageInfo->frameHeight,
+            _imageInfo->frameWidth,
+            _imageInfo->frameHeight,
+            _transColor);
+
+        GdiAlphaBlend(hdc, destX, destY, _imageInfo->frameWidth, _imageInfo->frameHeight,
+            _blendImage->hMemDC, 0, 0, _imageInfo->frameWidth, _imageInfo->frameHeight, _blendFunc);
+    }
+    else
+    {
+        GdiAlphaBlend(hdc, destX, destY, _imageInfo->frameWidth, _imageInfo->frameHeight,
+            _imageInfo->hMemDC, 0, 0, _imageInfo->frameWidth, _imageInfo->frameHeight, _blendFunc);
+    }
+}
+
 void GImage::loopRender(HDC hdc, const LPRECT drawArea, int offsetX, int offsetY)
 {
     // offset 값이 음수인 경우 보정

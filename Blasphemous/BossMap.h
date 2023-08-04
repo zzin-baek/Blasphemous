@@ -11,7 +11,7 @@ private:
 
 public:
 	HRESULT init(void);
-	void movdRect(int x);
+	void moveRect(int x);
 	void update(void);
 	void render(HDC hdc);
 

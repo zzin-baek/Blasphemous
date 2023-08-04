@@ -37,17 +37,15 @@ void BossStage::release(void)
 
 void BossStage::update(void)
 {
-    if (!_intro)
-    {
-        PLAYER->playerAction();
-        PLAYER->playerMove();
-        
-        if (!PLAYER->getFixed())
-            PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
 
-        if (PLAYER->getHitBox().left <= 0)
-            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
-    }
+    PLAYER->playerAction();
+    PLAYER->playerMove();
+        
+    if (!PLAYER->getFixed())
+        PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
+
+    if (PLAYER->getHitBox().left <= 0)
+        PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
 
     if ((!_intro || _ending) && !_mainStage)
     {
@@ -56,37 +54,34 @@ void BossStage::update(void)
         {
             _bm->setPosX(_bm->getPosX() + 4);
             PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
-            _bm->movdRect(4);
+            _bm->moveRect(4);
         }
         if (PLAYER->getLeft() && PLAYER->getCenterX() < WINSIZE_X / 2 + 10 && (_bm->getPosX() > 0))
         {
             _bm->setPosX(_bm->getPosX() - 4);
             PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
-            _bm->movdRect(-4);
+            _bm->moveRect(-4);
         }
     }
 
-    // 계속해서 인트로 해결하기 
     RECT _rt;
     if (PLAYER->getPosX() >= _bm->getRect().left && !_boss->getFin())
     {
         _intro = true;
-        PLAYER->setPosX(_bm->getRect().left);
-        PLAYER->getState().reset();
-        PLAYER->setAction("IDLE");
     }
 
     if (_intro)
     {
         _cnt++;
+        PLAYER->setPress(false);
         if (_cnt == 1)
         {
-            //_boss->addPattern("Isidora_Intro2");
+            _boss->addPattern("Isidora_Intro2");
             _boss->addPattern("Isidora_idle");
             _boss->addPattern("Isidora_vanish");
 
             if (_boss->getLeft())
-                _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_idle")->getMaxFrameX());
+                _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_Intro2")->getMaxFrameX());
             else
                 _boss->setIdxX(0);
         }
@@ -96,7 +91,7 @@ void BossStage::update(void)
             {
                 _bm->setPosX(_bm->getPosX() + 8);
                 PLAYER->setPosX(PLAYER->getPosX() - 8.0f);
-                _bm->movdRect(8);
+                _bm->moveRect(8);
                 _boss->setX(_boss->getX() - 8);
             }
         }
@@ -110,6 +105,7 @@ void BossStage::update(void)
 
     if (_mainStage)
     {
+        PLAYER->setPress(true);
         if (_boss->getDo())
         {
             int _temp;

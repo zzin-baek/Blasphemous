@@ -8,16 +8,30 @@ HRESULT BossMap2::init(void)
 	IMAGEMANAGER->addImage("Piedad_bg1", "Resources/Image/BackGround/piedad_bg1.bmp",
 		900 * 2, WINSIZE_Y, true, MAGENTA);
 	IMAGEMANAGER->addImage("Piedad_bg2", "Resources/Image/BackGround/piedad_bg2.bmp",
-		1000 * 2, WINSIZE_Y, true, MAGENTA);
+		2500, 800, true, MAGENTA);
 	IMAGEMANAGER->addImage("Piedad_bg3", "Resources/Image/BackGround/piedad_bg3.bmp",
 		2000 * 2, 429 * 2, true, MAGENTA);
 
 	IMAGEMANAGER->addImage("Piedad_map_collision", "Resources/Image/BackGround/piedad_map_collision.bmp",
 		2000 * 2, 360 * 2, true, RGB(255, 255, 255));
 
-	_pos = { 4000 - WINSIZE_X, 0 };
+	IMAGEMANAGER->addFrameImage("Portal", "Resources/Image/Sheet/redportal.bmp", 
+		456 * 2, 224 * 2, 6, 2, true, MAGENTA);
+
+	_pos = { 3000 - WINSIZE_X, 0 };
+
+	_sceneStart = RectMakeCenter(-100, 480, 70, 120);
+
+	_idx = { 0, 0 };
+	_cnt = _ind= 0;
 
 	return S_OK;
+}
+
+void BossMap2::moveRect(int x)
+{
+	_sceneStart.left -= x;
+	_sceneStart.right -= x;
 }
 
 void BossMap2::render(HDC hdc)
@@ -33,7 +47,33 @@ void BossMap2::render(HDC hdc)
 	}
 }
 
+void BossMap2::update(void)
+{
+	_cnt++;
+	if (_cnt % 10 == 0)
+	{
+		if (_ind > 12)
+		{
+			_ind = 0;
+		}
+
+		_idx.x = _ind % 6;
+		_idx.y = _ind / 6;
+
+		IMAGEMANAGER->findImage("Portal")->setFrameX(_idx.x);
+		IMAGEMANAGER->findImage("Portal")->setFrameY(_idx.y);
+
+		_ind++;
+	}
+}
+
 void BossMap2::renderColumn(HDC hdc)
 {
 	IMAGEMANAGER->render("Piedad_bg3", hdc, 0, 0, _pos.x, _pos.y, WINSIZE_X, WINSIZE_Y);
+	//IMAGEMANAGER->alphaFrameRender("Portal", hdc, WINSIZE_X / 2, WINSIZE_Y / 2, _idx.x, _idx.y, 30);
+
+	if (KEYMANAGER->isToggleKey(VK_TAB))
+	{
+		DrawRectMake(hdc, _sceneStart);
+	}
 }

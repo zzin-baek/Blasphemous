@@ -94,7 +94,7 @@ void MainGame::update(void)
 	{
 		if (!_initOnce[4])
 		{
-			PLAYER->init(1000, 430);
+			PLAYER->init(900, 430);
 			_initOnce[4] = true;
 		}
 		_currentScene = _bossStage2;

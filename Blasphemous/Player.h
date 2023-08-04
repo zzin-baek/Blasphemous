@@ -50,7 +50,7 @@ private:
 
 	bool _isLeft, _isGround, _isFixed, _isAttack;
 	bool _hold, _collect, _hit, _parrying;
-	bool _collected, _respawn;
+	bool _collected, _respawn, _press;
 
 	int _cnt, _idx_x, _idx_y;
 	int _hp, _score, _portion, _parry;
@@ -90,6 +90,8 @@ public:
 
 	inline void setHit(bool state) { _hit = state; }
 	inline bool getHit() { return _hit; }
+
+	inline void setPress(bool state) { _press = state; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
 	inline char* getAction() { return _strAction; }
