@@ -37,6 +37,12 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{c2a14420-85bc-469a-a979-918a27a4969f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Boss\Isidora">
+      <UniqueIdentifier>{093aba27-e901-4a6a-acd4-3ff5aea57989}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Boss\Pietat">
+      <UniqueIdentifier>{3bd5908e-e1ec-46ac-8572-ba3355b77ae0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -83,9 +89,6 @@
     <ClInclude Include="MainMenu.h">
       <Filter>MainMenu</Filter>
     </ClInclude>
-    <ClInclude Include="BossMap.h">
-      <Filter>Boss</Filter>
-    </ClInclude>
     <ClInclude Include="TutorialField.h">
       <Filter>Tutorial</Filter>
     </ClInclude>
@@ -94,12 +97,6 @@
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Battle</Filter>
-    </ClInclude>
-    <ClInclude Include="BossStage.h">
-      <Filter>Boss</Filter>
-    </ClInclude>
-    <ClInclude Include="Isidora.h">
-      <Filter>Boss</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>Utils</Filter>
@@ -115,6 +112,24 @@
     </ClInclude>
     <ClInclude Include="Shielder.h">
       <Filter>Battle</Filter>
+    </ClInclude>
+    <ClInclude Include="Isidora.h">
+      <Filter>Boss\Isidora</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMap.h">
+      <Filter>Boss\Isidora</Filter>
+    </ClInclude>
+    <ClInclude Include="BossStage.h">
+      <Filter>Boss\Isidora</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMap2.h">
+      <Filter>Boss\Pietat</Filter>
+    </ClInclude>
+    <ClInclude Include="BossStage2.h">
+      <Filter>Boss\Pietat</Filter>
+    </ClInclude>
+    <ClInclude Include="Pietat.h">
+      <Filter>Boss\Pietat</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -154,9 +169,6 @@
     <ClCompile Include="MainMenu.cpp">
       <Filter>MainMenu</Filter>
     </ClCompile>
-    <ClCompile Include="BossMap.cpp">
-      <Filter>Boss</Filter>
-    </ClCompile>
     <ClCompile Include="TutorialField.cpp">
       <Filter>Tutorial</Filter>
     </ClCompile>
@@ -165,12 +177,6 @@
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Battle</Filter>
-    </ClCompile>
-    <ClCompile Include="BossStage.cpp">
-      <Filter>Boss</Filter>
-    </ClCompile>
-    <ClCompile Include="Isidora.cpp">
-      <Filter>Boss</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>Utils</Filter>
@@ -186,6 +192,24 @@
     </ClCompile>
     <ClCompile Include="Shielder.cpp">
       <Filter>Battle</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMap.cpp">
+      <Filter>Boss\Isidora</Filter>
+    </ClCompile>
+    <ClCompile Include="BossStage.cpp">
+      <Filter>Boss\Isidora</Filter>
+    </ClCompile>
+    <ClCompile Include="Isidora.cpp">
+      <Filter>Boss\Isidora</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMap2.cpp">
+      <Filter>Boss\Pietat</Filter>
+    </ClCompile>
+    <ClCompile Include="BossStage2.cpp">
+      <Filter>Boss\Pietat</Filter>
+    </ClCompile>
+    <ClCompile Include="Pietat.cpp">
+      <Filter>Boss\Pietat</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

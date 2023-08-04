@@ -32,6 +32,7 @@ HRESULT BossStage::init(void)
 void BossStage::release(void)
 {
     SAFE_DELETE(_bm);
+    SAFE_DELETE(_boss);
 }
 
 void BossStage::update(void)

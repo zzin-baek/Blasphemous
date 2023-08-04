@@ -18,6 +18,12 @@ inline RECT RectMake(int x, int y, int width, int height)
 	return rc;
 }
 
+inline RECT RectMakeTop(int x, int y, int width, int height)
+{
+	RECT rc = { x - width / 2, y, x + width / 2, y + height };
+	return rc;
+}
+
 inline void DrawRectMake(HDC hdc, RECT rc)
 {
 	Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
@@ -28,6 +34,11 @@ inline RECT RectMakeCenter(int x, int y, int width, int height)
 	RECT rc = { x - width / 2, y - height / 2, x + width / 2, y + height / 2 };
 
 	return rc;
+}
+
+inline void DrawRectangle(HDC hdc, int x, int y, int width, int height)
+{
+	Rectangle(hdc, x - width / 2, y, x + width / 2, y + height);
 }
 
 inline void RectangleMake(HDC hdc, int x, int y, int width, int height)

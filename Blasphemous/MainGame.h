@@ -4,6 +4,7 @@
 #include "Tutorial.h"
 #include "BaseMap.h"
 #include "BossStage.h"
+#include "BossStage2.h"
 
 class MainGame : public GameNode
 {
@@ -12,10 +13,11 @@ private:
 	Tutorial* _tutorial;
 	BaseMap* _baseMap;
 	BossStage* _bossStage;
+	BossStage2* _bossStage2;
 
 	GameNode* _currentScene;
 
-	bool _initOnce[4];
+	bool _initOnce[5];
 public:
 	HRESULT init(void);
 	void release(void);

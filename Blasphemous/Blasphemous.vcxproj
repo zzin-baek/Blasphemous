@@ -147,7 +147,9 @@
     <ClInclude Include="BaseMap.h" />
     <ClInclude Include="BattleField.h" />
     <ClInclude Include="BossMap.h" />
+    <ClInclude Include="BossMap2.h" />
     <ClInclude Include="BossStage.h" />
+    <ClInclude Include="BossStage2.h" />
     <ClInclude Include="CommonMacroFucntion.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Enemy.h" />
@@ -161,6 +163,7 @@
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="Pietat.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RandomFunction.h" />
     <ClInclude Include="Shielder.h" />
@@ -176,7 +179,9 @@
     <ClCompile Include="BaseMap.cpp" />
     <ClCompile Include="BattleField.cpp" />
     <ClCompile Include="BossMap.cpp" />
+    <ClCompile Include="BossMap2.cpp" />
     <ClCompile Include="BossStage.cpp" />
+    <ClCompile Include="BossStage2.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FontManager.cpp" />
@@ -189,6 +194,7 @@
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="Pietat.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Shielder.cpp" />
     <ClCompile Include="SoundManager.cpp" />

@@ -9,7 +9,7 @@ enum eBossState
 	HIT_BOSS,
 	DIE_BOSS
 };
-struct tagBoss
+struct tagIsidora
 {
 	int timing;
 	POINT left;
@@ -54,7 +54,7 @@ private:
 	POINT _idx;
 
 	deque<char*> _pattern;
-	map<char*, tagBoss> _sync;
+	map<char*, tagIsidora> _sync;
 	vector<tagSequence> _seq;
 	bitset<3> _idState;
 
@@ -79,12 +79,12 @@ public:
 	void useSkill(void);
 
 	void bossDeath(void);
-	void switchPhase(void);
 
 	void columnInit(int num, int interval);
 	void columnCreate(void);
 	void columnCycle(void);
 	void columnCycle(bool phase);
+	void columnCollision(void);
 
 	void fireBallCreate(void);
 	void fireBallMove(bool _temporal);

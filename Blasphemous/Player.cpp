@@ -585,8 +585,8 @@ void Player::playerAction(void)
                    {
                        if (getState()[HIT] && _hit)
                            _hit = false;
-                       _isFixed = _isAttack = _parrying = false;
                        _plState.reset();
+                       _isFixed = _isAttack = _parrying = false;
                        setAction("IDLE");
                    }
                }
@@ -616,8 +616,8 @@ void Player::playerAction(void)
                    {
                        if (getState()[HIT] && _hit)
                            _hit = false;
-                       _isFixed = _isAttack = _parrying = false;
                        _plState.reset();
+                       _isFixed = _isAttack = _parrying = false;
                        _respawn = true;
                        setAction("IDLE");
                    }

@@ -250,7 +250,7 @@ void Isidora::update(void)
 							if (!_finIntro) _finIntro = true;
 							if (_patternNum != 3 && _patternNum != 5)
 								_doNothing = true;
-							_hit = false;
+							_hit = _once = _once2 = false;
 							if (!_seq.empty())
 								_seq.clear();
 						}
@@ -286,7 +286,8 @@ void Isidora::update(void)
 							if (!_finIntro) _finIntro = true;
 							if (_patternNum != 3  && _patternNum != 5)
 								_doNothing = true;
-							_hit = false;
+							_once = _once2 = _hit = false;
+
 							if (!_seq.empty())
 								_seq.clear();
 						}
@@ -351,6 +352,7 @@ void Isidora::update(void)
 		fireBallCreate();
 
 	columnCycle();
+	columnCollision();
 
 	if (_hp <= 100 && _hp > 0 && _isPhase3)
 	{
@@ -743,7 +745,7 @@ void Isidora::useSkill(void)
 					}
 
 				}
-				else if (!_isLeft)
+				else
 				{
 					if (_idx.x >= 8)
 						_pos.x += 6.0f;
@@ -868,11 +870,6 @@ void Isidora::useSkill(void)
 }
 
 void Isidora::bossDeath(void)
-{
-
-}
-
-void Isidora::switchPhase(void)
 {
 
 }
@@ -1025,6 +1022,30 @@ void Isidora::columnCycle(bool phase)
 	}
 }
 
+void Isidora::columnCollision(void)
+{
+	RECT _rt;
+	for (int i = 0; i < MAX_COLUMN; i++)
+	{
+		if (!_cl[i]._fire) continue;
+
+		if (!_cl[i]._cycle.empty())
+		{
+			if (!strcmp(_cl[i]._cycle.front(), "Column_loop"))
+			{
+				RECT _tempColumn = RectMakeTop(_cl[i]._clPos.x, _cl[i]._clPos.y, 80, 650);
+
+				if (IntersectRect(&_rt, &PLAYER->getHitBox(), &_tempColumn) &&
+					!PLAYER->getState()[HIT] && !PLAYER->getHit())
+				{
+					PLAYER->setHit(true);
+					PLAYER->setHP(PLAYER->getHP() - 5);	
+				}
+			}
+		}
+	}
+}
+
 void Isidora::fireBallCreate(void)
 {
 	for (int i = 0; i < MAX_FIREBALL; i++)
@@ -1115,7 +1136,14 @@ void Isidora::fireBallMove(bool _temporal)
 			if (_fb[i]._fire)
 			{
 				if (PtInRect(&PLAYER->getRect(), { int(_fb[i]._center.x), int(_fb[i]._center.y) }))
+				{
 					_fb[i]._visible = false;
+					if (!PLAYER->getState()[HIT] && !PLAYER->getHit())
+					{
+						PLAYER->setHit(true);
+						PLAYER->setHP(PLAYER->getHP() - 5);
+					}
+				}
 				else if (_fb[i]._center.y > 600 || _fb[i]._center.y < -30)
 					_fb[i]._visible = false;
 			}
@@ -1129,6 +1157,15 @@ void Isidora::fireBallMove(bool _temporal)
 			{
 				if (PtInRect(&getHitBox(), { int(_fb[i]._center.x), int(_fb[i]._center.y) }))
 					_fb[i]._visible = false;
+				else if (PtInRect(&PLAYER->getRect(), { int(_fb[i]._center.x), int(_fb[i]._center.y) }))
+				{
+					_fb[i]._visible = false;
+					if (!PLAYER->getState()[HIT] && !PLAYER->getHit())
+					{
+						PLAYER->setHit(true);
+						PLAYER->setHP(PLAYER->getHP() - 5);
+					}
+				}
 			}
 		}
 	}
@@ -1348,6 +1385,14 @@ void Isidora::render(HDC hdc)
 		
 		if (_isAttack)
 			DrawRectMake(hdc, _attack);
+
+		for (int i = 0; i < MAX_COLUMN; i++)
+		{
+			if (_cl[i]._fire)
+			{
+				DrawRectangle(hdc, _cl[i]._clPos.x, _cl[i]._clPos.y, 80, 650);
+			}
+		}
 
 		SelectObject(hdc, oldBrush);
 		DeleteObject(myBrush);

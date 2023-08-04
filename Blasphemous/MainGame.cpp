@@ -19,10 +19,13 @@ HRESULT MainGame::init(void)
 	_bossStage = new BossStage;
 	_bossStage->init();
 
+	_bossStage2 = new BossStage2;
+	_bossStage2->init();
+
 	_currentScene = _mainMenu;
 	assert(_currentScene != nullptr);
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 		_initOnce[i] = false;
 
 	return S_OK;
@@ -86,6 +89,17 @@ void MainGame::update(void)
 		}
 		_currentScene = _tutorial;
 	}
+
+	if (KEYMANAGER->isOnceKeyDown(VK_F6))
+	{
+		if (!_initOnce[4])
+		{
+			PLAYER->init(1000, 430);
+			_initOnce[4] = true;
+		}
+		_currentScene = _bossStage2;
+	}
+
 	_currentScene->update();
 }
 
