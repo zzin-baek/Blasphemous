@@ -100,6 +100,7 @@ void BossStage2::update(void)
     }
 
     _boss->update();
+    //_bm->update();
 }
 
 void BossStage2::render(void)

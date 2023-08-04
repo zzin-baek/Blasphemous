@@ -15,7 +15,7 @@ HRESULT BossMap2::init(void)
 	IMAGEMANAGER->addImage("Piedad_map_collision", "Resources/Image/BackGround/piedad_map_collision.bmp",
 		2000 * 2, 360 * 2, true, RGB(255, 255, 255));
 
-	IMAGEMANAGER->addFrameImage("Portal", "Resources/Image/Sheet/redportal.bmp", 
+	IMAGEMANAGER->addFrameImage("Portal", "Resources/Image/Sheet/bluePortal.bmp", 
 		456 * 2, 224 * 2, 6, 2, true, MAGENTA);
 
 	_pos = { 3000 - WINSIZE_X, 0 };
@@ -70,7 +70,7 @@ void BossMap2::update(void)
 void BossMap2::renderColumn(HDC hdc)
 {
 	IMAGEMANAGER->render("Piedad_bg3", hdc, 0, 0, _pos.x, _pos.y, WINSIZE_X, WINSIZE_Y);
-	//IMAGEMANAGER->alphaFrameRender("Portal", hdc, WINSIZE_X / 2, WINSIZE_Y / 2, _idx.x, _idx.y, 30);
+	//IMAGEMANAGER->alphaFrameRender("Portal", hdc, WINSIZE_X / 2, WINSIZE_Y / 2, _idx.x, _idx.y, 56);
 
 	if (KEYMANAGER->isToggleKey(VK_TAB))
 	{
