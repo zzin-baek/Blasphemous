@@ -69,6 +69,8 @@ void Acolyte::move(void)
     {
         _acList.clear();
         //_acState.reset();
+        EFFECT->addEffect({ "blood", 0, {(_acolyte.left + _acolyte.right) / 2, (_acolyte.top + _acolyte.bottom) / 2},
+            {0, 0} }, 3);
         setState(ATTACK_ENEMY, false);
         _hit = true;
         _acList.push_back("Acolyte_hit");

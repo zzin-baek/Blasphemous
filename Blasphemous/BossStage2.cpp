@@ -9,8 +9,11 @@ HRESULT BossStage2::init(void)
 	_boss = new Pietat;
 	_boss->init();
 
-    _cnt = 0;
+    _cnt = _nextStage = 0;
     _once = false;
+
+    SOUNDMANAGER->addWaveFileWithKey("pietat", "Resources/Sound/pietat/Pietat_MASTER.wav");
+    SOUNDMANAGER->addWaveFileWithKey("pietat_breath", "Resources/Sound/pietat/Pietat_Breathing.wav");
 
 	return S_OK;
 }
@@ -115,9 +118,19 @@ void BossStage2::update(void)
         {
             _boss->setState(HIT_PIETAT, true);
             _boss->setHP(_boss->getHP() - 10);
+
+            if (PLAYER->getLeft())
+                EFFECT->addEffect({ "attack_spark3", 0, { _rt.left, (_rt.top + _rt.bottom) / 2 },
+                    { IMAGEMANAGER->findImage("attack_spark3")->getMaxFrameX() + 1, 1} }, 1);
+            else
+                EFFECT->addEffect({ "attack_spark3", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
+
+            SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_ENEMY_HIT_4.wav");
         }
     }
 
+    if (PLAYER->getCenterX() > WINSIZE_X)
+        _nextStage = 1;
     //_bm->update();
 }
 

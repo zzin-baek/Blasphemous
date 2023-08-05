@@ -41,6 +41,8 @@ HRESULT BaseMap::init(void)
     _nextStage = _preStage = _cnt = _term = 0;
     _isInven = false;
 
+    SOUNDMANAGER->addWaveFileWithKey("churches_field", "Resources/Sound/Churches_Field_MASTER.wav");
+
     return S_OK;
 }
 
@@ -369,7 +371,7 @@ void BaseMap::update(void)
             if (!PLAYER->getState()[HIT] && !PLAYER->getHit() && _acolyteList[0]->canAttack())
             {
                 //PLAYER->setState(HIT, true);
-                PLAYER->setHit(true);
+                PLAYER->setHit(true);                
                 _bf->cameraShake();
                 PLAYER->setHP(PLAYER->getHP() - 5);
             }
@@ -403,7 +405,17 @@ void BaseMap::update(void)
                 if (!strcmp(PLAYER->getAction(), "COUNTER"))
                     _acolyteList[0]->setHP(_acolyteList[0]->getHP() - 20);
                 else
+                {
                     _acolyteList[0]->setHP(_acolyteList[0]->getHP() - 10);
+                    
+                    if (PLAYER->getLeft())
+                        EFFECT->addEffect({ "attack_spark1", 0, { _rt.left, (_rt.top + _rt.bottom) / 2 },
+                            { IMAGEMANAGER->findImage("attack_spark1")->getMaxFrameX() + 1, 1} }, 1);
+                    else
+                        EFFECT->addEffect({ "attack_spark1", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
+
+                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_ENEMY_HIT_3.wav");
+                }
             }
         } 
         if (_acolyteList[0]->getHP() <= 0 && _acolyteList[0]->getDie())
@@ -426,6 +438,14 @@ void BaseMap::update(void)
                     _stonerList[i]->setState(HIT_ENEMY, true);
                     _bf->cameraShake();
                     _stonerList[i]->setHP(_stonerList[i]->getHP() - 10);
+
+                    if (PLAYER->getLeft())
+                        EFFECT->addEffect({ "attack_spark2", 0, { _rt.left, (_rt.top + _rt.bottom) / 2 },
+                            { IMAGEMANAGER->findImage("attack_spark2")->getMaxFrameX() + 1, 1} }, 1);
+                    else
+                        EFFECT->addEffect({ "attack_spark2", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
+
+                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_ENEMY_HIT_3.wav");
                 }
             }
 
@@ -549,8 +569,32 @@ void BaseMap::update(void)
                     _shielderList[0]->setHP(_shielderList[0]->getHP() - 20);
                 else
                 {
-                    if(strcmp(_shielderList[0]->getAction(), "Shielder_idle"))
+                    if (strcmp(_shielderList[0]->getAction(), "Shielder_idle"))
+                    {
                         _shielderList[0]->setHP(_shielderList[0]->getHP() - 10);
+
+                        if (PLAYER->getLeft())
+                            EFFECT->addEffect({ "attack_spark1", 0, { _rt.left, (_rt.top + _rt.bottom) / 2 },
+                                { IMAGEMANAGER->findImage("attack_spark1")->getMaxFrameX() + 1, 1} }, 1);
+                        else
+                            EFFECT->addEffect({ "attack_spark1", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
+
+                        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_ENEMY_HIT_3.wav");
+                    }
+                    else
+                    {
+                        if (PLAYER->getLeft())
+                        {
+                            EFFECT->addEffect({ "shielder_block", 0, {PLAYER->getHitBox().left, (int)PLAYER->getCenterY()},
+                                { IMAGEMANAGER->findImage("shielder_block")->getMaxFrameX() + 1, 1} }, 1);
+                        }
+                        else
+                        {
+                            EFFECT->addEffect({ "shielder_block", 0, {PLAYER->getHitBox().right, (int)PLAYER->getCenterY()},
+                               { 0, 0 } }, 1);
+                        }
+                        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/enemy/SHIELD_ENEMY_HIT_SHIELD.wav");
+                    }
                 }
             }
         }

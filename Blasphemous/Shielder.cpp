@@ -72,6 +72,8 @@ void Shielder::move(void)
     if (_shState[HIT_ENEMY] && !_hit)
     {
         _shList.clear();
+        EFFECT->addEffect({ "blood", 0, {(_shielder.left + _shielder.right) / 2, (_shielder.top + _shielder.bottom) / 2},
+           {0, 0} }, 4);
         //_acState.reset();
         setState(ATTACK_ENEMY, false);
         _hit = true;

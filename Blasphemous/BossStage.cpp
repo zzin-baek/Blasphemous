@@ -482,6 +482,13 @@ void BossStage::update(void)
         {
             _boss->setState(HIT_BOSS, true);
             _boss->setHP(_boss->getHP() - 10);
+
+            if (PLAYER->getLeft())
+                EFFECT->addEffect({ "attack_spark3", 0, { _rt.left, (_rt.top + _rt.bottom) / 2 },
+                    { IMAGEMANAGER->findImage("attack_spark3")->getMaxFrameX() + 1, 1} }, 1);
+            else
+                EFFECT->addEffect({ "attack_spark3", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
+
         }
     }
 }

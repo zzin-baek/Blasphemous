@@ -21,8 +21,11 @@ public:
 	void playEffectSoundWave(char* fileName);
 	// MP3 재생
 	void playSoundWithKey(string key);
+	// MP3 재생 반복
+	void CheckAndReplayWithKey(string key);
 	// 정지
 	void stopMp3WithKey(string key);
+
 
 	SoundManager() {}
 	~SoundManager() {}

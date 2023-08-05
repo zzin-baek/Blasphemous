@@ -153,6 +153,9 @@ void Isidora::update(void)
 	if (_idState[HIT_BOSS] && !_hit)
 	{
 		_hit = true;
+
+		EFFECT->addEffect({ "blood2", 0, { (int)_center.x, (int)_center.y },
+		  {0, 0} }, 2);
 	}
 
 	if (_hp <= 0 && !getState()[DIE_BOSS])

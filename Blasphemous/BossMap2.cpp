@@ -5,6 +5,8 @@ HRESULT BossMap2::init(void)
 {
 	IMAGEMANAGER->addImage("Piedad_map", "Resources/Image/BackGround/piedad_map.bmp",
 		2000 * 2, 360 * 2, true, MAGENTA);
+	IMAGEMANAGER->addImage("Piedad_map_door", "Resources/Image/BackGround/piedad_map_door.bmp",
+		2000 * 2, 360 * 2, true, MAGENTA);
 	IMAGEMANAGER->addImage("Piedad_bg1", "Resources/Image/BackGround/piedad_bg1.bmp",
 		900 * 2, WINSIZE_Y, true, MAGENTA);
 	IMAGEMANAGER->addImage("Piedad_bg2", "Resources/Image/BackGround/piedad_bg2.bmp",
@@ -14,9 +16,6 @@ HRESULT BossMap2::init(void)
 
 	IMAGEMANAGER->addImage("Piedad_map_collision", "Resources/Image/BackGround/piedad_map_collision.bmp",
 		2000 * 2, 360 * 2, true, RGB(255, 255, 255));
-
-	IMAGEMANAGER->addFrameImage("Portal", "Resources/Image/Sheet/bluePortal.bmp", 
-		456 * 2, 224 * 2, 6, 2, true, MAGENTA);
 
 	_pos = { 3000 - WINSIZE_X, 0 };
 
@@ -69,6 +68,7 @@ void BossMap2::update(void)
 
 void BossMap2::renderColumn(HDC hdc)
 {
+	IMAGEMANAGER->render("Piedad_map_door", hdc, 0, 0, _pos.x, _pos.y, WINSIZE_X, WINSIZE_Y);
 	IMAGEMANAGER->render("Piedad_bg3", hdc, 0, 0, _pos.x, _pos.y, WINSIZE_X, WINSIZE_Y);
 	//IMAGEMANAGER->alphaFrameRender("Portal", hdc, WINSIZE_X / 2, WINSIZE_Y / 2, _idx.x, _idx.y, 56);
 

@@ -54,6 +54,9 @@ HRESULT Pietat::init(void)
 	IMAGEMANAGER->addFrameImage("Thorn_tower", "Resources/Image/Pietat/thorns_tower_anim.bmp",
 		640 * 3/2, 504 * 3/2, 10, 4, true, MAGENTA);
 
+	SOUNDMANAGER->addWaveFileWithKey("wakeup", "Resources/Sound/pietat/WakeUp.wav");
+	SOUNDMANAGER->addWaveFileWithKey("stomp", "Resources/Sound/pietat/PIETAT_STOMP.wav");
+
 	_cnt = _patternNum = _introIndex = 0;
 	_idx = _introIdx = { 0, 0 };
 	_isLeft = _intro = _outro = _finIntro = _finOutro = false;
@@ -62,7 +65,7 @@ HRESULT Pietat::init(void)
 
 	_intervalT = _phase = 1;
 	_pos = { -542, 343 };
-	_hp = 10;
+	_hp = 50;
 
 	wsprintf(_strAction, "Pietat_appear");
 
@@ -102,11 +105,19 @@ void Pietat::update(void)
 	if (_hp <= 100 && _hp > 0)
 		_phase = 2;
 	else if (_hp <= 0)
+	{
 		_outro = true;
+		SOUNDMANAGER->stopMp3WithKey("pietat");
+	}
 
 	_cnt++;
 	if (_intro)
 	{
+		if (_doNothing)
+		{
+			SOUNDMANAGER->CheckAndReplayWithKey("wakeup");
+			_doNothing = false;
+		}
 		showIntro();
 	}
 	else if (_outro && !_finOutro)
@@ -210,6 +221,9 @@ void Pietat::update(void)
 		if (_ptState[HIT_PIETAT] && !_hit)
 		{
 			_hit = true;
+
+			EFFECT->addEffect({ "blood2", 0, { (int)_center.x, (int)_center.y },
+		  {0, 0} }, 2);
 		}
 
 		if (_dist <= 200 && isEmpty())
@@ -348,6 +362,8 @@ void Pietat::useSkill(void)
 			else
 				_idx.x = 0;
 
+			SOUNDMANAGER->playEffectSoundWave("Resources/Sound/pietat/PIETAT_STOMP.wav");
+
 			_doNothing = false;
 		}
 		break;
@@ -468,6 +484,7 @@ void Pietat::attack(void)
 			{
 				if (_idx.x == IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX() - 29 && !_onceThorn)
 				{
+					SOUNDMANAGER->playEffectSoundWave("Resources/Sound/pietat/PietatSmash.wav");
 					_onceThorn = true;
 					int k = 0;
 					for (int i = 0; i < MAX_THORN; i++)
@@ -499,6 +516,7 @@ void Pietat::attack(void)
 			{
 				if (_idx.x == 29 && !_onceThorn)
 				{
+					SOUNDMANAGER->playEffectSoundWave("Resources/Sound/pietat/PietatSmash.wav");
 					_onceThorn = true;
 					int k = 0;
 					for (int i = 0; i < MAX_THORN; i += 2)
@@ -863,7 +881,8 @@ void Pietat::showIntro(void)
 		if (_introIndex > 85)
 		{
 			_intro = false;
-			_finIntro = true;
+			_finIntro = _doNothing = true;
+			SOUNDMANAGER->CheckAndReplayWithKey("pietat");
 			wsprintf(_strAction, "Pietat_idle");
 		}
 

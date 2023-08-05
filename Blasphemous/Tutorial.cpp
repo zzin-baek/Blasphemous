@@ -17,6 +17,8 @@ HRESULT Tutorial::init(void)
     _isInven = false;
     _isRespawn = true;
 
+    SOUNDMANAGER->addWaveFileWithKey("zone", "Resources/Sound/ZONE_INFO.wav");
+
     return S_OK;
 }
 

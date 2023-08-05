@@ -62,6 +62,7 @@ public:
 	HRESULT init(int startX, int startY);
 	void initImage(void);
 	void initTiming(void);
+	void initSound(void);
 	void playerAction(void);
 	void playerMove(void);
 	void comboAttack(void);

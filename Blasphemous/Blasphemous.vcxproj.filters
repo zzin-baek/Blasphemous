@@ -131,6 +131,7 @@
     <ClInclude Include="Pietat.h">
       <Filter>Boss\Pietat</Filter>
     </ClInclude>
+    <ClInclude Include="Teleport.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -211,5 +212,6 @@
     <ClCompile Include="Pietat.cpp">
       <Filter>Boss\Pietat</Filter>
     </ClCompile>
+    <ClCompile Include="Teleport.cpp" />
   </ItemGroup>
 </Project>

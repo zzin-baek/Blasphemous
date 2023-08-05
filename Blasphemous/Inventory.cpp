@@ -125,6 +125,7 @@ void Inventory::update(void)
 
     if (KEYMANAGER->isOnceKeyDown('D'))
     {
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/SELECTION.wav");
         switch (_slotSelect)
         {
         case ROSARY:
@@ -160,6 +161,7 @@ void Inventory::update(void)
     }
     if (KEYMANAGER->isOnceKeyDown('A'))
     {
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/SELECTION.wav");
         switch (_slotSelect)
         {
         case ROSARY:
@@ -208,6 +210,7 @@ void Inventory::update(void)
     }
     if (KEYMANAGER->isOnceKeyDown('W'))
     {
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/SELECTION.wav");
         switch (_slotSelect)
         {
         case ROSARY:
@@ -252,6 +255,7 @@ void Inventory::update(void)
     }
     if (KEYMANAGER->isOnceKeyDown('S'))
     {
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/SELECTION.wav");
         switch (_slotSelect)
         {
         case ROSARY:
@@ -292,6 +296,8 @@ void Inventory::update(void)
                 _rosary[_rosarySelect]._equip = false;
                 _equipRosary.erase(_equipRosary.find(_rosary[_rosarySelect]._iImage));
                 _eqRosary--;
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/UNEQUIP_ITEM.wav");
             }
             else
             {
@@ -300,6 +306,8 @@ void Inventory::update(void)
                     _rosary[_rosarySelect]._equip = true;
                     _equipRosary.insert(make_pair(_rosary[_rosarySelect]._iImage, _eqRosary));
                     _eqRosary++;
+
+                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/EQUIP_ITEM.wav");
                 }
             }
         }
@@ -310,6 +318,8 @@ void Inventory::update(void)
                 _heritage[_heritageSelect]._equip = false;
                 _equipHeritage.erase(_equipHeritage.find(_heritage[_heritageSelect]._iImage));
                 _eqHeritage--;
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/UNEQUIP_ITEM.wav");
             }
             else
             {
@@ -318,6 +328,8 @@ void Inventory::update(void)
                     _heritage[_heritageSelect]._equip = true;
                     _equipHeritage.insert(make_pair(_heritage[_heritageSelect]._iImage, _eqHeritage));
                     _eqHeritage++;
+
+                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/EQUIP_ITEM.wav");
                 }
             }
         }
@@ -328,6 +340,8 @@ void Inventory::update(void)
                 _mea[_meaSelect]._equip = false;
                 _equipMea.erase(_equipMea.find(_mea[_meaSelect]._iImage));
                 _eqMea--;
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/UNEQUIP_ITEM.wav");
             }
             else
             {
@@ -336,6 +350,8 @@ void Inventory::update(void)
                     _mea[_meaSelect]._equip = true;
                     _equipMea.insert(make_pair(_mea[_meaSelect]._iImage, _eqMea));
                     _eqMea++;
+
+                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/EQUIP_ITEM.wav");
                 }
             }
         }
@@ -346,6 +362,8 @@ void Inventory::update(void)
                 _pray[_praySelect]._equip = false;
                 _equipPray.erase(_equipPray.find(_pray[_praySelect]._iImage));
                 _eqPray--;
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/UNEQUIP_ITEM.wav");
             }
             else
             {
@@ -354,6 +372,8 @@ void Inventory::update(void)
                     _pray[_praySelect]._equip = true;
                     _equipPray.insert(make_pair(_pray[_praySelect]._iImage, _eqPray));
                     _eqPray++;
+
+                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/EQUIP_ITEM.wav");
                 }
             }
         }

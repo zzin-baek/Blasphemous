@@ -3,6 +3,7 @@
 #include "MainMenu.h"
 #include "Tutorial.h"
 #include "BaseMap.h"
+#include "Teleport.h"
 #include "BossStage.h"
 #include "BossStage2.h"
 
@@ -12,12 +13,13 @@ private:
 	MainMenu* _mainMenu;
 	Tutorial* _tutorial;
 	BaseMap* _baseMap;
+	Teleport* _teleport;
 	BossStage* _bossStage;
 	BossStage2* _bossStage2;
 
 	GameNode* _currentScene;
 
-	bool _initOnce[5];
+	bool _initOnce[6];
 public:
 	HRESULT init(void);
 	void release(void);

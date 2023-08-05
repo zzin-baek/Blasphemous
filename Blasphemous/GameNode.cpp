@@ -25,6 +25,7 @@ HRESULT GameNode::init(bool managerInit)
         KEYMANAGER->init();
         IMAGEMANAGER->init();
         SOUNDMANAGER->init();
+        EFFECT->init();
 
         PLAYER->init();
         INVENTORY->init();
@@ -44,6 +45,7 @@ void GameNode::release(void)
         IMAGEMANAGER->release();
         IMAGEMANAGER->releaseSingleton();
         SOUNDMANAGER->releaseSingleton();
+        EFFECT->releaseSingleton();
 
         PLAYER->releaseSingleton();
         INVENTORY->releaseSingleton();

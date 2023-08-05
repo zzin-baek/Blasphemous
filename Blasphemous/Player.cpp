@@ -112,6 +112,7 @@ void Player::initImage(void)
     IMAGEMANAGER->addImage("Score", "Resources/Image/Sheet/score.bmp", 83 * 2, 48 * 2, true, MAGENTA);
     IMAGEMANAGER->addImage("HP", "Resources/Image/Sheet/HealthBar.bmp",
         136 * 2, 4 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("Shadow", "Resources/Image/Sheet/shadow.bmp", 38 * 2, 5 * 2, true, MAGENTA);
 
     IMAGEMANAGER->addImage("ENEMY_HP_BAR", "Resources/Image/Sheet/enemy_health_bar.bmp",
         34 * 2, 4 * 2, true, MAGENTA);
@@ -127,7 +128,7 @@ void Player::initImage(void)
 void Player::initTiming(void)
 {
     // ## 기본적으로 왼쪽모습은 오른쪽 모습의 x + 50 
-    _sync["RESPAWN2"] = { 5, {0, -195}, {-16, -194} };
+    _sync["RESPAWN2"] = { 3, {0, -195}, {-16, -194} };
     _sync["IDLE"] = { 5, {0 + 50, 0}, {0, 0} };
     _sync["RUNNING"] = { 3, {0 + 50, 0}, {0, 0} };
     _sync["STOP"] = { 4, {-10 + 50, 10}, {-10, 10} };
@@ -135,7 +136,7 @@ void Player::initTiming(void)
     _sync["HANGON"] = { 5, {0, -50}, {50, -50} };
     _sync["CLIMB"] = { 5, {0, -150}, {50, -150} };
     _sync["LADDER"] = { 6, {50, 0}, {50, 0} };
-    _sync["JUMP"] = { 6, {0 + 50, 0}, {30, 0} };
+    _sync["JUMP"] = { 5, {0 + 50, 0}, {30, 0} };
     _sync["JUMP_FORWARD"] = { 5, {0 + 50, -20}, {0, -20} };
     _sync["ATTACK"] = { 3, {-135 + 50, 2}, {0, 3} };
     _sync["ATTACK_JUMP"] = { 6, {-100 + 50, -80}, {0, -80} };
@@ -162,11 +163,17 @@ void Player::initTiming(void)
     _sync["DEATH_FALL"] = { 7, {-30, 60}, {-20, 60} };
 }
 
+void Player::initSound(void)
+{
+    
+}
+
 void Player::playerAction(void)
 {
     if (!_respawn && isEmpty())
     {
         _actionList.push_back("RESPAWN2");
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_RESPAWN.wav");
     }
 
     _center.x = _plPos.x + IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2;
@@ -177,7 +184,7 @@ void Player::playerAction(void)
     // 히트박스 설정
     if (_isLeft)
     {
-        if (_isAttack || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
+        if (_isAttack || getState()[ATTACK] || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
             _hitBox = RectMake(_player.right - 130, _player.bottom - 130, 80, 130);
         else if (getState()[PORTION])
             _hitBox = RectMakeCenter(_center.x, _player.bottom - 75, 80, 130);
@@ -188,7 +195,7 @@ void Player::playerAction(void)
     }
     else
     {
-        if (_isAttack || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
+        if (_isAttack || getState()[ATTACK] || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
             _hitBox = RectMake(_player.left + 70, _player.bottom - 130, 80, 130);
         else if (getState()[PORTION])
             _hitBox = RectMakeCenter(_center.x, _player.bottom - 75, 80, 130);
@@ -231,7 +238,17 @@ void Player::playerAction(void)
     {
         
         if (!_plState[JUMP])
+        {
             setAction("RUNNING");
+
+            if (_cnt % 20 == 0)
+            {
+                EFFECT->addEffect({ "running_dust", 0, { _hitBox.right + 10, _hitBox.bottom - 10},
+                      { IMAGEMANAGER->findImage("running_dust")->getMaxFrameX() + 1, 1} }, 1);
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_RUN_MARBLE_6.wav");
+            }
+        }
         if (!strcmp(_strAction, "JUMP"))
         {
             if (!isEmpty())
@@ -253,7 +270,15 @@ void Player::playerAction(void)
         && !_plState[DODGE] && !_plState[PARRY] && _press && _respawn)
     {
         if (!_plState[JUMP])
+        {
             setAction("RUNNING");
+            if (_cnt % 20 == 0)
+            {
+                EFFECT->addEffect({ "running_dust", 0, { _hitBox.left - 10, _hitBox.bottom - 10},{ 0, 0} }, 1);
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_RUN_MARBLE_6.wav");
+            }
+        }
         if (!strcmp(_strAction, "JUMP"))
         {
             if (!isEmpty())
@@ -307,6 +332,8 @@ void Player::playerAction(void)
             _idx_x = IMAGEMANAGER->findImage("PARRY")->getMaxFrameX();
         else
             _idx_x = 0;
+
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_START_PARRY.wav");
     }
 
     // 패링 성공
@@ -320,16 +347,35 @@ void Player::playerAction(void)
             _isFixed = true;
             setAction("PARRY_SUCCESS");
             _actionList.push_back("PARRY_SUCCESS");
+            if (_isLeft)
+                EFFECT->addEffect({ "parry_success_effect", 0, { (int)_center.x + 10, _hitBox.bottom - 10},
+                    { IMAGEMANAGER->findImage("parry_success_effect")->getMaxFrameX() + 1, 1} }, 1);
+            else
+                EFFECT->addEffect({ "parry_success_effect", 0, {(int)_center.x, _hitBox.bottom - 10},{ 0, 0} }, 1);
             _actionList.push_back("COUNTER");
             if (_isLeft)
                 _idx_x = IMAGEMANAGER->findImage("PARRY_SUCCESS")->getMaxFrameX();
             else
                 _idx_x = 0;
+
+            SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_PARRY_SLOW.wav");
         }
         else if (_parry == 2)
         {
             _parrying = true;
             setAction("PARRY_SLIDE");
+            if (_isLeft)
+            {
+                EFFECT->addEffect({ "pushback_effect", 0, { _hitBox.left, _hitBox.bottom - 10},
+                    { IMAGEMANAGER->findImage("pushback_effect")->getMaxFrameX() + 1, 1} }, 1);
+            }
+            else
+            {
+                EFFECT->addEffect({ "pushback_effect", 0, { _hitBox.right, _hitBox.bottom - 10},{ 0, 0} }, 1);
+            }
+
+            SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_GUARD.wav");
+
             _actionList.push_back("PARRY_SLIDE");
             if (_isLeft)
                 _idx_x = IMAGEMANAGER->findImage("PARRY_SLIDE")->getMaxFrameX();
@@ -352,6 +398,8 @@ void Player::playerAction(void)
             _idx_x = IMAGEMANAGER->findImage("PORTION")->getMaxFrameX();
         else
             _idx_x = 0;
+
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/HEALING.wav");
     }
 
     if (KEYMANAGER->isOnceKeyDown('E') && _collect)
@@ -362,6 +410,8 @@ void Player::playerAction(void)
             _idx_x = IMAGEMANAGER->findImage("COLLECT")->getMaxFrameX();
         else
             _idx_x = 0;
+
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/GET_FLOOR_ITEM.wav");
     }
     if (KEYMANAGER->isOnceKeyUp('E'))
         _collected = false;
@@ -369,6 +419,15 @@ void Player::playerAction(void)
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP] && _press)
     {
         //_isFixed = true;
+        if (_isLeft)
+            EFFECT->addEffect({ "jump_dust", 0, { (_hitBox.left + _hitBox.right) / 2, _hitBox.bottom - 10},
+                { IMAGEMANAGER->findImage("jump_dust")->getMaxFrameX() + 1, 1} }, 1);
+        else
+            EFFECT->addEffect({ "jump_dust", 0, { (_hitBox.left + _hitBox.right) / 2, _hitBox.bottom - 10},
+                { 0, 0 } }, 1);
+
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_JUMP.wav");
+
         _temp.y = _plPos.y;
         if (_plState[WALK])
         {
@@ -398,7 +457,7 @@ void Player::playerAction(void)
             setAction("JUMP");
             _actionList.push_back("JUMP");
             if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("JUMP")->getMaxFrameX();
+                _idx_x = IMAGEMANAGER->findImage("JUMP")->getMaxFrameX() + 1;
             else
                 _idx_x = 0;
         }
@@ -434,6 +493,14 @@ void Player::playerAction(void)
         _temp.x = _plPos.x;
         setState(DODGE, true);
         _actionList.push_back("DODGE");
+        
+        if (_isLeft)
+            EFFECT->addEffect({ "dodge_effect", 0, {_hitBox.right, _hitBox.bottom - 30},
+                { IMAGEMANAGER->findImage("dodge_effect")->getMaxFrameX() + 1, 1}}, 1);
+        else
+            EFFECT->addEffect({ "dodge_effect", 0, {_hitBox.left, _hitBox.bottom - 30},{ 0, 0} }, 1);
+
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_DASH.wav");
         //_actionList.push_back("STOP");
         setAction("DODGE");
         if (_isLeft)
@@ -472,6 +539,8 @@ void Player::playerAction(void)
                     else
                         _idx_x = 0;
                 }
+                
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_SLASH_AIR_4.wav");
             }
             else if (_plState[UP])
             {
@@ -482,6 +551,8 @@ void Player::playerAction(void)
                     _idx_x = IMAGEMANAGER->findImage("ATTACK_UPWARD")->getMaxFrameX();
                 else
                     _idx_x = 0;
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_SLASH_AIR_4.wav");
             }
             else if (_plState[DODGE])
             {
@@ -495,6 +566,8 @@ void Player::playerAction(void)
                     _idx_x = IMAGEMANAGER->findImage("ATTACK_DODGE")->getMaxFrameX();
                 else
                     _idx_x = 0;
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/LUNGE_ATTACK_LV3.wav");
             }
             else if (_plState[CROUCH])
             {
@@ -505,6 +578,8 @@ void Player::playerAction(void)
                     _idx_x = IMAGEMANAGER->findImage("ATTACK_CROUCH")->getMaxFrameX();
                 else
                     _idx_x = 0;
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_SLASH_AIR_4.wav");
             }
             else
             {
@@ -532,6 +607,8 @@ void Player::playerAction(void)
             _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
         else
             _idx_x = 0;
+
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_OVERTHROW_DEFAULT.wav");
     }
    _cnt++;
    if (_actionList.empty())
@@ -585,7 +662,10 @@ void Player::playerAction(void)
                    {
                        _idx_x = IMAGEMANAGER->findImage(_actionList.front())->getMaxFrameX();
                        if (!strcmp(_actionList.front(), "COUNTER"))
+                       {
                            setState(ATTACK, true);
+                           SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_PARRY_HIT.wav");
+                       }
                        setAction(_actionList.front());
                    }
                    else
@@ -616,7 +696,10 @@ void Player::playerAction(void)
                    {
                        _idx_x = 0;
                        if (!strcmp(_actionList.front(), "COUNTER"))
+                       {
                            setState(ATTACK, true);
+                           SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_PARRY_HIT.wav");
+                       }
                        setAction(_actionList.front());
                    }
                    else
@@ -650,7 +733,7 @@ void Player::playerMove(void)
             }
             if (!strcmp(_strAction, "JUMP"))
             {
-               if (_temp.y - _player.bottom < 200)
+               if (_temp.y - _hitBox.bottom < 230)
                     _plPos.y -= 9.5f;
                 else
                 {
@@ -665,7 +748,7 @@ void Player::playerMove(void)
                 _plPos.y -= 9.2f;
             if (!strcmp(_strAction, "JUMP"))
             {
-                if (_temp.y - _player.bottom < 200)
+                if (_temp.y - _hitBox.bottom < 230)
                 {
                     _plPos.y -= 9.5f;
                 }
@@ -696,6 +779,9 @@ void Player::playerMove(void)
             {
                 if (_idx_x > getMaxFrameX() - 19 && _idx_x < getMaxFrameX() - 6)
                     _plPos.x -= 4.5f;
+
+                /*if (_idx_x == _idx_x < getMaxFrameX() - 6)
+                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/LUNGE_ATTACK_LV3.wav");*/
             }
             else
             {
@@ -756,6 +842,8 @@ void Player::comboAttack(void)
             _idx_x = IMAGEMANAGER->findImage("ATTACK")->getMaxFrameX();
         else
             _idx_x = 0;
+
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_SLASH_AIR_4.wav");
     }
     else
     {
@@ -767,6 +855,8 @@ void Player::comboAttack(void)
                 setAction("ATTACK_COMBO_2");
                 _actionList.push_back("ATTACK_COMBO_2");
 
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_SLASH_AIR_2.wav");
+
             }
             else if (!strcmp(_strAction, "ATTACK_COMBO_2"))
             {
@@ -775,6 +865,7 @@ void Player::comboAttack(void)
                 setAction("ATTACK_COMBO_3");
                 _actionList.push_back("ATTACK_COMBO_3");
 
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_HEAVY_SLASH.wav");
             }
             else
             {
@@ -785,6 +876,8 @@ void Player::comboAttack(void)
                     _idx_x = IMAGEMANAGER->findImage("ATTACK")->getMaxFrameX();
                 else
                     _idx_x = 0;
+
+                SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_SLASH_AIR_4.wav");
             }        
         }
         else
@@ -793,6 +886,7 @@ void Player::comboAttack(void)
     }
 
 }
+
 
 void Player::renderPlayer(HDC hdc)
 {
@@ -847,6 +941,11 @@ void Player::renderPlayer(HDC hdc)
                 IMAGEMANAGER->findImage(_actionList.front())->getFrameHeight());
             //cout << _sync.find(_actionList.front().c_str())->second.rightMove.y << endl;
         }
+    }
+
+    if (!_plState[JUMP])
+    {
+        IMAGEMANAGER->alphaRender("Shadow", hdc, _hitBox.left, _hitBox.bottom - 7, 90);
     }
     
     if (KEYMANAGER->isToggleKey(VK_TAB))

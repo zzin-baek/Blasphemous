@@ -171,6 +171,7 @@
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="Stoner.h" />
+    <ClInclude Include="Teleport.h" />
     <ClInclude Include="Tutorial.h" />
     <ClInclude Include="TutorialField.h" />
   </ItemGroup>
@@ -200,6 +201,7 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stdafx.cpp" />
     <ClCompile Include="Stoner.cpp" />
+    <ClCompile Include="Teleport.cpp" />
     <ClCompile Include="Tutorial.cpp" />
     <ClCompile Include="TutorialField.cpp" />
     <ClCompile Include="WinMain.cpp" />

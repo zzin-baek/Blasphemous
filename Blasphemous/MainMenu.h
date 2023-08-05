@@ -4,9 +4,10 @@
 class MainMenu : public GameNode
 {
 private:
-	int cnt, idx, minus, _menuSelect;
-	int idx_bg, idx_petal, idx_crisanta, idx_petal_fg;
-	int idx_angel;
+	int cnt, idx, minus, _menuSelect, _alpha, _alpha2;
+	int idx_bg, idx_petal, idx_crisanta, idx_petal_fg, idx_angel;
+	bool _isTitle, _pressed, _opening;
+
 	POINT bg, crisanta, petal, petal_fg, angel;
 	POINT _angelPos;
 

@@ -83,13 +83,15 @@ void Stoner::move(void)
             }
         }
 
-        //if (_stState[HIT_ENEMY] && !_hit)
-        //{
-        //    _stList.clear();
-        //    //_acState.reset();
-        //    setState(ATTACK_ENEMY, false);
-        //    _hit = true;
-        //}
+        if (_stState[HIT_ENEMY] && !_hit)
+        {
+            _stList.clear();
+            //_acState.reset();
+            EFFECT->addEffect({ "blood", 0, {(_stoner.left + _stoner.right) / 2, (_stoner.top + _stoner.bottom) / 2},
+           {0, 0} }, 5);
+            setState(ATTACK_ENEMY, false);
+            _hit = true;
+        }
 
 
         if (getState()[ATTACK_ENEMY])

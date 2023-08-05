@@ -9,7 +9,7 @@ private:
 	BossMap2* _bm;
 	Pietat* _boss;
 
-	int _cnt;
+	int _cnt, _nextStage;
 	bool _once;
 
 public:
@@ -17,6 +17,8 @@ public:
 	void release(void);
 	void update(void);
 	void render(void);
+
+	inline int getNext() { return _nextStage; }
 
 	BossStage2() {}
 	~BossStage2() {}
