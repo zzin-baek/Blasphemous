@@ -305,7 +305,14 @@ void Stoner::rockMove(void)
             center.y = _rock[i].pos.y - 3 * sin((_rock[i].angle * PI / 180));
 
             _rock[i].pos = { center.x, center.y };
-            _rock[i].rock = RectMakeCenter(_rock[i].pos.x, _rock[i].pos.y, 30, 30);
+            //_rock[i].rock = RectMakeCenter(_rock[i].pos.x, _rock[i].pos.y, 30, 30);
+
+            if (!_rock[i].cycle.empty())
+            {
+                _rock[i].rock = RectMakeCenter(_rock[i].pos.x, _rock[i].pos.y,
+                    IMAGEMANAGER->findImage(_rock[i].cycle.front())->getFrameWidth(),
+                    IMAGEMANAGER->findImage(_rock[i].cycle.front())->getFrameHeight());
+            }
         }
     }
 
@@ -321,9 +328,13 @@ void Stoner::rockMove(void)
 
 void Stoner::rockCycle(void)
 {
+    int _time;
     for (int i = 0; i < MAX_ROCK; i++)
     {
-        if (_rock[i].shoot && !_rock[i].cycle.empty() && _cnt % 10 == 0)
+        if (_rock[i].broke) _time = 5;
+        else _time = 10;
+
+        if (_rock[i].shoot && !_rock[i].cycle.empty() && _cnt % _time == 0)
         {
             _rock[i].cnt++;
 
@@ -349,13 +360,17 @@ void Stoner::rockCycle(void)
             }
             else
             {
-                if (_rock[i].shoot)
+                if (_rock[i].shoot && !_rock[i].broke)
                 {
-                    if (_rock[i].broke)
-                        _rock[i].cycle.push_back("Rock_landing");
-                    else
-                        _rock[i].cycle.push_back("Rock");
+                    _rock[i].cycle.push_back("Rock");
                 }
+            }
+
+            if (_rock[i].broke)
+            {
+                if (!_rock[i].cycle.empty())
+                    _rock[i].cycle.clear();
+                _rock[i].cycle.push_back("Rock_landing");
             }
         }
     }
@@ -372,7 +387,8 @@ void Stoner::rockCollision(void)
         if (IntersectRect(&_rt, &_rock[i].rock, &PLAYER->getRect()) 
             && (PLAYER->getState()[ATTACK] || PLAYER->getAttack()))
         {
-                _rock[i].broke = true;            
+            _rock[i].broke = true;
+            _rock[i].cnt = 0;
         }
 
         if (IntersectRect(&_rt, &_rock[i].rock, &PLAYER->getHitBox()) && 
@@ -382,7 +398,9 @@ void Stoner::rockCollision(void)
             {
                 PLAYER->setHit(true);
                 PLAYER->setHP(PLAYER->getHP() - 5);
+                
                 _rock[i].broke = true;
+                _rock[i].cnt = 0;
             }
         }
     }
@@ -397,7 +415,12 @@ void Stoner::setRockPos(int x, int y)
         _rock[i].pos.x += x;
         _rock[i].pos.y += y;
 
-        _rock[i].rock = RectMakeCenter(_rock[i].pos.x, _rock[i].pos.y, 30, 30);
+        if (!_rock[i].cycle.empty())
+        {
+            _rock[i].rock = RectMakeCenter(_rock[i].pos.x, _rock[i].pos.y,
+                IMAGEMANAGER->findImage(_rock[i].cycle.front())->getFrameWidth(),
+                IMAGEMANAGER->findImage(_rock[i].cycle.front())->getFrameHeight());
+        }
     }
 }
 
@@ -468,7 +491,9 @@ void Stoner::render(HDC hdc)
         {
             //_mask = RectMake(_fb[i]._center.x - 23, _fb[i]._center.y - 23, 130, 130);            
             IMAGEMANAGER->frameRender(_rock[i].cycle.front(), hdc,
-                _rock[i].pos.x - 15, _rock[i].pos.y - 15, _rock[i].idx.x, _rock[i].idx.y);
+                _rock[i].pos.x - IMAGEMANAGER->findImage(_rock[i].cycle.front())->getFrameWidth() / 2,
+                _rock[i].pos.y - IMAGEMANAGER->findImage(_rock[i].cycle.front())->getFrameHeight() / 2,
+                _rock[i].idx.x, _rock[i].idx.y);
         }
     }
 

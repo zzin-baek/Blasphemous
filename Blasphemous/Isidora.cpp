@@ -305,9 +305,9 @@ void Isidora::update(void)
 	// 불기둥 파이어볼 관련 //
 	if (_phase == 2 && _patternNum != 13)
 	{
-		_intervalF = 200;
+		_intervalF = 400;
 
-		if (_cnt % 200 == 0)
+		if (_cnt % 300 == 0)
 		{
 			for (int i = 0; i < MAX_FIREBALL; i++)
 			{

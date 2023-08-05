@@ -74,6 +74,6 @@ void BossMap2::renderColumn(HDC hdc)
 
 	if (KEYMANAGER->isToggleKey(VK_TAB))
 	{
-		DrawRectMake(hdc, _sceneStart);
+		//DrawRectMake(hdc, _sceneStart);
 	}
 }
