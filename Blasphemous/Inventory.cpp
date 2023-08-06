@@ -105,11 +105,13 @@ void Inventory::update(void)
 {
     if (KEYMANAGER->isOnceKeyDown('E'))
     {
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/SELECTION.wav");
         _slot++;
         _rosarySelect = _heritageSelect = _questSelect = _praySelect = _skillSelect = _colSelect = 0;
     }
     if (KEYMANAGER->isOnceKeyDown('Q'))
     {
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/SELECTION.wav");
         _slot--;
         if (_slot < 0)
             _slot = 6;
@@ -120,6 +122,7 @@ void Inventory::update(void)
 
     if (KEYMANAGER->isOnceKeyDown(VK_ESCAPE))
     {
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/SELECTION.wav");
         _out = true;
     }
 

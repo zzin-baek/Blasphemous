@@ -84,6 +84,11 @@ void BossStage::update(void)
                 _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_Intro2")->getMaxFrameX());
             else
                 _boss->setIdxX(0);
+
+            SOUNDMANAGER->CheckAndReplayWithKey("Isidora_MASTER");
+            //SOUNDMANAGER->playEffectSoundWave("Resources/Sound/Isidora/Isidora_MASTER.wav");
+            SOUNDMANAGER->playSoundWithKey("Isidora_intro");
+            SOUNDMANAGER->playSoundWithKey("Isidora_intro_voice");
         }
         if (_cnt % 2 == 0)
         {
@@ -106,7 +111,7 @@ void BossStage::update(void)
     if (_mainStage)
     {
         PLAYER->setPress(true);
-        if (_boss->getDo())
+        if (_boss->getDo() && _boss->getHP() > 0)
         {
             int _temp;
      
@@ -136,6 +141,9 @@ void BossStage::update(void)
                 break;
             case 3:
                 _boss->initPos(WINSIZE_X / 2 - 10, WINSIZE_Y / 2 + 100);
+
+                SOUNDMANAGER->CheckAndReplayWithKey("Isidora_tp_out");
+
                 _boss->addPattern("Isidora_outToCast");
                 _boss->addPattern("Isidora_cast");
                 _boss->addPattern("Isidora_vanish");
@@ -190,6 +198,9 @@ void BossStage::update(void)
                 break;
             case 5:
                 _boss->initPos(1000, 400);
+
+                SOUNDMANAGER->CheckAndReplayWithKey("Isidora_tp_out");
+
                 _boss->addPattern("Isidora_outToTwirl");
                 _boss->addPattern("Isidora_backToIdle");
                 _boss->addPattern("Isidora_slash");
@@ -231,6 +242,8 @@ void BossStage::update(void)
                     _boss->setLeft(false);
                 else
                     _boss->setLeft(true);
+
+                SOUNDMANAGER->CheckAndReplayWithKey("Isidora_tp_out");
 
                 _boss->addPattern("Isidora_outToTwirl");
                 _boss->addPattern("Isidora_backToIdle");
@@ -274,6 +287,8 @@ void BossStage::update(void)
                 else
                     _boss->initPos(200, 450);
 
+                SOUNDMANAGER->CheckAndReplayWithKey("Isidora_tp_out");
+
                 _boss->addPattern("Isidora_outToRising");
                 _boss->addPattern("Isidora_scy2");
                 _boss->addPattern("Isidora_twirl");
@@ -304,6 +319,8 @@ void BossStage::update(void)
                 else
                     _boss->setLeft(true);
 
+                SOUNDMANAGER->CheckAndReplayWithKey("Isidora_tp_out");
+
                 _boss->addPattern("Isidora_outToTwirl");
                 _boss->addPattern("Isidora_backToIdle");
                 _boss->addPattern("Isidora_slash");
@@ -330,6 +347,8 @@ void BossStage::update(void)
                     _boss->setLeft(false);
                 else
                     _boss->setLeft(true);
+
+                SOUNDMANAGER->CheckAndReplayWithKey("Isidora_tp_out");
 
                 _boss->addPattern("Isidora_outToTwirl");
                 _boss->addPattern("Isidora_backToIdle");
@@ -384,6 +403,8 @@ void BossStage::update(void)
                 _boss->addPattern("Isidora_cast");
                 _boss->addPattern("Isidora_vanish");
 
+                SOUNDMANAGER->CheckAndReplayWithKey("Isidora_tp_out");
+
                 if (_boss->getLeft())
                     _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX());
                 else
@@ -405,6 +426,8 @@ void BossStage::update(void)
                 _boss->initPos(WINSIZE_X - 300, 240);
                 _boss->addPattern("Isidora_outToCast");
                 _boss->addPattern("Isidora_cast");
+
+                SOUNDMANAGER->CheckAndReplayWithKey("Isidora_tp_out");
 
                 if (_boss->getLeft())
                     _boss->setIdxX(IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX());
@@ -437,6 +460,12 @@ void BossStage::update(void)
             _bm->changeBrazier("Brazier_HalfToFull");
         if (_bm->getScene() > 230)
             _bm->changeBrazier("Brazier_FullLoop");
+    }
+
+    if (_boss->getHP() <= 0)
+    {
+        _bm->changeBrazier("Brazier_dark");
+        _bm->setScene(0);
     }
 
     _boss->update();
@@ -489,6 +518,7 @@ void BossStage::update(void)
             else
                 EFFECT->addEffect({ "attack_spark3", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
 
+            SOUNDMANAGER->playSoundWithKey("Hit_enemy_1");
         }
     }
 }

@@ -414,7 +414,7 @@ void BaseMap::update(void)
                     else
                         EFFECT->addEffect({ "attack_spark1", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
 
-                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_ENEMY_HIT_3.wav");
+                    SOUNDMANAGER->playSoundWithKey("Hit_enemy_2");
                 }
             }
         } 
@@ -445,7 +445,7 @@ void BaseMap::update(void)
                     else
                         EFFECT->addEffect({ "attack_spark2", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
 
-                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_ENEMY_HIT_3.wav");
+                    SOUNDMANAGER->playSoundWithKey("Hit_enemy_2");
                 }
             }
 
@@ -579,7 +579,7 @@ void BaseMap::update(void)
                         else
                             EFFECT->addEffect({ "attack_spark1", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
 
-                        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_ENEMY_HIT_3.wav");
+                        SOUNDMANAGER->playSoundWithKey("Hit_enemy_2");
                     }
                     else
                     {
@@ -593,11 +593,17 @@ void BaseMap::update(void)
                             EFFECT->addEffect({ "shielder_block", 0, {PLAYER->getHitBox().right, (int)PLAYER->getCenterY()},
                                { 0, 0 } }, 1);
                         }
-                        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/enemy/SHIELD_ENEMY_HIT_SHIELD.wav");
+                        SOUNDMANAGER->playSoundWithKey("Hit_shield");
                     }
                 }
             }
         }
+        /*if ((IntersectRect(&_rt, &_shielderList[0]->getRect(), &PLAYER->getRect())
+            && (PLAYER->getState()[ATTACK] || PLAYER->getAttack()) && strcmp(_shielderList[0]->getAction(), "Shielder_idle")))
+        {
+            SOUNDMANAGER->playSoundWithKey("Hit_shield");
+        }*/
+
         if (_shielderList[0]->getHP() <= 0 && _shielderList[0]->getDie())
         {
             _shielderList.pop_back();

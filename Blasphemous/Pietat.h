@@ -54,8 +54,8 @@ private:
 	tagSpit _spit[MAX_SPIT];
 
 	RECT _pietat, _hitBox, _attack;
-	int _cnt, _phase, _patternNum, _hp, _dist;
-	int _introIndex, _doNothing, _intervalT;
+	int _cnt, _phase, _patternNum, _hp, _dist, _alpha;
+	int _introIndex, _doNothing, _intervalT, _deathCnt;
 	float _temp;
 	bool _isLeft, _intro, _outro, _finIntro, _finOutro;
 	bool _onceThorn, _isAttack, _hit;
@@ -66,6 +66,7 @@ private:
 public:
 	HRESULT init(void);
 	void initSync(void);
+	void initSound(void);
 	void update(void);
 
 	void useSkill(void);

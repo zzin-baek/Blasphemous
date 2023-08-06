@@ -6,14 +6,15 @@ HRESULT Player::init(void)
     initImage();
 
     _cnt = _idx_x = _idx_y = 0;
-    _isLeft = _isGround = _isFixed = _hold = _collect = false;
-    _isAttack = _collected = _respawn = _hit = _parrying =false;
+    _isLeft = _isGround = _isFixed = _hold = _collect = _death = false;
+    _isAttack = _collected = _respawn = _hit = _parrying = _die = false;
 
     _center = _temp = { 0.0f, 0.0f };
 
     _hp = 100; 
     _score, _parry = 0;
     _portion = 5;
+    _alpha = 0;
 
     _press = true;
 
@@ -113,6 +114,7 @@ void Player::initImage(void)
     IMAGEMANAGER->addImage("HP", "Resources/Image/Sheet/HealthBar.bmp",
         136 * 2, 4 * 2, true, MAGENTA);
     IMAGEMANAGER->addImage("Shadow", "Resources/Image/Sheet/shadow.bmp", 38 * 2, 5 * 2, true, MAGENTA);
+    IMAGEMANAGER->addImage("Player_death", "Resources/Image/BackGround/death_screen.bmp", 640 * 2, 360 * 2);
 
     IMAGEMANAGER->addImage("ENEMY_HP_BAR", "Resources/Image/Sheet/enemy_health_bar.bmp",
         34 * 2, 4 * 2, true, MAGENTA);
@@ -165,7 +167,9 @@ void Player::initTiming(void)
 
 void Player::initSound(void)
 {
-    
+    SOUNDMANAGER->addWaveFileWithKey("penitent_spike_death", "Resources/Sound/penitent/PENITENT_SPIKES_DEATH.wav");
+    SOUNDMANAGER->addWaveFileWithKey("pentitent_death", "Resources/Sound/penitent/PENITENT_DEATH_DEFAULT.wav");
+    SOUNDMANAGER->addWaveFileWithKey("death_scene", "Resources/Sound/Player_Death.wav");
 }
 
 void Player::playerAction(void)
@@ -225,11 +229,55 @@ void Player::playerAction(void)
             setAction("FALLING");
     }
 
-
-    if (_plState[DEATH_FALL])
+    if (!_plState[HIT] && _hit)
     {
-        //_actionList.clear();
-        //_actionList.push_back("DEATH_FALL");
+        setState(HIT, true);
+        setAction("PUSHBACK");
+
+        if (!isEmpty())
+            _actionList.clear();
+
+        _actionList.push_back("PUSHBACK");
+        _actionList.push_back("CROUCH_UP");
+
+        if (_isLeft)
+            _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
+        else
+            _idx_x = 0;
+
+        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_OVERTHROW_DEFAULT.wav");
+    }
+
+    if (_hp <= 0 && !_die)
+    {
+        _die = true;
+        if (_plState[DEATH_FALL])
+        {
+            setState(DEATH_FALL, false);
+            _press = false;
+            _actionList.clear();
+            _actionList.push_back("DEATH_FALL");
+
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("DEATH_FALL")->getMaxFrameX();
+            else
+                _idx_x = 0;
+
+            SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_SPIKES_DEATH.wav");
+        }
+        else
+        {
+            _press = false;
+            _actionList.clear();
+            _actionList.push_back("DEATH");
+
+            if (_isLeft)
+                _idx_x = IMAGEMANAGER->findImage("DEATH")->getMaxFrameX();
+            else
+                _idx_x = 0;
+
+            SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_DEATH_DEFAULT.wav");
+        }
     }
 
     //cout << "hold"<<_hold << endl;
@@ -592,24 +640,7 @@ void Player::playerAction(void)
         else
             _comboTime.push_back(clock());
     }
-    if (!_plState[HIT] && _hit)
-    {
-        setState(HIT, true);
-        setAction("PUSHBACK");
 
-        if (!isEmpty())
-            _actionList.clear();
-
-        _actionList.push_back("PUSHBACK");
-        _actionList.push_back("CROUCH_UP");
-
-        if (_isLeft)
-            _idx_x = IMAGEMANAGER->findImage("PUSHBACK")->getMaxFrameX();
-        else
-            _idx_x = 0;
-
-        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_OVERTHROW_DEFAULT.wav");
-    }
    _cnt++;
    if (_actionList.empty())
    {
@@ -657,6 +688,11 @@ void Player::playerAction(void)
                _idx_x--;
                if (_idx_x < 1)
                {
+                    if (!strcmp(_actionList.front(), "DEATH_FALL") || !strcmp(_actionList.front(), "DEATH"))
+                    {
+                        _death = true;
+                        SOUNDMANAGER->playEffectSoundWave("Resources/Sound/Player_Death.wav");
+                    }
                    _actionList.pop_front();
                    if (!_actionList.empty())
                    {
@@ -691,6 +727,11 @@ void Player::playerAction(void)
            {
                if (_idx_x > IMAGEMANAGER->findImage(_actionList.front())->getMaxFrameX())
                {
+                   if (!strcmp(_actionList.front(), "DEATH_FALL") || !strcmp(_actionList.front(), "DEATH"))
+                   {
+                       _death = true;
+                       SOUNDMANAGER->playEffectSoundWave("Resources/Sound/Player_Death.wav");
+                   }
                    _actionList.pop_front();
                    if (!_actionList.empty())
                    {
@@ -890,57 +931,72 @@ void Player::comboAttack(void)
 
 void Player::renderPlayer(HDC hdc)
 {
-    if (_actionList.empty())
+    if (!_death)
     {
-        if (_isLeft)
+        if (_actionList.empty())
         {
-            IMAGEMANAGER->frameRender(_strAction, hdc,
-                _plPos.x + _sync.find(_strAction)->second.leftMove.x,
-                _plPos.y + _sync.find(_strAction)->second.leftMove.y, _idx_x, _idx_y);
+            if (_isLeft)
+            {
+                IMAGEMANAGER->frameRender(_strAction, hdc,
+                    _plPos.x + _sync.find(_strAction)->second.leftMove.x,
+                    _plPos.y + _sync.find(_strAction)->second.leftMove.y, _idx_x, _idx_y);
 
-            _player = RectMake(_plPos.x + _sync.find(_strAction)->second.leftMove.x, 
-                _plPos.y + _sync.find(_strAction)->second.leftMove.y,
-                IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
-                IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
+                _player = RectMake(_plPos.x + _sync.find(_strAction)->second.leftMove.x,
+                    _plPos.y + _sync.find(_strAction)->second.leftMove.y,
+                    IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
+                    IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
+            }
+            else
+            {
+                IMAGEMANAGER->frameRender(_strAction, hdc,
+                    _plPos.x + _sync[_strAction].rightMove.x,
+                    _plPos.y + _sync[_strAction].rightMove.y, _idx_x, _idx_y);
+
+                _player = RectMake(_plPos.x + _sync.find(_strAction)->second.rightMove.x,
+                    _plPos.y + _sync.find(_strAction)->second.rightMove.y,
+                    IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
+                    IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
+            }
         }
         else
         {
-            IMAGEMANAGER->frameRender(_strAction, hdc,
-                _plPos.x + _sync[_strAction].rightMove.x,
-                _plPos.y + _sync[_strAction].rightMove.y, _idx_x, _idx_y);
+            if (_isLeft)
+            {
+                IMAGEMANAGER->frameRender(_actionList.front(), hdc,
+                    _plPos.x + _sync.find(_actionList.front())->second.leftMove.x,
+                    _plPos.y + _sync.find(_actionList.front())->second.leftMove.y, _idx_x, _idx_y);
 
-            _player = RectMake(_plPos.x + _sync.find(_strAction)->second.rightMove.x,
-                _plPos.y + _sync.find(_strAction)->second.rightMove.y,
-                IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
-                IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
+                _player = RectMake(_plPos.x + _sync.find(_actionList.front())->second.leftMove.x,
+                    _plPos.y + _sync.find(_actionList.front())->second.leftMove.y,
+                    IMAGEMANAGER->findImage(_actionList.front())->getFrameWidth(),
+                    IMAGEMANAGER->findImage(_actionList.front())->getFrameHeight());
+                //cout << _sync.find(_actionList.front().c_str())->second.leftMove.y << endl;
+            }
+            else
+            {
+                IMAGEMANAGER->frameRender(_actionList.front(), hdc,
+                    _plPos.x + _sync[_actionList.front()].rightMove.x,
+                    _plPos.y + _sync[_actionList.front()].rightMove.y, _idx_x, _idx_y);
+
+                _player = RectMake(_plPos.x + _sync.find(_actionList.front())->second.rightMove.x,
+                    _plPos.y + _sync.find(_actionList.front())->second.rightMove.y,
+                    IMAGEMANAGER->findImage(_actionList.front())->getFrameWidth(),
+                    IMAGEMANAGER->findImage(_actionList.front())->getFrameHeight());
+                //cout << _sync.find(_actionList.front().c_str())->second.rightMove.y << endl;
+            }
         }
     }
     else
     {
-        if (_isLeft)
-        {
-            IMAGEMANAGER->frameRender(_actionList.front(), hdc, 
-                _plPos.x + _sync.find(_actionList.front())->second.leftMove.x,
-                _plPos.y + _sync.find(_actionList.front())->second.leftMove.y, _idx_x, _idx_y);
+        _alpha += 2;
+        if (_alpha >= 255)
+            _alpha = 255;
 
-            _player = RectMake(_plPos.x + _sync.find(_actionList.front())->second.leftMove.x,
-                _plPos.y + _sync.find(_actionList.front())->second.leftMove.y,
-                IMAGEMANAGER->findImage(_actionList.front())->getFrameWidth(),
-                IMAGEMANAGER->findImage(_actionList.front())->getFrameHeight());
-            //cout << _sync.find(_actionList.front().c_str())->second.leftMove.y << endl;
-        }
-        else
-        {
-            IMAGEMANAGER->frameRender(_actionList.front(), hdc, 
-                _plPos.x + _sync[_actionList.front()].rightMove.x,
-                _plPos.y + _sync[_actionList.front()].rightMove.y, _idx_x, _idx_y);
-            
-            _player = RectMake(_plPos.x + _sync.find(_actionList.front())->second.rightMove.x,
-                _plPos.y + _sync.find(_actionList.front())->second.rightMove.y,
-                IMAGEMANAGER->findImage(_actionList.front())->getFrameWidth(),
-                IMAGEMANAGER->findImage(_actionList.front())->getFrameHeight());
-            //cout << _sync.find(_actionList.front().c_str())->second.rightMove.y << endl;
-        }
+        IMAGEMANAGER->alphaRender("Player_death", hdc, 0, 0, _alpha);
+
+        SOUNDMANAGER->stopMp3WithKey("churches_field");
+        SOUNDMANAGER->stopMp3WithKey("Isidora_MASTER");
+        SOUNDMANAGER->stopMp3WithKey("pietat");
     }
 
     if (!_plState[JUMP])
@@ -969,20 +1025,23 @@ void Player::renderPlayer(HDC hdc)
 
 void Player::renderProfile(HDC hdc)
 {
-    IMAGEMANAGER->render("Profile", hdc, 30, 30);
-    IMAGEMANAGER->render("Score", hdc, WINSIZE_X - 200, 30);
-    IMAGEMANAGER->render("HP", hdc, 186, 76, 0, 0, 
-        IMAGEMANAGER->findImage("HP")->getWidth() * _hp / 100, IMAGEMANAGER->findImage("HP")->getHeight());
-
-    for (int i = 0; i < 5; i++)
+    if (_hp > 0)
     {
-        if (i < _portion)
+        IMAGEMANAGER->render("Profile", hdc, 30, 30);
+        IMAGEMANAGER->render("Score", hdc, WINSIZE_X - 200, 30);
+        IMAGEMANAGER->render("HP", hdc, 186, 76, 0, 0,
+            IMAGEMANAGER->findImage("HP")->getWidth() * _hp / 100, IMAGEMANAGER->findImage("HP")->getHeight());
+
+        for (int i = 0; i < 5; i++)
         {
-            IMAGEMANAGER->render("flask_full", hdc, 155 + 42 * i, 105);
-        }
-        else
-        {
-            IMAGEMANAGER->render("flask_empty", hdc, 155 + 42 * i, 105);
+            if (i < _portion)
+            {
+                IMAGEMANAGER->render("flask_full", hdc, 155 + 42 * i, 105);
+            }
+            else
+            {
+                IMAGEMANAGER->render("flask_empty", hdc, 155 + 42 * i, 105);
+            }
         }
     }
 }

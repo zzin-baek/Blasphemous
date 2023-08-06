@@ -54,22 +54,24 @@ HRESULT Pietat::init(void)
 	IMAGEMANAGER->addFrameImage("Thorn_tower", "Resources/Image/Pietat/thorns_tower_anim.bmp",
 		640 * 3/2, 504 * 3/2, 10, 4, true, MAGENTA);
 
-	SOUNDMANAGER->addWaveFileWithKey("wakeup", "Resources/Sound/pietat/WakeUp.wav");
-	SOUNDMANAGER->addWaveFileWithKey("stomp", "Resources/Sound/pietat/PIETAT_STOMP.wav");
+	IMAGEMANAGER->addImage("Boss_death_logo", "Resources/Image/BackGround/boss-defeated-screen-title.bmp", 
+		640 * 2, 360 * 2, true, MAGENTA);
 
-	_cnt = _patternNum = _introIndex = 0;
+	_cnt = _patternNum = _introIndex = _deathCnt = 0;
 	_idx = _introIdx = { 0, 0 };
 	_isLeft = _intro = _outro = _finIntro = _finOutro = false;
 	_onceThorn = _isAttack = _hit = false;
 	_doNothing = true;
 
 	_intervalT = _phase = 1;
+	_alpha = 255;
 	_pos = { -542, 343 };
-	_hp = 50;
+	_hp = 200;
 
 	wsprintf(_strAction, "Pietat_appear");
 
 	initSync();
+	initSound();
 
 	return S_OK;
 }
@@ -99,6 +101,22 @@ void Pietat::initSync(void)
 	_sync.insert({ "Pietat_stomp", {5, {-100, 30}, {-100, 30}} });
 }
 
+void Pietat::initSound(void)
+{
+	SOUNDMANAGER->addWaveFileWithKey("Boss_defeat", "Resources/Sound/Boss_Fight_Ending.wav");
+	SOUNDMANAGER->addWaveFileWithKey("wakeup", "Resources/Sound/pietat/WakeUp.wav");
+	SOUNDMANAGER->addWaveFileWithKey("stomp", "Resources/Sound/pietat/PIETAT_STOMP.wav");
+	SOUNDMANAGER->addWaveFileWithKey("pietat_death", "Resources/Sound/pietat/PIETAT_DEATH.wav");
+	SOUNDMANAGER->addWaveFileWithKey("pietat_smash", "Resources/Sound/pietat/PietatSmash.wav");
+	SOUNDMANAGER->addWaveFileWithKey("pietat_smash_voice", "Resources/Sound/pietat/PIETAT_SMASH_VOICE");
+	SOUNDMANAGER->addWaveFileWithKey("pietat_spit", "Resources/Sound/pietat/PIETAT_SPIT_VOICE.wav");
+	SOUNDMANAGER->addWaveFileWithKey("peitat_slash", "Resources/Sound/pietat/PIETAT_SLASH.wav");
+	SOUNDMANAGER->addWaveFileWithKey("pietat_death_voice", "Resources/Sound/pietat/PIETAT_DEATH_VOICE.wav");
+	SOUNDMANAGER->addWaveFileWithKey("", "");
+	SOUNDMANAGER->addWaveFileWithKey("", "");
+
+}
+
 void Pietat::update(void)
 {
 	// 페이즈 변경 기준
@@ -108,6 +126,26 @@ void Pietat::update(void)
 	{
 		_outro = true;
 		SOUNDMANAGER->stopMp3WithKey("pietat");
+
+		if (!_onceThorn)
+		{
+			if (!isEmpty())
+				_pattern.clear();
+
+			_pattern.push_back("Pietat_death");
+			setAction("Pietat_death");
+
+			if (_isLeft)
+				_idx.x = IMAGEMANAGER->findImage("Pietat_death")->getMaxFrameX();
+			else
+				_idx.x = 0;
+
+			SOUNDMANAGER->playSoundWithKey("Boss_Hit");
+			SOUNDMANAGER->playSoundWithKey("pietat_death");
+			SOUNDMANAGER->playSoundWithKey("pietat_death_voice");
+
+			_onceThorn = true;
+		}
 	}
 
 	_cnt++;
@@ -122,7 +160,7 @@ void Pietat::update(void)
 	}
 	else if (_outro && !_finOutro)
 	{
-		if (_doNothing)
+		/*if (_doNothing)
 		{
 			if (!isEmpty())
 				_pattern.clear();
@@ -134,7 +172,8 @@ void Pietat::update(void)
 			else
 				_idx.x = 0;
 			_doNothing = false;
-		}
+		}*/
+		_doNothing = true;
 
 		if (_isLeft)
 		{
@@ -145,6 +184,7 @@ void Pietat::update(void)
 				_idx.x--;
 				if (_idx.x < 1)
 				{
+					_idx.x = 1;
 					_pattern.pop_front();
 
 					if (_outro)
@@ -165,6 +205,7 @@ void Pietat::update(void)
 				_idx.x++;
 				if (_idx.x > IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX() + 1)
 				{
+					_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX();
 					_pattern.pop_front();
 
 					if (_outro)
@@ -362,7 +403,8 @@ void Pietat::useSkill(void)
 			else
 				_idx.x = 0;
 
-			SOUNDMANAGER->playEffectSoundWave("Resources/Sound/pietat/PIETAT_STOMP.wav");
+			//SOUNDMANAGER->playEffectSoundWave("Resources/Sound/pietat/PIETAT_STOMP.wav");
+			SOUNDMANAGER->playSoundWithKey("stomp");
 
 			_doNothing = false;
 		}
@@ -380,6 +422,7 @@ void Pietat::useSkill(void)
 			else
 				_idx.x = 0;
 
+			SOUNDMANAGER->playSoundWithKey("pietat_smash_voice");
 			_doNothing = false;
 		}
 		break;
@@ -398,6 +441,7 @@ void Pietat::useSkill(void)
 			else
 				_idx.x = 0;
 
+			SOUNDMANAGER->playSoundWithKey("pietat_spit");
 			_doNothing = false;
 		}
 		break;
@@ -411,6 +455,7 @@ void Pietat::useSkill(void)
 			else
 				_idx.x = 0;
 
+			SOUNDMANAGER->playSoundWithKey("pietat_slash");
 			_doNothing = false;
 		}
 		break;
@@ -484,7 +529,7 @@ void Pietat::attack(void)
 			{
 				if (_idx.x == IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX() - 29 && !_onceThorn)
 				{
-					SOUNDMANAGER->playEffectSoundWave("Resources/Sound/pietat/PietatSmash.wav");
+					SOUNDMANAGER->playSoundWithKey("pietat_smash");
 					_onceThorn = true;
 					int k = 0;
 					for (int i = 0; i < MAX_THORN; i++)
@@ -516,7 +561,7 @@ void Pietat::attack(void)
 			{
 				if (_idx.x == 29 && !_onceThorn)
 				{
-					SOUNDMANAGER->playEffectSoundWave("Resources/Sound/pietat/PietatSmash.wav");
+					SOUNDMANAGER->playSoundWithKey("pietat_smash");
 					_onceThorn = true;
 					int k = 0;
 					for (int i = 0; i < MAX_THORN; i += 2)
@@ -929,6 +974,28 @@ void Pietat::render(HDC hdc)
 			IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
 			IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
 
+		/*if (!strcmp(_strAction, "Pietat_death"))
+		{
+			_deathCnt++;
+
+			if (_doNothing)
+			{
+				SOUNDMANAGER->playEffectSoundWave("Resources/Sound/Boss_Fight_Ending.wav");
+
+				_doNothing = false;
+			}
+
+			IMAGEMANAGER->alphaRender("Boss_death_logo", hdc, _alpha);
+			IMAGEMANAGER->alphaRender("Black_bg", hdc, _alpha / 2);
+
+			if (_deathCnt > 500)
+			{
+				_alpha -= 2;
+				if (_alpha <= 0)
+					_alpha = 0;
+			}
+		}*/
+
 		if (!strcmp(_strAction, "Pietat_appear"))
 			IMAGEMANAGER->frameRender(_strAction, hdc, _pos.x - IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2,
 				_pos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2, _introIdx.x, _introIdx.y);
@@ -1030,5 +1097,30 @@ void Pietat::renderHP(HDC hdc)
 		IMAGEMANAGER->render("Isidora_HP_Bar", hdc, 290, 634);
 		FONTMANAGER->drawText(hdc, WINSIZE_X / 2 - 80, 612, "Neo둥근모 Pro", 30, 1, L"텐 피에다드",
 			0, RGB(171, 154, 63));
+	}
+
+	else
+	{
+		if (_pattern.empty() && !strcmp(_strAction, "Pietat_death"))
+		{
+			_deathCnt++;
+
+			if (_doNothing)
+			{
+				//SOUNDMANAGER->playEffectSoundWave("Resources/Sound/Boss_Fight_Ending.wav");
+				SOUNDMANAGER->playSoundWithKey("Boss_defeat");
+				_doNothing = false;
+			}
+
+			IMAGEMANAGER->alphaRender("Black_bg", hdc, _alpha / 2);
+			IMAGEMANAGER->alphaRender("Boss_death_logo", hdc, _alpha);
+
+			if (_deathCnt > 400)
+			{
+				_alpha -= 2;
+				if (_alpha <= 0)
+					_alpha = 0;
+			}
+		}
 	}
 }

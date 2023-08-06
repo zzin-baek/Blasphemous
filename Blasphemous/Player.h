@@ -50,10 +50,10 @@ private:
 
 	bool _isLeft, _isGround, _isFixed, _isAttack;
 	bool _hold, _collect, _hit, _parrying;
-	bool _collected, _respawn, _press;
+	bool _collected, _respawn, _press, _die;
 
-	int _cnt, _idx_x, _idx_y;
-	int _hp, _score, _portion, _parry;
+	int _cnt, _idx_x, _idx_y, _alpha;
+	int _hp, _score, _portion, _parry, _death;
 
 	char _loc[128], _action[128];
 

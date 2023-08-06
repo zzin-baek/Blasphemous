@@ -80,11 +80,12 @@ HRESULT Isidora::init(void)
 	
 	_pos = { WINSIZE_X / 2 + 380, WINSIZE_Y / 2 - 100};
 	_idx = { 0, 0 };
-	_cnt = _patternNum = 0;
+	_cnt = _patternNum = _deathCnt = _outroCnt = 0;
 	_intervalC = _intervalF = 10;
 
-	_hp = 300;
+	_hp = 200;
 	_phase = 1;
+	_alpha = 255;
 	_isidoraAngle = 45.0f;
 
 	_isLeft = _doNothing = true;
@@ -99,16 +100,17 @@ HRESULT Isidora::init(void)
 	_temp = { 0.0f, 450.0f };
 	
 	initSync();
+	initSound();
 
 	return S_OK;
 }
 
 void Isidora::initSync(void)
 {
-	_sync.insert({ "Isidora_Intro2", { 6, {0, 0}, {0, 0}} });
+	_sync.insert({ "Isidora_Intro2", { 4, {0, 0}, {0, 0}} });
 	_sync.insert({ "Isidora_idle", { 5, {-12, 18}, {30, 18} } });
 	_sync.insert({ "Isidora_backToIdle", {5, {10, 20}, {10, 20}} });
-	_sync.insert({ "Isidora_death", {5, {0, 0}, {0, 0}} });
+	_sync.insert({ "Isidora_death", {3, {-5, -100}, {-50, -100}} });
 
 	_sync.insert({ "Isidora_outToCast", { 4, {-50, 15}, {65, 15} } });
 	_sync.insert({ "Isidora_outToRising", { 3, {20, 30}, {0, 30} } });
@@ -121,7 +123,7 @@ void Isidora::initSync(void)
 	_sync.insert({ "Isidora_slash", { 3, {0, -27}, {23, -27} } });
 	_sync.insert({ "Isidora_twirl", { 3, {10, 8}, {10, 8} } });
 	_sync.insert({ "Isidora_screen_slash", { 6, {30, -10}, {0, -10} } });
-	_sync.insert({ "Isidora_screenslash_effect", { 5, {0, 0}, {0, 0}} });
+	_sync.insert({ "Isidora_screenslash_effect", { 6, {0, 0}, {0, 0}} });
 
 	_sync.insert({ "Isidora_sparkAppear", {5, {0, 0}, {0, 0}} });
 	_sync.insert({ "Isidora_sparkLoop", {5, {0, 0}, {0, 0}} });
@@ -129,6 +131,23 @@ void Isidora::initSync(void)
 	_sync.insert({ "Isidora_vanish", { 4, {-10, 13}, {23, 13} } });
 	_sync.insert({ "Isidora_twirlToVanish", { 4, {-10, 0}, {30, 0} } });
 	_sync.insert({ "Isidora_slashToVanish", { 6, {0, 0}, {0, 0} } });
+}
+
+void Isidora::initSound(void)
+{
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_MASTER", "Resources/Sound/Isidora/Isidora_MASTER.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_intro", "Resources/Sound/Isidora/INTRO_ISIDORA.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_intro_voice", "Resources/Sound/Isidora/INTRO_ISIDORA_SING.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_death", "Resources/Sound/Isidora/ISIDORA_DEATH.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_slash", "Resources/Sound/Isidora/SLASH_ISIDORA.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_tp_in", "Resources/Sound/Isidora/FAST_TP_IN_ISIDORA.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_tp_out", "Resources/Sound/Isidora/FAST_TP_OUT_ISIDORA.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_twirl", "Resources/Sound/Isidora/ISIDORA_TWIRL.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_dash", "Resources/Sound/Isidora/INVISIBLE_DASH.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_fastslash", "Resources/Sound/Isidora/ISIDORA_FASTSLASH.wav");
+	SOUNDMANAGER->addWaveFileWithKey("Isidora_rising_slash", "Resources/Sound/Isidora/RISING_SLASH_ISIDORA.wav");
+	SOUNDMANAGER->addWaveFileWithKey("fireball_start", "Resources/Sound/Isidora/FIREBALL_START.wav");
+	SOUNDMANAGER->addWaveFileWithKey("", "");
 }
 
 void Isidora::update(void)
@@ -160,211 +179,227 @@ void Isidora::update(void)
 
 	if (_hp <= 0 && !getState()[DIE_BOSS])
 	{
+		cout << "실행" << endl;
 		setState(DIE_BOSS, true);
 		//_die = true;
+		SOUNDMANAGER->stopMp3WithKey("Isidora_MASTER");
+		SOUNDMANAGER->playSoundWithKey("Isidora_death");
 
 		_pattern.clear();
-		bossDeath();
+		_doNothing = true;
+		_pattern.push_back("Isidora_death");
+		wsprintf(_strAction, "Isidora_death");
 	}
+	if (_hp <= 0)
+		bossDeath();
 
 	_cnt++;
-	if (!_pattern.empty())
+	if (_hp > 0)
 	{
-		if (_seq.empty())
+		if (!_pattern.empty())
 		{
-			if (_isLeft)
+			if (_seq.empty())
 			{
-				_idx.y = 1;
-				IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
-				if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
+				if (_isLeft)
 				{
-					_idx.x--;
-					if (_idx.x < 1)
+					_idx.y = 1;
+					IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+					if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
 					{
-						_pattern.pop_front();
-						if (!_pattern.empty())
+						_idx.x--;
+						if (_idx.x < 1)
 						{
-							_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX();
-						}
-						else
-						{
-							if (!_finIntro) _finIntro = true;
+							_pattern.pop_front();
+							if (!_pattern.empty())
+							{
+								_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX();
+							}
+							else
+							{
+								if (!_finIntro) _finIntro = true;
 
-							_doNothing = true;
+								_doNothing = true;
+							}
 						}
+						if (!_pattern.empty())
+							IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
 					}
-					if (!_pattern.empty())
-						IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+				}
+				else
+				{
+					_idx.y = 0;
+					IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+					if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
+					{
+						_idx.x++;
+						if (_idx.x > IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX())
+						{
+							_pattern.pop_front();
+							if (!_pattern.empty())
+							{
+								_idx.x = 0;
+							}
+							else
+							{
+								if (!_finIntro) _finIntro = true;
+								_doNothing = true;
+							}
+						}
+						if (!_pattern.empty())
+							IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+					}
 				}
 			}
 			else
 			{
-				_idx.y = 0;
-				IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
-				if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
+				if (_isLeft)
 				{
-					_idx.x++;
-					if (_idx.x > IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX())
+					_idx.y = 1;
+					IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+					if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
 					{
-						_pattern.pop_front();
+						_idx.x--;
+						if (_idx.x < IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX() - _seq.begin()->_current.y + 1)
+						{
+							if (_seq.begin()->_pass)
+								_pattern.pop_front();
+
+							_seq.erase(_seq.begin());
+
+							if (!_pattern.empty())
+							{
+								cout << _pattern.front() << endl;
+								_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX()
+									- _seq.begin()->_current.x;
+								_once = _once2 = false;
+
+								_hit = false;
+								_idState.reset();
+							}
+							else
+							{
+								if (!_finIntro) _finIntro = true;
+								if (_patternNum != 3 && _patternNum != 5)
+									_doNothing = true;
+								_hit = _once = _once2 = false;
+								if (!_seq.empty())
+									_seq.clear();
+							}
+						}
 						if (!_pattern.empty())
-						{
-							_idx.x = 0;
-						}
-						else
-						{
-							if (!_finIntro) _finIntro = true;
-							_doNothing = true;
-						}
+							IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
 					}
-					if (!_pattern.empty())
-						IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+				}
+				else
+				{
+					_idx.y = 0;
+					IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+					if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
+					{
+						_idx.x++;
+						if (_idx.x > _seq.begin()->_current.y - 1)
+						{
+							if (_seq.begin()->_pass)
+								_pattern.pop_front();
+
+							_seq.erase(_seq.begin());
+							if (!_pattern.empty())
+							{
+								//cout << _pattern.front() << endl;
+								_idx.x = _seq.begin()->_current.x;
+								_once = _once2 = false;
+
+								_hit = false;
+								_idState.reset();
+							}
+							else
+							{
+								if (!_finIntro) _finIntro = true;
+								if (_patternNum != 3 && _patternNum != 5)
+									_doNothing = true;
+								_once = _once2 = _hit = false;
+
+								if (!_seq.empty())
+									_seq.clear();
+							}
+						}
+						if (!_pattern.empty())
+							IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+					}
 				}
 			}
+		}
+
+		useSkill();
+		attack();
+
+		// 불기둥 파이어볼 관련 //
+		if (_phase == 2 && _patternNum != 13)
+		{
+			_intervalF = 400;
+
+			if (_cnt % 300 == 0)
+			{
+				for (int i = 0; i < MAX_FIREBALL; i++)
+				{
+					if (_fb[i]._create) continue;
+
+					_fb[i]._center = { WINSIZE_X / 2 - 30, WINSIZE_Y / 2 };
+					_fb[i]._idx = { 0, 0 };
+					_fb[i]._cnt = 0;
+
+					_fb[i]._angle = 90.0f;
+					_fb[i]._create = true;
+
+					break;
+				}
+			}
+		}
+		else if (_phase == 3 && !_onceFire)
+		{
+
+			for (int i = 0; i < MAX_FIREBALL; i++)
+			{
+				_fb[i]._create = false;
+			}
+
+			_intervalF == 20;
+
+			if (_cnt % 20 == 0)
+			{
+				for (int i = 0; i < MAX_FIREBALL; i++)
+				{
+					if (_fb[i]._create) continue;
+
+					_fb[i]._center = { WINSIZE_X / 2 - 30, WINSIZE_Y / 2 };
+					_fb[i]._idx = { 0, 0 };
+					_fb[i]._cnt = 0;
+
+					_fb[i]._angle = RND->getFromFloatTo(270.0f, 450.0f);
+					_fb[i]._create = true;
+				}
+			}
+			_onceFire = true;
+		}
+
+		if (_cnt % _intervalC == 0)
+			columnCreate();
+
+		if (_cnt % _intervalF == 0)
+			fireBallCreate();
+
+		columnCycle();
+		columnCollision();
+
+		if (_hp <= 100 && _hp > 0 && _isPhase3)
+		{
+			fireBallMove(false);
 		}
 		else
-		{
-			if (_isLeft)
-			{
-				_idx.y = 1;
-				IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
-				if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
-				{
-					_idx.x--;
-					if (_idx.x < IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX() - _seq.begin()->_current.y + 1)
-					{
-						if (_seq.begin()->_pass)
-							_pattern.pop_front();
-						
-						_seq.erase(_seq.begin());
-						
-						if (!_pattern.empty())
-						{
-							cout << _pattern.front() << endl;
-							_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX()
-								- _seq.begin()->_current.x;
-							_once = _once2 = false;
+			fireBallMove(true);
 
-							_hit = false;
-							_idState.reset();
-						}
-						else
-						{
-							if (!_finIntro) _finIntro = true;
-							if (_patternNum != 3 && _patternNum != 5)
-								_doNothing = true;
-							_hit = _once = _once2 = false;
-							if (!_seq.empty())
-								_seq.clear();
-						}
-					}
-					if (!_pattern.empty())
-						IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
-				}
-			}
-			else
-			{
-				_idx.y = 0;
-				IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
-				if (_cnt % _sync.find(_pattern.front())->second.timing == 0)
-				{
-					_idx.x++;
-					if (_idx.x > _seq.begin()->_current.y - 1)
-					{
-						if (_seq.begin()->_pass)
-							_pattern.pop_front();
-
-						_seq.erase(_seq.begin());
-						if (!_pattern.empty())
-						{
-							//cout << _pattern.front() << endl;
-							_idx.x = _seq.begin()->_current.x;
-							_once = _once2 = false;
-
-							_hit = false;
-							_idState.reset();
-						}
-						else
-						{
-							if (!_finIntro) _finIntro = true;
-							if (_patternNum != 3  && _patternNum != 5)
-								_doNothing = true;
-							_once = _once2 = _hit = false;
-
-							if (!_seq.empty())
-								_seq.clear();
-						}
-					}
-					if (!_pattern.empty())
-						IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
-				}
-			}
-		}
+		fireBallCycle();
 	}
-
-	useSkill();
-	attack();
-
-	// 불기둥 파이어볼 관련 //
-	if (_phase == 2 && _patternNum != 13)
-	{
-		_intervalF = 400;
-
-		if (_cnt % 300 == 0)
-		{
-			for (int i = 0; i < MAX_FIREBALL; i++)
-			{
-				if (_fb[i]._create) continue;
-
-				_fb[i]._center = { WINSIZE_X / 2 - 30, WINSIZE_Y / 2 };
-				_fb[i]._idx = { 0, 0 };
-				_fb[i]._cnt = 0;
-
-				_fb[i]._angle = 90.0f;
-				_fb[i]._create = true;
-
-				break;
-			}
-		}
-	}
-	else if (_phase == 3 && !_onceFire)
-	{
-		_intervalF == 20;
-
-		if (_cnt % 20 == 0)
-		{
-			for (int i = 0; i < MAX_FIREBALL; i++)
-			{
-				if (_fb[i]._create) continue;
-
-				_fb[i]._center = { WINSIZE_X / 2 - 30, WINSIZE_Y / 2 };
-				_fb[i]._idx = { 0, 0 };
-				_fb[i]._cnt = 0;
-
-				_fb[i]._angle = RND->getFromFloatTo(270.0f, 450.0f);
-				_fb[i]._create = true;
-			}
-		}
-		_onceFire = true;
-	}
-
-	if (_cnt % _intervalC == 0)
-		columnCreate();
-
-	if (_cnt % _intervalF == 0)
-		fireBallCreate();
-
-	columnCycle();
-	columnCollision();
-
-	if (_hp <= 100 && _hp > 0 && _isPhase3)
-	{
-		fireBallMove(false);
-	}
-	else
-		fireBallMove(true);
-
-	fireBallCycle();
 
 }
 
@@ -854,6 +889,11 @@ void Isidora::useSkill(void)
 
 		if (!_onceFire)
 		{
+			for (int i = 0; i < MAX_FIREBALL; i++)
+			{
+				_fb[i]._fire = false;
+				_fb->_create = false;
+			}
 			_intervalF = 10;
 			for (int i = 0; i < MAX_FIREBALL; i++)
 			{
@@ -874,7 +914,34 @@ void Isidora::useSkill(void)
 
 void Isidora::bossDeath(void)
 {
+	if (_cnt % 3 == 0 && !_pattern.empty())
+	{
+		if (_outroCnt > 117)
+		{
+			_outroCnt = 118;
 
+			_idx.x = _outroCnt % 10;
+			_idx.y = _outroCnt / 10;
+
+			_pattern.pop_front();
+		}
+
+		if (_outroCnt >= 32 && _pos.y < 505)
+		{
+			_pos.y += 50.0f;
+		}
+
+		_idx.x = _outroCnt % 10;
+		_idx.y = _outroCnt / 10;
+
+		if (!_pattern.empty())
+		{
+			IMAGEMANAGER->findImage(_pattern.front())->setFrameX(_idx.x);
+			IMAGEMANAGER->findImage(_pattern.front())->setFrameY(_idx.y);
+		}
+
+		_outroCnt++;
+	}
 }
 
 // 일정 간격, 갯수의 불기둥 생성
@@ -1292,12 +1359,18 @@ void Isidora::attack(void)
 			{
 				if (_idx.x > 24 && _idx.x < 30)
 					_isAttack = true;
+
+				if (_idx.x == IMAGEMANAGER->findImage("Isidora_slash")->getMaxFrameX() - 1)
+					SOUNDMANAGER->playSoundWithKey("Isidora_slash");
 			}
 			else
 			{
 				if (_idx.x < IMAGEMANAGER->findImage("Isidora_slash")->getMaxFrameX() - 24 
 					&& _idx.x > IMAGEMANAGER->findImage("Isidora_slash")->getMaxFrameX() - 30)
 					_isAttack = true;
+
+				if (_idx.x == 0)
+					SOUNDMANAGER->playSoundWithKey("Isidora_slash");
 			}
 		}
 
@@ -1305,14 +1378,43 @@ void Isidora::attack(void)
 		{
 			_attack = RectMakeCenter(_pos.x, _pos.y - 30, 320, 170);
 			_isAttack = true;
+
+			if (!_isLeft)
+			{
+				if (_idx.x == IMAGEMANAGER->findImage("Isidora_twirl")->getMaxFrameX() - 1)
+					SOUNDMANAGER->playSoundWithKey("Isidora_twirl");
+			}
+			else
+			{
+				if (_idx.x == 0)
+					SOUNDMANAGER->playSoundWithKey("Isidora_twirl");
+			}
 		}
 
 		if (!strcmp(_pattern.front(), "Isidora_screenslash_effect"))
 		{
+			if (_idx.x == 1)
+				SOUNDMANAGER->playSoundWithKey("Isidora_fastslash");
+
 			_attack = RectMakeCenter(_pos.x, _pos.y, 
 				IMAGEMANAGER->findImage("Isidora_screenslash_effect")->getFrameWidth(),
 				IMAGEMANAGER->findImage("Isidora_screenslash_effect")->getFrameHeight());
 			_isAttack = true;
+		}
+
+
+		if (strstr(_pattern.front(), "Vanish") || strstr(_pattern.front(), "vanish"))
+		{
+			if (!_isLeft)
+			{
+				if (_idx.x == IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX() - 1)
+					SOUNDMANAGER->playSoundWithKey("Isidora_tp_in");
+			}
+			else
+			{
+				if (_idx.x == 0)
+					SOUNDMANAGER->playSoundWithKey("Isidora_tp_in");
+			}
 		}
 	}
 }
@@ -1324,41 +1426,69 @@ void Isidora::render(HDC hdc)
 		_isidora = RectMakeCenter(_pos.x, _pos.y,
 			IMAGEMANAGER->findImage(_pattern.front())->getFrameWidth(),
 			IMAGEMANAGER->findImage(_pattern.front())->getFrameHeight());
-		if (_isLeft)
+		if (_hp > 0)
 		{
-			IMAGEMANAGER->frameRender(_pattern.front(), hdc,
-				_isidora.left + _sync[_pattern.front()].left.x, 
-				_isidora.top + _sync[_pattern.front()].left.y, _idx.x, _idx.y);
+			if (_isLeft)
+			{
+				IMAGEMANAGER->frameRender(_pattern.front(), hdc,
+					_isidora.left + _sync[_pattern.front()].left.x,
+					_isidora.top + _sync[_pattern.front()].left.y, _idx.x, _idx.y);
+			}
+			else
+			{
+				IMAGEMANAGER->frameRender(_pattern.front(), hdc,
+					_isidora.left + _sync[_pattern.front()].right.x,
+					_isidora.top + _sync[_pattern.front()].right.y, _idx.x, _idx.y);
+			}
 		}
 		else
 		{
-			IMAGEMANAGER->frameRender(_pattern.front(), hdc,
-				_isidora.left + _sync[_pattern.front()].right.x,
-				_isidora.top + _sync[_pattern.front()].right.y, _idx.x, _idx.y);
+			if (_isLeft)
+			{
+				IMAGEMANAGER->frameRender(_pattern.front(), hdc,
+					_isidora.left + _sync[_pattern.front()].left.x,
+					_isidora.top + _sync[_pattern.front()].left.y, _idx.x, _idx.y);
+			}
+			else
+			{
+				IMAGEMANAGER->frameRender(_pattern.front(), hdc,
+					_isidora.left + _sync[_pattern.front()].right.x,
+					_isidora.top + _sync[_pattern.front()].right.y, _idx.x, _idx.y);
+			}
 		}
 	}
 
-	for (int i = 0; i < MAX_COLUMN; i++)
+	if (_pattern.empty() && !strcmp(_strAction, "Isidora_death"))
 	{
-		if (_cl[i]._fire && !_cl[i]._cycle.empty())
-		{
-			_mask = RectMake(_cl[i]._clPos.x - 100, _cl[i]._clPos.y, 164, 650);
-			if (_phase == 1)
-				IMAGEMANAGER->alphaRender("Column_Mask", hdc, _mask.left, _mask.top, 30);
-			IMAGEMANAGER->frameRender(_cl[i]._cycle.front(), hdc, 
-				_cl[i]._clPos.x - 82, _cl[i]._clPos.y, _cl[i]._idx.x, _cl[i]._idx.y);
-		}
+		IMAGEMANAGER->frameRender(_strAction, hdc,
+			_isidora.left + _sync[_strAction].left.x,
+			_isidora.top + _sync[_strAction].left.y, _idx.x, _idx.y);
 	}
 
-	for (int i = 0; i < MAX_FIREBALL; i++)
+	if (_hp > 0)
 	{
-		if (_fb[i]._fire && !_fb[i]._cycle.empty())
+		for (int i = 0; i < MAX_COLUMN; i++)
 		{
-			_mask = RectMake(_fb[i]._center.x - 23, _fb[i]._center.y - 23, 130, 130);
-			if (_phase == 1)
-				IMAGEMANAGER->alphaRender("Circle_Mask", hdc, _mask.left, _mask.top, 30);
-			IMAGEMANAGER->frameRender(_fb[i]._cycle.front(), hdc,
-				_fb[i]._center.x, _fb[i]._center.y, _fb[i]._idx.x, _fb[i]._idx.y);
+			if (_cl[i]._fire && !_cl[i]._cycle.empty())
+			{
+				_mask = RectMake(_cl[i]._clPos.x - 100, _cl[i]._clPos.y, 164, 650);
+				if (_phase == 1)
+					IMAGEMANAGER->alphaRender("Column_Mask", hdc, _mask.left, _mask.top, 30);
+				IMAGEMANAGER->frameRender(_cl[i]._cycle.front(), hdc,
+					_cl[i]._clPos.x - 82, _cl[i]._clPos.y, _cl[i]._idx.x, _cl[i]._idx.y);
+			}
+		}
+
+		for (int i = 0; i < MAX_FIREBALL; i++)
+		{
+			if (_fb[i]._fire && !_fb[i]._cycle.empty())
+			{
+				_mask = RectMake(_fb[i]._center.x - 23, _fb[i]._center.y - 23, 130, 130);
+				if (_phase == 1)
+					IMAGEMANAGER->alphaRender("Circle_Mask", hdc, _mask.left, _mask.top, 30);
+				IMAGEMANAGER->frameRender(_fb[i]._cycle.front(), hdc,
+					_fb[i]._center.x, _fb[i]._center.y, _fb[i]._idx.x, _fb[i]._idx.y);
+			}
 		}
 	}
 
@@ -1369,6 +1499,22 @@ void Isidora::render(HDC hdc)
 		IMAGEMANAGER->render("Isidora_HP_Bar", hdc, 290, 654);
 		FONTMANAGER->drawText(hdc, 360, 632, "Neo둥근모 Pro", 30, 1, L"죽은 자들을 위해 노래하는 성녀 이시도라",
 			0, RGB(171, 154, 63));
+	}
+	else
+	{
+		if (_outroCnt >= 118 && !strcmp(_strAction, "Isidora_death"))
+		{
+			_deathCnt++;
+
+			if (_doNothing)
+			{
+				SOUNDMANAGER->playSoundWithKey("Boss_defeat");
+				_doNothing = false;
+			}
+
+			IMAGEMANAGER->alphaRender("Black_bg", hdc, _alpha / 2);
+			IMAGEMANAGER->alphaRender("Boss_death_logo", hdc, _alpha);
+		}
 	}
 
 	if (KEYMANAGER->isToggleKey(VK_TAB))

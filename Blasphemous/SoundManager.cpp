@@ -3,6 +3,13 @@
 
 HRESULT SoundManager::init(void)
 {
+    SOUNDMANAGER->addWaveFileWithKey("Hit_enemy_1", "Resources/Sound/penitent/PENITENT_ENEMY_HIT_4.wav");
+    SOUNDMANAGER->addWaveFileWithKey("Hit_enemy_2", "Resources/Sound/penitent/PENITENT_ENEMY_HIT_3.wav");
+    SOUNDMANAGER->addWaveFileWithKey("Hit_shield", "Resources/Sound/enemy/SHIELD_ENEMY_HIT_SHIELD.wav");
+    SOUNDMANAGER->addWaveFileWithKey("Boss_defeat", "Resources/Sound/Boss_Fight_Ending.wav");
+    SOUNDMANAGER->addWaveFileWithKey("Boss_Hit", "Rosources/Sound/penitent/PENITENT_BOSS_DEATH_HIT.wav");
+
+
     return S_OK;
 }
 
@@ -37,11 +44,14 @@ void SoundManager::playEffectSoundWave(char* fileName)
 
 void SoundManager::playSoundWithKey(string key)
 {
-    string first = "play ";
-    string finalQuery = first + key;
+    //string first = "play ";
+    //string finalQuery = first + key;
 
-    const char* str = finalQuery.c_str();
-    mciSendString(str, NULL, 0, NULL);
+    string finalQuery = "seek " + key + " to start";
+    mciSendString(finalQuery.c_str(), NULL, 0, NULL);
+    string first = "play ";
+    finalQuery = first + key;
+    mciSendString(finalQuery.c_str(), NULL, 0, NULL);
 }
 
 void SoundManager::stopMp3WithKey(string key)

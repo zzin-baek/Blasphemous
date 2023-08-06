@@ -37,6 +37,7 @@ void BossStage2::update(void)
     {
         PLAYER->setPress(true);
 
+        cout << _bm->getPosX() << endl;
         if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 4000)
         {
             _bm->setPosX(_bm->getPosX() + 4);
@@ -125,7 +126,7 @@ void BossStage2::update(void)
             else
                 EFFECT->addEffect({ "attack_spark3", 0, { _rt.right, (_rt.top + _rt.bottom) / 2 },{ 0, 0} }, 1);
 
-            SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_ENEMY_HIT_4.wav");
+            SOUNDMANAGER->playSoundWithKey("Hit_enemy_1");
         }
     }
 

@@ -44,10 +44,11 @@ void Effect::addEffect(tagEffect effect, int vectorNum)
 	switch (vectorNum)
 	{
 	case 1:
-		_plEffect.push_back(effect);
-		
 		if (!_plEffect.empty())
-			plEffect = *_plEffect.begin();
+			_plEffect.clear();
+
+		_plEffect.push_back(effect);
+		plEffect = *_plEffect.begin();
 
 		break;
 	case 2:

@@ -64,17 +64,20 @@ private:
 private:
 	RECT _isidora, _attack, _hitBox, _mask;
 	int _cnt, _hp, _phase, _intervalC, _intervalF, _patternNum;
+	int _deathCnt, _alpha, _outroCnt;
 	float _isidoraAngle;
 
 	bool _isLeft, _finIntro, _isPhase2, _isPhase3, _isAttack, _doNothing, _hit;
 	bool _once, _once2, _onceColumn, _onceFire;
 
+	char _strAction[128];
 	char _loc[128];
 
 public:
 	HRESULT init(void);
 	void initSync(void);
 	void initPos(float x, float y) { _pos.x = x; _pos.y = y; }
+	void initSound(void);
 	void update(void);
 	void useSkill(void);
 
