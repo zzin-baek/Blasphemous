@@ -64,6 +64,7 @@ void Tutorial::update(void)
     _tf->update();
     // ม฿ทย
     //if (!PLAYER->getGround())
+    //if (!PLAYER->getState()[JUMP])
     if (!PLAYER->getFixed())
         PLAYER->setPosY(PLAYER->getPosY() + 8.0f);
 

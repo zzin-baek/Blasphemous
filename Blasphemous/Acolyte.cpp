@@ -36,7 +36,7 @@ void Acolyte::initSync(void)
     _sync.insert({ "Acolyte_idle", { 4, {-5, 0}, {10, 0} } });
     _sync.insert({ "Acolyte_walk", { 5, {0, 0}, {0, 0} } });
     _sync.insert({ "Acolyte_attack", { 7, {-190, 20}, {-150, 20} } });
-    _sync.insert({ "Acolyte_hit", { 7, {-20, 0}, {-120, 0} } });
+    _sync.insert({ "Acolyte_hit", { 7, {-20, 0}, {-95, 0} } });
     _sync.insert({ "Acolyte_parry", { 7, {-190, 0}, {-20, 0} } });
     _sync.insert({ "Acolyte_death", { 7, {-150, 0}, {-130, 0} } });
 }

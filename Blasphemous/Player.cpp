@@ -20,7 +20,7 @@ HRESULT Player::init(void)
 
     _jumpTime = 0.0f;
     _jumpHeight = 0.0f;
-    _jumpPower = 15.0f;
+    _jumpPower = 100.0f;
 
     wsprintf(_strAction, "IDLE");
     initTiming();
@@ -135,7 +135,7 @@ void Player::initTiming(void)
 {
     // ## 기본적으로 왼쪽모습은 오른쪽 모습의 x + 50 
     _sync["RESPAWN2"] = { 3, {0, -195}, {-16, -194} };
-    _sync["IDLE"] = { 5, {0 + 50, 0}, {0, 0} };
+    _sync["IDLE"] = { 4, {0 + 50, 0}, {0, 0} };
     _sync["RUNNING"] = { 3, {0 + 50, 0}, {0, 0} };
     _sync["STOP"] = { 4, {-10 + 50, 10}, {-10, 10} };
     _sync["FALLING"] = { 5, {0 + 50, 0}, {10, 0} };
@@ -143,7 +143,7 @@ void Player::initTiming(void)
     _sync["CLIMB"] = { 5, {0, -150}, {50, -150} };
     _sync["LADDER"] = { 6, {50, 0}, {50, 0} };
     _sync["JUMP"] = { 5, {0 + 50, 0}, {30, 0} };
-    _sync["JUMP_FORWARD"] = { 5, {0 + 50, -20}, {0, -20} };
+    _sync["JUMP_FORWARD"] = { 4, {0 + 50, -20}, {0, -20} };
     _sync["ATTACK"] = { 3, {-135 + 50, 2}, {0, 3} };
     _sync["ATTACK_JUMP"] = { 6, {-100 + 50, -80}, {0, -80} };
     _sync["ATTACK_JUMP1"] = { 4, {-100 + 50, -80}, {-20, -80} };
@@ -157,7 +157,7 @@ void Player::initTiming(void)
     _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
     _sync["PARRY_SUCCESS"] = { 4, {-85, -60}, {-15, -60} };
     _sync["PARRY_SLIDE"] = { 3, {-42 + 50, -18}, {-29, -18} }; // -18
-    _sync["COUNTER"] = { 4, {-180 + 50, -58}, {0, -58} };
+    _sync["COUNTER"] = { 3, {-180 + 50, -58}, {0, -58} };
     _sync["PUSHBACK"] = { 4, {-20 + 50, 10}, {-30, 10} };
     _sync["DODGE"] = { 2, {0 + 50, 0}, {0, 0} };
     _sync["CROUCH_DOWN"] = { 3, {0 + 50, 10}, {-25, 10} };
@@ -189,14 +189,6 @@ void Player::playerAction(void)
 
     if (strstr("ATTACK", _strAction))
         _isAttack = true;
-    if (getState()[JUMP])
-        _isFixed = true;
-    else
-    {
-
-        _jumpTime = 0.0f;
-        _jumpHeight = 0.0f;
-    }
 
     // 히트박스 설정
     if (_isLeft)
@@ -236,13 +228,15 @@ void Player::playerAction(void)
             */
             _plState.reset();
         }
+
+        //_plState.reset();
     }
     else
     {
         if (_plState.none())
             setAction("FALLING");
 
-        setState(JUMP, true);
+        //setState(JUMP, true);
     }
 
     if (!_plState[HIT] && _hit)
@@ -313,7 +307,7 @@ void Player::playerAction(void)
                 SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_RUN_MARBLE_6.wav");
             }
         }
-        if (!strcmp(_strAction, "JUMP"))
+        /*if (!strcmp(_strAction, "JUMP"))
         {
             if (!isEmpty())
                 _actionList.pop_front();
@@ -324,7 +318,7 @@ void Player::playerAction(void)
                 _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX() - 5;
             else
                 _idx_x = 6;
-        }
+        }*/
         _isLeft = true;
         setState(WALK, true);
         if (!_plState[CROUCH] && !_plState[HIT])
@@ -343,7 +337,7 @@ void Player::playerAction(void)
                 SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_RUN_MARBLE_6.wav");
             }
         }
-        if (!strcmp(_strAction, "JUMP"))
+        /*if (!strcmp(_strAction, "JUMP"))
         {
             if (!isEmpty())
                 _actionList.pop_front();
@@ -354,7 +348,7 @@ void Player::playerAction(void)
                 _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX() - 5;
             else
                 _idx_x = 6;
-        }
+        }*/
         _isLeft = false;
         setState(WALK, true);
         if (!_plState[CROUCH] && !_plState[HIT])
@@ -778,53 +772,60 @@ void Player::playerAction(void)
 
 void Player::playerMove(void)
 {
-    //if (_plState[JUMP])
-    //{
-    //    if (_isLeft)
-    //    {
-    //        if (!strcmp(_strAction, "JUMP_FORWARD"))
-    //        {
-    //            if (_idx_x > getMaxFrameX() - 7)
-    //                _plPos.y -= 14.0f;
-    //        }
-    //        if (!strcmp(_strAction, "JUMP"))
-    //        {
-    //           if (_temp.y - _hitBox.bottom < 230)
-    //                _plPos.y -= 14.0f; // 9.2
-    //            else
-    //            {
-    //                setAction("FALLING");
-    //                setState(JUMP, false);
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 7)
-    //            _plPos.y -= 14.0f;
-    //        if (!strcmp(_strAction, "JUMP"))
-    //        {
-    //            if (_temp.y - _hitBox.bottom < 230)
-    //            {
-    //                _plPos.y -= 14.0f;
-    //            }
-    //            else
-    //            {
-    //                setAction("FALLING");
-    //                setState(JUMP, false);
-    //            }
-    //        }
-    //    }
-    //}
-
     if (_plState[JUMP])
     {
-        _jumpHeight = (_jumpTime * _jumpTime - _jumpPower * _jumpTime) / 3.0f;
-        _jumpTime += 0.4f;
-
-        cout << _jumpHeight << endl;
-        _plPos.y += _jumpHeight;
+        if (_isLeft)
+        {
+            if (!strcmp(_strAction, "JUMP_FORWARD"))
+            {
+                if (_idx_x > getMaxFrameX() - 7)
+                    _plPos.y -= 13.0f;
+            }
+            if (!strcmp(_strAction, "JUMP"))
+            {
+               if (_temp.y - _hitBox.bottom < 230)
+                    _plPos.y -= 13.0f; // 9.2
+                else
+                {
+                    setAction("FALLING");
+                    setState(JUMP, false);
+                }
+            }
+        }
+        else
+        {
+            if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 7)
+                _plPos.y -= 13.0f;
+            if (!strcmp(_strAction, "JUMP"))
+            {
+                if (_temp.y - _hitBox.bottom < 230)
+                {
+                    _plPos.y -= 13.0f;
+                }
+                else
+                {
+                    setAction("FALLING");
+                    setState(JUMP, false);
+                }
+            }
+        }
     }
+    //if (_plState[JUMP])
+    //{
+    //    _jumpHeight = (_jumpTime * _jumpTime - _jumpPower * _jumpTime) / 4.0f;
+    //    _jumpTime += 0.04f;
+
+    //    //cout << _jumpHeight << endl;
+    //    
+    //    _plPos.y += _jumpHeight;
+
+    //    if (_jumpTime > _jumpPower)
+    //    {
+    //        _jumpTime = 0;
+    //        _jumpHeight = 0;
+    //        setState(JUMP, false);
+    //    }
+    //}
     if (_plState[DODGE])
     {
         if (_isLeft)
@@ -1023,7 +1024,7 @@ void Player::renderPlayer(HDC hdc)
         SOUNDMANAGER->stopMp3WithKey("pietat");
     }
 
-    if (!_plState[JUMP] && !strcmp(_strAction, "FALLING"))
+    if (!_plState[JUMP] && strcmp(_strAction, "FALLING"))
     {
         IMAGEMANAGER->alphaRender("Shadow", hdc, _hitBox.left, _hitBox.bottom - 7, 90);
     }
