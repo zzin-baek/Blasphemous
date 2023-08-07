@@ -83,7 +83,7 @@ HRESULT Isidora::init(void)
 	_cnt = _patternNum = _deathCnt = _outroCnt = 0;
 	_intervalC = _intervalF = 10;
 
-	_hp = 200;
+	_hp = 300;
 	_phase = 1;
 	_alpha = 255;
 	_isidoraAngle = 45.0f;
@@ -357,12 +357,6 @@ void Isidora::update(void)
 		}
 		else if (_phase == 3 && !_onceFire)
 		{
-
-			for (int i = 0; i < MAX_FIREBALL; i++)
-			{
-				_fb[i]._create = false;
-			}
-
 			_intervalF == 20;
 
 			if (_cnt % 20 == 0)
@@ -1483,11 +1477,15 @@ void Isidora::render(HDC hdc)
 		{
 			if (_fb[i]._fire && !_fb[i]._cycle.empty())
 			{
-				_mask = RectMake(_fb[i]._center.x - 23, _fb[i]._center.y - 23, 130, 130);
+				_mask = RectMake(_fb[i]._center.x - IMAGEMANAGER->findImage("Circle_Mask")->getFrameWidth() / 2,
+					_fb[i]._center.y - IMAGEMANAGER->findImage("Circle_Mask")->getFrameHeight() / 2, 130, 130);
 				if (_phase == 1)
 					IMAGEMANAGER->alphaRender("Circle_Mask", hdc, _mask.left, _mask.top, 30);
+
 				IMAGEMANAGER->frameRender(_fb[i]._cycle.front(), hdc,
-					_fb[i]._center.x, _fb[i]._center.y, _fb[i]._idx.x, _fb[i]._idx.y);
+					_fb[i]._center.x - IMAGEMANAGER->findImage(_fb[i]._cycle.front())->getFrameWidth() / 2,
+					_fb[i]._center.y - IMAGEMANAGER->findImage(_fb[i]._cycle.front())->getFrameHeight() / 2,
+					_fb[i]._idx.x, _fb[i]._idx.y);
 			}
 		}
 	}

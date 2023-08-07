@@ -37,7 +37,6 @@ void BossStage::release(void)
 
 void BossStage::update(void)
 {
-
     PLAYER->playerAction();
     PLAYER->playerMove();
         
@@ -46,6 +45,14 @@ void BossStage::update(void)
 
     if (PLAYER->getHitBox().left <= 0)
         PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
+
+    if (_mainStage)
+    {
+        if (PLAYER->getHitBox().left <= 0)
+            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
+        if (PLAYER->getHitBox().right >= WINSIZE_X)
+            PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
+    }
 
     if ((!_intro || _ending) && !_mainStage)
     {
@@ -116,7 +123,7 @@ void BossStage::update(void)
             int _temp;
      
             if (_boss->getPhase() == 1 && _boss->getHP() > 200)
-                _pattern = RND->getIntArray(_phase1, 6);
+                _pattern = 3; // RND->getIntArray(_phase1, 6);
             else if (_boss->getHP() <= 200 && !_boss->getIsPhase2())
             {
                 _pattern = _sq[0];

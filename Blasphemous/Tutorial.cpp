@@ -64,7 +64,8 @@ void Tutorial::update(void)
     _tf->update();
     // ม฿ทย
     //if (!PLAYER->getGround())
-    PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
+    if (!PLAYER->getFixed())
+        PLAYER->setPosY(PLAYER->getPosY() + 8.0f);
 
     if (PLAYER->getHitBox().left <= 0)
     {
@@ -83,7 +84,7 @@ void Tutorial::update(void)
         if ((r == 255 && g == 0 && b == 255))
         {
             PLAYER->setGround(true);
-            PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
+            PLAYER->setPosY(PLAYER->getPosY() - 8.0f);
             break;
         }
         PLAYER->setGround(false);

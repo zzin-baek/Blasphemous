@@ -55,6 +55,8 @@ private:
 	int _cnt, _idx_x, _idx_y, _alpha;
 	int _hp, _score, _portion, _parry, _death;
 
+	float _jumpTime, _jumpHeight, _jumpPower;
+
 	char _loc[128], _action[128];
 
 public:
