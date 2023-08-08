@@ -14,6 +14,7 @@ HRESULT Tutorial::init(void)
     _itemList.push_back(_item);
 
     _nextStage = 0;
+    _temp = 0;
     _isInven = false;
     _isRespawn = true;
 
@@ -63,16 +64,17 @@ void Tutorial::update(void)
 
     _tf->update();
     // ม฿ทย
-    //if (!PLAYER->getGround())
     //if (!PLAYER->getState()[JUMP])
-    if (!PLAYER->getFixed())
-        PLAYER->setPosY(PLAYER->getPosY() + 8.0f);
+    //if (!PLAYER->getFixed())
+   // PLAYER->setPosY(PLAYER->getPosY() + 8.0f);
 
     if (PLAYER->getHitBox().left <= 0)
     {
         PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
     }
 
+    //if (PLAYER->getJumpPower() 
+    cout << PLAYER->getPosY() << endl;
     for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
@@ -84,13 +86,14 @@ void Tutorial::update(void)
 
         if ((r == 255 && g == 0 && b == 255))
         {
-            PLAYER->setGround(true);
-            PLAYER->setPosY(PLAYER->getPosY() - 8.0f);
+            PLAYER->setGround(true);         
+            PLAYER->setPosY(PLAYER->getPosY() - 1.0f);
             break;
         }
         PLAYER->setGround(false);
-    }
+        PLAYER->setPosY(PLAYER->getPosY() + 1.0f);
 
+    }
     if (PLAYER->getCenterX() > WINSIZE_X)
         _nextStage = 1;
 

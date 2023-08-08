@@ -31,9 +31,6 @@
     <Filter Include="Tutorial">
       <UniqueIdentifier>{3e3289ba-062e-40df-9251-606f57b6f5a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Battle">
-      <UniqueIdentifier>{babd6a8c-c96d-4e30-b9be-0a7d273534e4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{c2a14420-85bc-469a-a979-918a27a4969f}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,9 @@
     </Filter>
     <Filter Include="Boss\Pietat">
       <UniqueIdentifier>{3bd5908e-e1ec-46ac-8572-ba3355b77ae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Battle">
+      <UniqueIdentifier>{babd6a8c-c96d-4e30-b9be-0a7d273534e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

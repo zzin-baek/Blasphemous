@@ -95,6 +95,7 @@ public:
 	inline bool getHit() { return _hit; }
 
 	inline void setPress(bool state) { _press = state; }
+	inline float getJumpPower() { return _jumpPower; }
 
 	inline void setAction(char* _action) { wsprintf(_strAction, _action); }
 	inline char* getAction() { return _strAction; }

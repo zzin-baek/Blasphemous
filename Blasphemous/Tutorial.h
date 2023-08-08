@@ -13,6 +13,7 @@ private:
 	vector<Item*> _itemList;
 
 	int _nextStage;
+	float _temp;
 	bool _isInven, _isRespawn, _once;
 
 public:
