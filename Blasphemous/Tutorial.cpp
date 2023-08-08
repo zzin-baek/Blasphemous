@@ -74,7 +74,8 @@ void Tutorial::update(void)
     }
 
     //if (PLAYER->getJumpPower() 
-    cout << PLAYER->getPosY() << endl;
+    cout << PLAYER->getJumpPower() << endl;
+    cout << "isGround? " << PLAYER->getGround() << endl;
     for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
@@ -84,15 +85,14 @@ void Tutorial::update(void)
         int g = GetGValue(color);
         int b = GetBValue(color);
 
-        if ((r == 255 && g == 0 && b == 255))
+
+        if (r == 255 && g == 0 && b == 255)
         {
-            PLAYER->setGround(true);         
-            PLAYER->setPosY(PLAYER->getPosY() - 1.0f);
+            PLAYER->setGround(true);
             break;
         }
-        PLAYER->setGround(false);
-        PLAYER->setPosY(PLAYER->getPosY() + 1.0f);
-
+        PLAYER->setGround(false);       
+        //PLAYER->setState(JUMP, true);
     }
     if (PLAYER->getCenterX() > WINSIZE_X)
         _nextStage = 1;

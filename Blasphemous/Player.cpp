@@ -814,7 +814,7 @@ void Player::playerMove(void)
         //    }
         //}
 
-        _jumpPower += _jumpHeight;
+        _jumpPower -= _jumpHeight;
         _plPos.y -= _jumpPower;
 
         _jumpHeight += 1.0f;
