@@ -20,6 +20,7 @@ HRESULT BossStage::init(void)
     for (int i = 0; i < 3; i++)
         _phase2[i] = i + 7;
 
+    // 페이즈 2로 넘어갈 때 패턴 순서
     _sq.push_back(11);
     _sq.push_back(12);
     _sq.push_back(11);
@@ -92,8 +93,7 @@ void BossStage::update(void)
             else
                 _boss->setIdxX(0);
 
-            SOUNDMANAGER->CheckAndReplayWithKey("Isidora_MASTER");
-            //SOUNDMANAGER->playEffectSoundWave("Resources/Sound/Isidora/Isidora_MASTER.wav");
+            SOUNDMANAGER->CheckAndReplayWithKey("Isidora_MASTER");         
             SOUNDMANAGER->playSoundWithKey("Isidora_intro");
             SOUNDMANAGER->playSoundWithKey("Isidora_intro_voice");
         }
@@ -123,7 +123,7 @@ void BossStage::update(void)
             int _temp;
      
             if (_boss->getPhase() == 1 && _boss->getHP() > 200)
-                _pattern = 3; // RND->getIntArray(_phase1, 6);
+                _pattern = RND->getIntArray(_phase1, 6);
             else if (_boss->getHP() <= 200 && !_boss->getIsPhase2())
             {
                 _pattern = _sq[0];

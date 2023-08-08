@@ -1233,7 +1233,6 @@ void Isidora::fireBallMove(bool _temporal)
 			}
 		}
 	}
-	//cout << _fb[0]._angle << endl;
 }
 
 void Isidora::fireBallCycle(void)
@@ -1461,6 +1460,7 @@ void Isidora::render(HDC hdc)
 
 	if (_hp > 0)
 	{
+		// 불기둥 출력
 		for (int i = 0; i < MAX_COLUMN; i++)
 		{
 			if (_cl[i]._fire && !_cl[i]._cycle.empty())
@@ -1472,12 +1472,12 @@ void Isidora::render(HDC hdc)
 					_cl[i]._clPos.x - 82, _cl[i]._clPos.y, _cl[i]._idx.x, _cl[i]._idx.y);
 			}
 		}
-
+		// 파이어볼 출력
 		for (int i = 0; i < MAX_FIREBALL; i++)
 		{
 			if (_fb[i]._fire && !_fb[i]._cycle.empty())
 			{
-				_mask = RectMake(_fb[i]._center.x - IMAGEMANAGER->findImage("Circle_Mask")->getFrameWidth() / 2,
+				_mask = RectMakeCenter(_fb[i]._center.x - IMAGEMANAGER->findImage("Circle_Mask")->getFrameWidth() / 2,
 					_fb[i]._center.y - IMAGEMANAGER->findImage("Circle_Mask")->getFrameHeight() / 2, 130, 130);
 				if (_phase == 1)
 					IMAGEMANAGER->alphaRender("Circle_Mask", hdc, _mask.left, _mask.top, 30);
@@ -1539,6 +1539,12 @@ void Isidora::render(HDC hdc)
 			{
 				DrawRectangle(hdc, _cl[i]._clPos.x, _cl[i]._clPos.y, 80, 650);
 			}
+		}
+
+		for (int i = 0; i < MAX_FIREBALL; i++)
+		{
+			if (_fb[i]._fire)
+				DrawRectangle(hdc, _fb[i]._center.x, _fb[i]._center.y, 30, 30);
 		}
 
 		SelectObject(hdc, oldBrush);

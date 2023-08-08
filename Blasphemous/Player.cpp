@@ -236,8 +236,9 @@ void Player::playerAction(void)
         if (_plState.none())
             setAction("FALLING");
 
-        //setState(JUMP, true);
+        setState(JUMP, true);
     }
+
 
     if (!_plState[HIT] && _hit)
     {
@@ -772,60 +773,62 @@ void Player::playerAction(void)
 
 void Player::playerMove(void)
 {
-    if (_plState[JUMP])
-    {
-        if (_isLeft)
-        {
-            if (!strcmp(_strAction, "JUMP_FORWARD"))
-            {
-                if (_idx_x > getMaxFrameX() - 7)
-                    _plPos.y -= 13.0f;
-            }
-            if (!strcmp(_strAction, "JUMP"))
-            {
-               if (_temp.y - _hitBox.bottom < 230)
-                    _plPos.y -= 13.0f; // 9.2
-                else
-                {
-                    setAction("FALLING");
-                    setState(JUMP, false);
-                }
-            }
-        }
-        else
-        {
-            if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 7)
-                _plPos.y -= 13.0f;
-            if (!strcmp(_strAction, "JUMP"))
-            {
-                if (_temp.y - _hitBox.bottom < 230)
-                {
-                    _plPos.y -= 13.0f;
-                }
-                else
-                {
-                    setAction("FALLING");
-                    setState(JUMP, false);
-                }
-            }
-        }
-    }
     //if (_plState[JUMP])
     //{
-    //    _jumpHeight = (_jumpTime * _jumpTime - _jumpPower * _jumpTime) / 4.0f;
-    //    _jumpTime += 0.04f;
-
-    //    //cout << _jumpHeight << endl;
-    //    
-    //    _plPos.y += _jumpHeight;
-
-    //    if (_jumpTime > _jumpPower)
+    //    if (_isLeft)
     //    {
-    //        _jumpTime = 0;
-    //        _jumpHeight = 0;
-    //        setState(JUMP, false);
+    //        if (!strcmp(_strAction, "JUMP_FORWARD"))
+    //        {
+    //            if (_idx_x > getMaxFrameX() - 7)
+    //                _plPos.y -= 13.0f;
+    //        }
+    //        if (!strcmp(_strAction, "JUMP"))
+    //        {
+    //           if (_temp.y - _hitBox.bottom < 230)
+    //                _plPos.y -= 13.0f; // 9.2
+    //            else
+    //            {
+    //                setAction("FALLING");
+    //                setState(JUMP, false);
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 7)
+    //            _plPos.y -= 13.0f;
+    //        if (!strcmp(_strAction, "JUMP"))
+    //        {
+    //            if (_temp.y - _hitBox.bottom < 230)
+    //            {
+    //                _plPos.y -= 13.0f;
+    //            }
+    //            else
+    //            {
+    //                setAction("FALLING");
+    //                setState(JUMP, false);
+    //            }
+    //        }
     //    }
     //}
+
+    if (_plState[JUMP])
+    {
+        _jumpHeight = (_jumpTime * _jumpTime - _jumpPower * _jumpTime) / 4.0f;
+        _jumpTime += 0.04f;
+
+        //cout << _jumpHeight << endl;
+        
+        _plPos.y += (-8.0 + _jumpHeight);
+
+        if (_jumpTime > _jumpPower)
+        {
+            _jumpTime = 0;
+            _jumpHeight = 0;
+            setState(JUMP, false);
+        }
+    }
+
     if (_plState[DODGE])
     {
         if (_isLeft)
