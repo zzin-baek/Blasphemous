@@ -3,8 +3,6 @@
 
 HRESULT Tutorial::init(void)
 {
-    //PLAYER->init(88, 484);
-
     _tf = new TutorialField();
     _tf->init();
 
@@ -36,6 +34,7 @@ void Tutorial::update(void)
         PLAYER->playerAction();
         PLAYER->playerMove();
     }
+
     if (!_itemList.empty())
     {
         _itemList[0]->update();
@@ -64,9 +63,10 @@ void Tutorial::update(void)
 
     _tf->update();
     // ม฿ทย
-    //if (!PLAYER->getState()[JUMP])
     //if (!PLAYER->getFixed())
-   // PLAYER->setPosY(PLAYER->getPosY() + 8.0f);
+    
+    //if (!PLAYER->getState()[JUMP])
+    //    PLAYER->setPosY(PLAYER->getPosY() + 8.0f);
 
     if (PLAYER->getHitBox().left <= 0)
     {
@@ -74,8 +74,10 @@ void Tutorial::update(void)
     }
 
     //if (PLAYER->getJumpPower() 
+
     cout << PLAYER->getJumpPower() << endl;
     cout << "isGround? " << PLAYER->getGround() << endl;
+    cout << "is Jumping? " << PLAYER->getState()[JUMP] << endl;
     for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
@@ -85,14 +87,28 @@ void Tutorial::update(void)
         int g = GetGValue(color);
         int b = GetBValue(color);
 
+        COLORREF color2 = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
+            i, PLAYER->getHitBox().bottom - 2);
 
-        if (r == 255 && g == 0 && b == 255)
+        int r2 = GetRValue(color2);
+        int g2 = GetGValue(color2);
+        int b2 = GetBValue(color2);
+
+
+        if ((r == 255 && g == 0 && b == 255))           
         {
+            //while (r2 == 255 && g2 == 0 && b2 == 255)
+            //{
+            //    PLAYER->setPosY(PLAYER->getPosY() + 1.0);
+            //}
+
             PLAYER->setGround(true);
+            
             break;
         }
-        PLAYER->setGround(false);       
-        //PLAYER->setState(JUMP, true);
+        PLAYER->setGround(false);    
+        //PLAYER->setPosY(PLAYER->getPosY() + 1.0);
+
     }
     if (PLAYER->getCenterX() > WINSIZE_X)
         _nextStage = 1;

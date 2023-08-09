@@ -18,9 +18,8 @@ HRESULT Player::init(void)
 
     _press = true;
 
-    _jumpTime = 0.0f;
-    _jumpHeight = 0.0f;
-    _jumpPower = 20.0f;
+    _jumpHeight = 1.0f;
+    _jumpPower = 30.0f;
 
     wsprintf(_strAction, "IDLE");
     initTiming();
@@ -143,7 +142,7 @@ void Player::initTiming(void)
     _sync["CLIMB"] = { 5, {0, -150}, {50, -150} };
     _sync["LADDER"] = { 6, {50, 0}, {50, 0} };
     _sync["JUMP"] = { 5, {0 + 50, 0}, {30, 0} };
-    _sync["JUMP_FORWARD"] = { 5, {0 + 50, -20}, {0, -20} };
+    _sync["JUMP_FORWARD"] = { 3, {0 + 50, -20}, {0, -20} };
     _sync["ATTACK"] = { 3, {-135 + 50, 2}, {0, 3} };
     _sync["ATTACK_JUMP"] = { 6, {-100 + 50, -80}, {0, -80} };
     _sync["ATTACK_JUMP1"] = { 4, {-100 + 50, -80}, {-20, -80} };
@@ -219,23 +218,21 @@ void Player::playerAction(void)
         if (!strcmp(_strAction, "FALLING"))
         {
             setAction("IDLE");
-            /*setAction("STOP");
-            _actionList.push_back("STOP");
-            if (_isLeft)
-                _idx_x = IMAGEMANAGER->findImage("STOP")->getMaxFrameX();
-            else
-                _idx_x = 0;
-            */
             _plState.reset();
         }
-        _jumpHeight = 0.0f;
-        _jumpPower = 20.0f;
+    
         setState(JUMP, false);
+        //_jumpHeight = 0.0f;
+        _jumpPower = 0.0f;
+        
     }
     else
     {
         if (_plState.none())
+        {
             setAction("FALLING");
+            //setState(JUMP, true);
+        }
 
         //setState(JUMP, true);
     }
@@ -309,7 +306,7 @@ void Player::playerAction(void)
                 SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_RUN_MARBLE_6.wav");
             }
         }
-        /*if (!strcmp(_strAction, "JUMP"))
+        if (!strcmp(_strAction, "JUMP"))
         {
             if (!isEmpty())
                 _actionList.pop_front();
@@ -320,7 +317,7 @@ void Player::playerAction(void)
                 _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX() - 5;
             else
                 _idx_x = 6;
-        }*/
+        }
         _isLeft = true;
         setState(WALK, true);
         if (!_plState[CROUCH] && !_plState[HIT])
@@ -339,7 +336,7 @@ void Player::playerAction(void)
                 SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_RUN_MARBLE_6.wav");
             }
         }
-        /*if (!strcmp(_strAction, "JUMP"))
+        if (!strcmp(_strAction, "JUMP"))
         {
             if (!isEmpty())
                 _actionList.pop_front();
@@ -350,7 +347,7 @@ void Player::playerAction(void)
                 _idx_x = IMAGEMANAGER->findImage("JUMP_FORWARD")->getMaxFrameX() - 5;
             else
                 _idx_x = 6;
-        }*/
+        }
         _isLeft = false;
         setState(WALK, true);
         if (!_plState[CROUCH] && !_plState[HIT])
@@ -478,9 +475,8 @@ void Player::playerAction(void)
 
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP] && _press)
     {
-        // 점프 관련 변수 초기화
-        _jumpHeight = 0.0f;
-        _jumpPower = 20.0f;
+        // 점프 관련 변수 초기화      
+        _jumpPower = 30.0f;
 
         if (_isLeft)
             EFFECT->addEffect({ "jump_dust", 0, { (_hitBox.left + _hitBox.right) / 2, _hitBox.bottom - 10},
@@ -492,7 +488,7 @@ void Player::playerAction(void)
         SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_JUMP.wav");
 
         _temp.y = _plPos.y;
-        if (_plState[WALK])
+        if (_plState[WALK] && isEmpty())
         {
             setState(JUMP, true);
             setAction("JUMP_FORWARD");
@@ -778,57 +774,21 @@ void Player::playerMove(void)
 {
     if (_plState[JUMP])
     {
-        //if (_isLeft)
-        //{
-        //    if (!strcmp(_strAction, "JUMP_FORWARD"))
-        //    {
-        //        if (_idx_x > getMaxFrameX() - 7)
-        //            _plPos.y -= 13.0f;
-        //    }
-        //    if (!strcmp(_strAction, "JUMP"))
-        //    {
-        //       if (_temp.y - _hitBox.bottom < 230)
-        //            _plPos.y -= 13.0f; // 9.2
-        //        else
-        //        {
-        //            setAction("FALLING");
-        //            setState(JUMP, false);
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    if (!strcmp(_strAction, "JUMP_FORWARD") && _idx_x < 7)
-        //        _plPos.y -= 13.0f;
-        //    if (!strcmp(_strAction, "JUMP"))
-        //    {
-        //        if (_temp.y - _hitBox.bottom < 230)
-        //        {
-        //            _plPos.y -= 13.0f;
-        //        }
-        //        else
-        //        {
-        //            setAction("FALLING");
-        //            setState(JUMP, false);
-        //        }
-        //    }
-        //}
-
         _jumpPower -= _jumpHeight;
         _plPos.y -= _jumpPower;
 
-        _jumpHeight += 1.0f;
+        //_jumpHeight += 0.4f;
     }
 
     if (_plState[DODGE])
     {
         if (_isLeft)
         {
-            _plPos.x -= 8.5f;
+            _plPos.x -= 8.0f;
         }
         else
         {
-            _plPos.x += 8.5f;
+            _plPos.x += 8.0f;
         }
     }
     if (_plState[ATTACK])
@@ -838,15 +798,12 @@ void Player::playerMove(void)
             if (_isLeft)
             {
                 if (_idx_x > getMaxFrameX() - 19 && _idx_x < getMaxFrameX() - 6)
-                    _plPos.x -= 4.5f;
-
-                /*if (_idx_x == _idx_x < getMaxFrameX() - 6)
-                    SOUNDMANAGER->playEffectSoundWave("Resources/Sound/LUNGE_ATTACK_LV3.wav");*/
+                    _plPos.x -= 5.0f;
             }
             else
             {
                 if (_idx_x < 19 && _idx_x > 6)
-                    _plPos.x += 4.f;
+                    _plPos.x += 5.0f;
             }
         }
 

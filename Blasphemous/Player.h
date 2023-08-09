@@ -1,8 +1,6 @@
 #pragma once
 #include "SingletonBase.h"
 
-#define MAX_STATE 14
-
 struct POINTF
 {
 	float x;
@@ -25,7 +23,9 @@ enum eState
 	HIT,
 	PORTION,
 	DEATH,
-	DEATH_FALL
+	DEATH_FALL,
+	MAX_STATE
+
 };
 
 struct plImageInfo
