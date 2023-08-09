@@ -18,8 +18,8 @@ HRESULT Player::init(void)
 
     _press = true;
 
-    _jumpHeight = 1.0f;
-    _jumpPower = 30.0f;
+    _jumpHeight = 0.4f;
+    _jumpPower = 10.0f;
 
     wsprintf(_strAction, "IDLE");
     initTiming();
@@ -142,7 +142,7 @@ void Player::initTiming(void)
     _sync["CLIMB"] = { 5, {0, -150}, {50, -150} };
     _sync["LADDER"] = { 6, {50, 0}, {50, 0} };
     _sync["JUMP"] = { 5, {0 + 50, 0}, {30, 0} };
-    _sync["JUMP_FORWARD"] = { 3, {0 + 50, -20}, {0, -20} };
+    _sync["JUMP_FORWARD"] = { 5, {0 + 50, -20}, {0, -20} };
     _sync["ATTACK"] = { 3, {-135 + 50, 2}, {0, 3} };
     _sync["ATTACK_JUMP"] = { 6, {-100 + 50, -80}, {0, -80} };
     _sync["ATTACK_JUMP1"] = { 4, {-100 + 50, -80}, {-20, -80} };
@@ -150,7 +150,7 @@ void Player::initTiming(void)
     _sync["ATTACK_UPWARD"] = { 4, {-30 + 50, -92}, {8, -92} };
     _sync["ATTACK_UPWARD_JUMP"] = { 3, {0 + 50, -190}, {0, -190} };
     _sync["ATTACK_CROUCH"] = { 4, {-80 + 50, 20}, {-15, 20} };
-    _sync["ATTACK_DODGE"] = { 3, {-240 + 50, -55}, {-5, -55} };
+    _sync["ATTACK_DODGE"] = { 3, {-240 + 50, -50}, {-5, -50} };
     _sync["ATTACK_COMBO_2"] = { 4, {-130 + 50, 10}, {-20, 10} };
     _sync["ATTACK_COMBO_3"] = { 4, {-310 + 50, -8}, {60, -8} };
     _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
@@ -223,20 +223,15 @@ void Player::playerAction(void)
     
         setState(JUMP, false);
         //_jumpHeight = 0.0f;
-        _jumpPower = 0.0f;
+        _jumpPower = 10.0f;
         
     }
     else
     {
-        if (_plState.none())
-        {
-            setAction("FALLING");
-            //setState(JUMP, true);
-        }
 
+        //setAction("FALLING");    
         //setState(JUMP, true);
     }
-
 
     if (!_plState[HIT] && _hit)
     {
@@ -476,7 +471,7 @@ void Player::playerAction(void)
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP] && _press)
     {
         // 점프 관련 변수 초기화      
-        _jumpPower = 30.0f;
+        _jumpPower = 10.0f;
 
         if (_isLeft)
             EFFECT->addEffect({ "jump_dust", 0, { (_hitBox.left + _hitBox.right) / 2, _hitBox.bottom - 10},
@@ -717,7 +712,12 @@ void Player::playerAction(void)
                    {
                        if (getState()[HIT] && _hit)
                            _hit = false;
-                       _plState.reset();
+                       for (int i=0;i<MAX_STATE;i++)
+                       {
+                           if (i != JUMP)
+                               setState(i, false);
+                       }
+                       //_plState.reset();
                        _isFixed = _isAttack = _parrying = false;
                        setAction("IDLE");
                    }
@@ -756,7 +756,12 @@ void Player::playerAction(void)
                    {
                        if (getState()[HIT] && _hit)
                            _hit = false;
-                       _plState.reset();
+                       for (int i = 0; i < MAX_STATE; i++)
+                       {
+                           if (i != JUMP)
+                               setState(i, false);
+                       }
+                       //_plState.reset();
                        _isFixed = _isAttack = _parrying = false;
                        _respawn = true;
                        setAction("IDLE");
@@ -774,6 +779,7 @@ void Player::playerMove(void)
 {
     if (_plState[JUMP])
     {
+        
         _jumpPower -= _jumpHeight;
         _plPos.y -= _jumpPower;
 

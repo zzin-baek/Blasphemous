@@ -199,7 +199,9 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Shielder.cpp" />
     <ClCompile Include="SoundManager.cpp" />
-    <ClCompile Include="Stdafx.cpp" />
+    <ClCompile Include="Stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Stoner.cpp" />
     <ClCompile Include="Teleport.cpp" />
     <ClCompile Include="Tutorial.cpp" />

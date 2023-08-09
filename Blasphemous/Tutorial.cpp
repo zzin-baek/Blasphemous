@@ -81,28 +81,16 @@ void Tutorial::update(void)
     for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
-            i, PLAYER->getHitBox().bottom);
+            i, PLAYER->getHitBox().bottom - 5);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
         int b = GetBValue(color);
 
-        COLORREF color2 = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
-            i, PLAYER->getHitBox().bottom - 2);
-
-        int r2 = GetRValue(color2);
-        int g2 = GetGValue(color2);
-        int b2 = GetBValue(color2);
-
-
         if ((r == 255 && g == 0 && b == 255))           
         {
-            //while (r2 == 255 && g2 == 0 && b2 == 255)
-            //{
-            //    PLAYER->setPosY(PLAYER->getPosY() + 1.0);
-            //}
-
             PLAYER->setGround(true);
+            PLAYER->setPosYPush(3);
             
             break;
         }

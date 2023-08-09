@@ -73,6 +73,7 @@ public:
 
 	inline void setPosX(float x) { _plPos.x = x; }
 	inline void setPosY(float y) { _plPos.y = y; }
+	inline void setPosYPush(float y) { _plPos.y -= y; }
 	inline float getPosX() { return _plPos.x; }
 	inline float getPosY() { return _plPos.y; }
 

@@ -118,7 +118,7 @@ void Inventory::update(void)
         _rosarySelect = _heritageSelect = _questSelect = _praySelect = _skillSelect = _colSelect = 0;
     }
 
-    _slotSelect = _slot % SLOT_NUM;
+    _slotSelect = _slot % MAX_SLOT;
 
     if (KEYMANAGER->isOnceKeyDown(VK_ESCAPE))
     {

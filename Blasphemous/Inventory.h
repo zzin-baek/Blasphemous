@@ -1,8 +1,6 @@
 #pragma once
 #include "SingletonBase.h"
 
-#define SLOT_NUM 7
-
 enum eSlot
 {
 	ROSARY,
@@ -11,14 +9,15 @@ enum eSlot
 	MEA,
 	PRAY,
 	SKILL,
-	COLLECTION
+	COLLECTION,
+	MAX_SLOT
 };
 
 struct tagItem
 {
 	string _iImage;
 	char _iName[CHAR_MAX];
-	char _iManual[7][CHAR_MAX];
+	char _iManual[MAX_SLOT][CHAR_MAX];
 	bool _equip = false;
 };
 
