@@ -112,8 +112,8 @@ void BaseMap::update(void)
     }
 
     // 중력
-    if (!PLAYER->getFixed())
-        PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
+    //if (!PLAYER->getFixed())
+    //    PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
     
     // 카메라 이동
     if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bf->getX() + 1280 < 3760) //2000
@@ -237,16 +237,18 @@ void BaseMap::update(void)
     for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + i, _bf->getY() + PLAYER->getHitBox().bottom);
+            _bf->getX() + i, _bf->getY() + PLAYER->getHitBox().bottom + 8);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
         int b = GetBValue(color);
 
-        if ((r == 255 && g == 0 && b == 255))
+        if ((r == 255 && g == 0 && b == 255) && PLAYER->getJumpPower() <= 0)
         {
+            PLAYER->setState(JUMP, false);
             PLAYER->setGround(true);
-            PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
+            //PLAYER->setPosYPush(9);
+            //PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
             break;
         }
 

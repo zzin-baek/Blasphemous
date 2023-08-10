@@ -19,7 +19,7 @@ HRESULT Player::init(void)
     _press = true;
 
     _jumpHeight = 0.4f;
-    _jumpPower = 10.0f;
+    _jumpPower = 12.0f;
 
     wsprintf(_strAction, "IDLE");
     initTiming();
@@ -150,7 +150,7 @@ void Player::initTiming(void)
     _sync["ATTACK_UPWARD"] = { 4, {-30 + 50, -92}, {8, -92} };
     _sync["ATTACK_UPWARD_JUMP"] = { 3, {0 + 50, -190}, {0, -190} };
     _sync["ATTACK_CROUCH"] = { 4, {-80 + 50, 20}, {-15, 20} };
-    _sync["ATTACK_DODGE"] = { 3, {-240 + 50, -50}, {-5, -50} };
+    _sync["ATTACK_DODGE"] = { 3, {-240 + 50, -55}, {-5, -55} };
     _sync["ATTACK_COMBO_2"] = { 4, {-130 + 50, 10}, {-20, 10} };
     _sync["ATTACK_COMBO_3"] = { 4, {-310 + 50, -8}, {60, -8} };
     _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
@@ -192,7 +192,9 @@ void Player::playerAction(void)
     // 히트박스 설정
     if (_isLeft)
     {
-        if (_isAttack || getState()[ATTACK] || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
+        if (!strcmp(_strAction, "ATTACK_DODGE") || !_respawn)
+            _hitBox = RectMake(_player.left, _player.bottom - 150, 80, 130);
+        else if (_isAttack || getState()[ATTACK] || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
             _hitBox = RectMake(_player.right - 130, _player.bottom - 130, 80, 130);
         else if (getState()[PORTION])
             _hitBox = RectMakeCenter(_center.x, _player.bottom - 75, 80, 130);
@@ -203,7 +205,9 @@ void Player::playerAction(void)
     }
     else
     {
-        if (_isAttack || getState()[ATTACK] || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
+        if (!strcmp(_strAction, "ATTACK_DODGE") || !_respawn)
+            _hitBox = RectMake(_player.right - 130, _player.bottom - 150, 80, 130);
+        else if (_isAttack || getState()[ATTACK] || !strcmp(_strAction, "PARRY_SUCCESS") || !strcmp(_strAction, "COUNTER"))
             _hitBox = RectMake(_player.left + 70, _player.bottom - 130, 80, 130);
         else if (getState()[PORTION])
             _hitBox = RectMakeCenter(_center.x, _player.bottom - 75, 80, 130);
@@ -218,17 +222,23 @@ void Player::playerAction(void)
         if (!strcmp(_strAction, "FALLING"))
         {
             setAction("IDLE");
-            _plState.reset();
+            //_plState.reset();
         }
     
-        setState(JUMP, false);
+        //setState(JUMP, false);
         //_jumpHeight = 0.0f;
-        _jumpPower = 10.0f;
-        
+        _jumpPower = 0.0f;
     }
     else
     {
+        if (!_plState[JUMP])
+        {
+            _jumpPower -= _jumpHeight;
+            _plPos.y -= _jumpPower;
 
+        }
+        else
+            setAction("FALLING");
         //setAction("FALLING");    
         //setState(JUMP, true);
     }
@@ -356,7 +366,8 @@ void Player::playerAction(void)
     }
     if (KEYMANAGER->isOnceKeyUp('A') || KEYMANAGER->isOnceKeyUp('D'))
     {
-        _plState.reset();
+        //_plState.reset();
+        setState(WALK, false);
         setAction("IDLE");
         /* setAction("STOP");
         _actionList.push_back("STOP");
@@ -471,7 +482,7 @@ void Player::playerAction(void)
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP] && _press)
     {
         // 점프 관련 변수 초기화      
-        _jumpPower = 10.0f;
+        _jumpPower = 12.0f;
 
         if (_isLeft)
             EFFECT->addEffect({ "jump_dust", 0, { (_hitBox.left + _hitBox.right) / 2, _hitBox.bottom - 10},
@@ -530,7 +541,7 @@ void Player::playerAction(void)
             //_hold = false;
             setState(LADDER, true);
             setAction("LADDER");
-            _plPos.y -= 3.0f;
+            _plPos.y -= 10.0f;
         }
        /* _actionList.push_back("HANGON");
         _actionList.push_back("CLIMB");

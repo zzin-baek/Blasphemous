@@ -81,20 +81,21 @@ void Tutorial::update(void)
     for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("tutorial_map_collision")->getMemDC(),
-            i, PLAYER->getHitBox().bottom - 5);
+            i, PLAYER->getHitBox().bottom + 8);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
         int b = GetBValue(color);
 
-        if ((r == 255 && g == 0 && b == 255))           
+        if ((r == 255 && g == 0 && b == 255) && PLAYER->getJumpPower() <= 0)           
         {
+            PLAYER->setState(JUMP, false);
             PLAYER->setGround(true);
-            PLAYER->setPosYPush(3);
+            //PLAYER->setPosYPush(9);
             
             break;
         }
-        PLAYER->setGround(false);    
+        PLAYER->setGround(false);
         //PLAYER->setPosY(PLAYER->getPosY() + 1.0);
 
     }
