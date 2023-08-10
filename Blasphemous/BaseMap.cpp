@@ -111,13 +111,10 @@ void BaseMap::update(void)
         _preStage = 1;
     }
 
-    // 중력
-    //if (!PLAYER->getFixed())
-    //    PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
-    
     // 카메라 이동
     if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bf->getX() + 1280 < 3760) //2000
     {
+        int dist = WINSIZE_X/2 - PLAYER->getHitBox().right;
         _bf->setX(_bf->getX() + 4.0f);
         PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
 
@@ -247,8 +244,6 @@ void BaseMap::update(void)
         {
             PLAYER->setState(JUMP, false);
             PLAYER->setGround(true);
-            //PLAYER->setPosYPush(9);
-            //PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
             break;
         }
 

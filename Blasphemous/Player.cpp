@@ -19,7 +19,7 @@ HRESULT Player::init(void)
     _press = true;
 
     _jumpHeight = 0.4f;
-    _jumpPower = 12.0f;
+    _jumpPower = 0.0f;
 
     wsprintf(_strAction, "IDLE");
     initTiming();

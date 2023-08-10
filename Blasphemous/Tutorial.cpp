@@ -91,7 +91,7 @@ void Tutorial::update(void)
         {
             PLAYER->setState(JUMP, false);
             PLAYER->setGround(true);
-            //PLAYER->setPosYPush(9);
+            //PLAYER->setPosYPush(1);
             
             break;
         }

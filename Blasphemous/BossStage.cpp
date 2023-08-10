@@ -41,9 +41,6 @@ void BossStage::update(void)
     PLAYER->playerAction();
     PLAYER->playerMove();
         
-    if (!PLAYER->getFixed())
-        PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
-
     if (PLAYER->getHitBox().left <= 0)
         PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
 
@@ -481,16 +478,16 @@ void BossStage::update(void)
     for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("BossMap_collision")->getMemDC(),
-            i, PLAYER->getRect().bottom);
+            i, PLAYER->getRect().bottom + 8);
 
         int r = GetRValue(color);
         int g = GetGValue(color);
         int b = GetBValue(color);
 
-        if ((r == 255 && g == 0 && b == 255))
+        if ((r == 255 && g == 0 && b == 255) && PLAYER->getJumpPower() <= 0)
         {
-            PLAYER->setGround(true);
-            PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
+            PLAYER->setState(JUMP, false);
+            PLAYER->setGround(true);          
             break;
         }
         PLAYER->setGround(false);

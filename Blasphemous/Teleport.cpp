@@ -27,22 +27,19 @@ void Teleport::update(void)
 	PLAYER->playerAction();
 	PLAYER->playerMove();
 
-	if (!PLAYER->getFixed())
-		PLAYER->setPosY(PLAYER->getPosY() + 5.0f);
-
 	for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
 	{
 		COLORREF color = GetPixel(IMAGEMANAGER->findImage("Room_teleport_collision")->getMemDC(),
-			i, PLAYER->getRect().bottom);
+			i, PLAYER->getRect().bottom + 8);
 
 		int r = GetRValue(color);
 		int g = GetGValue(color);
 		int b = GetBValue(color);
 
-		if ((r == 255 && g == 0 && b == 255))
+		if ((r == 255 && g == 0 && b == 255) && PLAYER->getJumpPower() <= 0)
 		{
+			PLAYER->setState(JUMP, false);
 			PLAYER->setGround(true);
-			PLAYER->setPosY(PLAYER->getPosY() - 5.0f);
 			break;
 		}
 		PLAYER->setGround(false);
