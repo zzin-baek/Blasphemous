@@ -99,7 +99,7 @@ void Tutorial::update(void)
         //PLAYER->setPosY(PLAYER->getPosY() + 1.0);
 
     }
-    if (PLAYER->getCenterX() > WINSIZE_X)
+    if (PLAYER->getPosX() > WINSIZE_X)
         _nextStage = 1;
 
     if (KEYMANAGER->isOnceKeyDown('I'))

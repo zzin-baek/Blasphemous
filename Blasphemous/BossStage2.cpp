@@ -127,7 +127,7 @@ void BossStage2::update(void)
         }
     }
 
-    if (PLAYER->getCenterX() > WINSIZE_X)
+    if (PLAYER->getPosX() > WINSIZE_X)
         _nextStage = 1;
     //_bm->update();
 }

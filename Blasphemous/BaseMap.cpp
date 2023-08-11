@@ -101,11 +101,11 @@ void BaseMap::update(void)
         PLAYER->setCollect(false);
 
     // 스테이지 이동
-    if (PLAYER->getCenterX() > WINSIZE_X)
+    if (PLAYER->getPosX() > WINSIZE_X)
     {
         _nextStage = 1;
     }
-    else if (PLAYER->getCenterX() < 0)
+    else if (PLAYER->getPosX() + 40 < 0)
     {
         _nextStage = 0;
         _preStage = 1;
