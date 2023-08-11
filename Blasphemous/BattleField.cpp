@@ -36,8 +36,8 @@ HRESULT BattleField::init(void)
 
 void BattleField::rectMove(void)
 {
-    _ladder = RectMake(995 - (_startPos_x - _copyPos_x),
-        245 - (_startPos_y - _copyPos_y), 18, 350);
+    _ladder = RectMake(988 - (_startPos_x - _copyPos_x),
+        245 - (_startPos_y - _copyPos_y), 30, 350);
 }
 
 void BattleField::cameraShake(void)
