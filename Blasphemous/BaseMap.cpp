@@ -15,15 +15,11 @@ HRESULT BaseMap::init(void)
     _sh = new Shielder;
     _sh->init();
 
-    _acolyteList.push_back(_ac);
-    // stoner 2마리 생성
-    for (int i = 0; i < 2; i++)
-    {
-        _st = new Stoner;
-        _st->init();
+    _st = new Stoner;
+    _st->init();
 
-        _stonerList.push_back(_st);
-    }
+    _acolyteList.push_back(_ac);
+    _stonerList.push_back(_st);
     _shielderList.push_back(_sh);
 
     _item = new Item;
@@ -32,11 +28,10 @@ HRESULT BaseMap::init(void)
     _itemList.push_back(_item);
 
     // stoner위치 초기화
-    _stonerList[0]->init(WINSIZE_X + 50, WINSIZE_Y / 2 - 45);
-    _stonerList[1]->init(2626, WINSIZE_Y / 2 - 138);
+    _stonerList[0]->init(2626, WINSIZE_Y / 2 - 138);
 
     //_shielderList[0]->init(100, 410);
-    _shielderList[0]->init(WINSIZE_X + 500, WINSIZE_Y / 2 + 270);
+    _shielderList[0]->init(WINSIZE_X - 300, WINSIZE_Y / 2 + 153);
 
     _nextStage = _preStage = _cnt = _term = 0;
     _isInven = false;
@@ -101,7 +96,7 @@ void BaseMap::update(void)
         PLAYER->setCollect(false);
 
     // 스테이지 이동
-    if (PLAYER->getPosX() > WINSIZE_X)
+    if (PLAYER->getCenterX() > WINSIZE_X)
     {
         _nextStage = 1;
     }
@@ -114,46 +109,46 @@ void BaseMap::update(void)
     // 카메라 이동
     if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bf->getX() + 1280 < 3760) //2000
     {
-        int dist = WINSIZE_X/2 - PLAYER->getHitBox().right;
-        _bf->setX(_bf->getX() + 4.0f);
-        PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
+        _bf->setX(_bf->getX() + 5.0f);
+        PLAYER->setPosX(PLAYER->getPosX() - 5.0f);
 
         if (!_acolyteList.empty())
-            _acolyteList[0]->setPosX(_acolyteList[0]->getPosX() - 4);
+            _acolyteList[0]->setPosX(_acolyteList[0]->getPosX() - 5);
         if (!_stonerList.empty())
         {
             for (int i = 0; i < _stonerList.size(); i++)
             {
-                _stonerList[i]->setPosX(_stonerList[i]->getPosX() - 4);
-                _stonerList[i]->setRockPos(-4, 0);
+                _stonerList[i]->setPosX(_stonerList[i]->getPosX() - 5);
+                _stonerList[i]->setRockPos(-5, 0);
             }
         }
         if (!_shielderList.empty())
-            _shielderList[0]->setPosX(_shielderList[0]->getPosX() - 4);
+            _shielderList[0]->setPosX(_shielderList[0]->getPosX() - 5);
         if (!_itemList.empty())
-            _itemList[0]->setPosX(_item->getPosX() - 4);
+            _itemList[0]->setPosX(_item->getPosX() - 5);
 
     }
     if (PLAYER->getLeft() && PLAYER->getHitBox().left < WINSIZE_X / 2 && (_bf->getX() > 0))
     {
-        _bf->setX(_bf->getX() - 4.0f);
-        PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
+        _bf->setX(_bf->getX() - 5.0f);
+        PLAYER->setPosX(PLAYER->getPosX() + 5.0f);
 
         if (!_acolyteList.empty())
-            _acolyteList[0]->setPosX(_acolyteList[0]->getPosX() + 4);
+            _acolyteList[0]->setPosX(_acolyteList[0]->getPosX() + 5);
         if (!_stonerList.empty())
         {
             for (int i = 0; i < _stonerList.size(); i++)
             {
-                _stonerList[i]->setPosX(_stonerList[i]->getPosX() + 4);
-                _stonerList[i]->setRockPos(4, 0);
+                _stonerList[i]->setPosX(_stonerList[i]->getPosX() + 5);
+                _stonerList[i]->setRockPos(5, 0);
             }
         }
         if (!_shielderList.empty())
-            _shielderList[0]->setPosX(_shielderList[0]->getPosX() + 4);
+            _shielderList[0]->setPosX(_shielderList[0]->getPosX() + 5);
         if (!_itemList.empty())
-            _itemList[0]->setPosX(_item->getPosX() + 4);
+            _itemList[0]->setPosX(_item->getPosX() + 5);
     }
+
     if (PLAYER->getHitBox().top < WINSIZE_Y / 2 && _bf->getY() > 0)
     {
         PLAYER->setPosY(PLAYER->getPosY() + 2.0f);
@@ -268,7 +263,7 @@ void BaseMap::update(void)
 
         if ((r == 255 && g == 0 && b == 255))
         {
-            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
+            PLAYER->setPosX(PLAYER->getPosX() + 5.0f);
             break;
         } 
     }
@@ -284,7 +279,7 @@ void BaseMap::update(void)
         
         if ((r == 255 && g == 0 && b == 255))
         {
-            PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
+            PLAYER->setPosX(PLAYER->getPosX() - 5.0f);
             break;
         }
     }
@@ -481,7 +476,7 @@ void BaseMap::update(void)
         }
 
         color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + _shielderList[0]->getPosX() + 30, _bf->getY() + _shielderList[0]->getPosY() - 50);
+            _bf->getX() + _shielderList[0]->getPosX() + 50, _bf->getY() + _shielderList[0]->getPosY() - 20);
 
         r = GetRValue(color);
         g = GetGValue(color);
@@ -595,11 +590,6 @@ void BaseMap::update(void)
                 }
             }
         }
-        /*if ((IntersectRect(&_rt, &_shielderList[0]->getRect(), &PLAYER->getRect())
-            && (PLAYER->getState()[ATTACK] || PLAYER->getAttack()) && strcmp(_shielderList[0]->getAction(), "Shielder_idle")))
-        {
-            SOUNDMANAGER->playSoundWithKey("Hit_shield");
-        }*/
 
         if (_shielderList[0]->getHP() <= 0 && _shielderList[0]->getDie())
         {
@@ -608,7 +598,7 @@ void BaseMap::update(void)
 
     }
 
-    //인벤토리?
+    // 인벤토리
     if (KEYMANAGER->isOnceKeyDown('I'))
     {
         _isInven = true;
@@ -623,8 +613,6 @@ void BaseMap::update(void)
             _isInven = false;
         }
     }
-
-    //_bf->initCamera();
 }
 
 void BaseMap::render(void)

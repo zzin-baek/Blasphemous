@@ -7,7 +7,6 @@ struct POINTF
 	float y;
 };
 
-// bitset: 기본, 걷기, 점프, 앉기, 매달리기
 enum eState
 {
 	WALK = 0,
@@ -35,7 +34,6 @@ struct plImageInfo
 	POINT rightMove;
 };
 
-// bool _isGround: 바닥인지 공중인지
 class Player : public SingletonBase <Player>
 {
 private:
@@ -52,7 +50,7 @@ private:
 	bool _hold, _collect, _hit, _parrying;
 	bool _collected, _respawn, _press, _die;
 
-	int _cnt, _idx_x, _idx_y, _alpha;
+	int _cnt, _idx_x, _idx_y, _alpha, _running;
 	int _hp, _score, _portion, _parry, _death;
 
 	float _jumpTime, _jumpHeight, _jumpPower;

@@ -12,7 +12,7 @@ HRESULT Player::init(void)
     _center = _temp = { 0.0f, 0.0f };
 
     _hp = 100; 
-    _score, _parry = 0;
+    _parry = 0;
     _portion = 5;
     _alpha = 0;
 
@@ -132,7 +132,7 @@ void Player::initImage(void)
 
 void Player::initTiming(void)
 {
-    // ## 기본적으로 왼쪽모습은 오른쪽 모습의 x + 50 
+    // 모션 싱크를 맞추기 위한 map
     _sync["RESPAWN2"] = { 3, {0, -195}, {-16, -194} };
     _sync["IDLE"] = { 4, {0 + 50, 0}, {0, 0} };
     _sync["RUNNING"] = { 3, {0 + 50, 0}, {0, 0} };
@@ -222,11 +222,8 @@ void Player::playerAction(void)
         if (!strcmp(_strAction, "FALLING"))
         {
             setAction("IDLE");
-            //_plState.reset();
         }
     
-        //setState(JUMP, false);
-        //_jumpHeight = 0.0f;
         _jumpPower = 0.0f;
     }
     else
@@ -239,8 +236,6 @@ void Player::playerAction(void)
         }
         else
             setAction("FALLING");
-        //setAction("FALLING");    
-        //setState(JUMP, true);
     }
 
     if (!_plState[HIT] && _hit)
@@ -326,7 +321,7 @@ void Player::playerAction(void)
         _isLeft = true;
         setState(WALK, true);
         if (!_plState[CROUCH] && !_plState[HIT])
-            _plPos.x -= 4.0f;
+            _plPos.x -= 5.0f;
     }
     if (KEYMANAGER->isStayKeyDown('D') && !strstr("ATTACK", _strAction)
         && !_plState[DODGE] && !_plState[PARRY] && _press && _respawn)
@@ -356,25 +351,20 @@ void Player::playerAction(void)
         _isLeft = false;
         setState(WALK, true);
         if (!_plState[CROUCH] && !_plState[HIT])
-            _plPos.x += 4.0f;
+            _plPos.x += 5.0f;
     }
+
     if (KEYMANAGER->isStayKeyDown('S') && isEmpty() && _press)
     {
         setState(CROUCH, true);
         if (!_plState.none())
             setAction("CROUCH_DOWN");
     }
+
     if (KEYMANAGER->isOnceKeyUp('A') || KEYMANAGER->isOnceKeyUp('D'))
     {
-        //_plState.reset();
         setState(WALK, false);
         setAction("IDLE");
-        /* setAction("STOP");
-        _actionList.push_back("STOP");
-        if (_isLeft)
-            _idx_x = IMAGEMANAGER->findImage("STOP")->getMaxFrameX();
-        else
-            _idx_x = 0;*/
     }
     if (KEYMANAGER->isOnceKeyUp('S') && isEmpty() && _press)
     {
@@ -482,7 +472,7 @@ void Player::playerAction(void)
     if (KEYMANAGER->isOnceKeyDown(VK_SPACE) && !_plState[JUMP] && _press)
     {
         // 점프 관련 변수 초기화      
-        _jumpPower = 12.0f;
+        _jumpPower = 11.0f;
 
         if (_isLeft)
             EFFECT->addEffect({ "jump_dust", 0, { (_hitBox.left + _hitBox.right) / 2, _hitBox.bottom - 10},
@@ -532,23 +522,20 @@ void Player::playerAction(void)
     {
         setState(UP, true);
 
-        /*if (!isEmpty())
-            _actionList.pop_front();*/
 
         if (_hold)
         {
+            if (!isEmpty())
+                _actionList.pop_front();
+
             _isFixed = true;
             //_hold = false;
+            setState(JUMP, false);
             setState(LADDER, true);
             setAction("LADDER");
-            _plPos.y -= 10.0f;
+            _jumpPower = 0;
+            _plPos.y -= 3.0f;
         }
-       /* _actionList.push_back("HANGON");
-        _actionList.push_back("CLIMB");
-        if (_isLeft)
-            _idx_x = IMAGEMANAGER->findImage("HANGON")->getMaxFrameX();
-        else
-            _idx_x = 0;*/
     }
     if (KEYMANAGER->isOnceKeyUp('W') && !_hold)
         setState(UP, false);

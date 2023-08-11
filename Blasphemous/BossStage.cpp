@@ -42,14 +42,14 @@ void BossStage::update(void)
     PLAYER->playerMove();
         
     if (PLAYER->getHitBox().left <= 0)
-        PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
+        PLAYER->setPosX(PLAYER->getPosX() + 5.0f);
 
     if (_mainStage)
     {
         if (PLAYER->getHitBox().left <= 0)
-            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
+            PLAYER->setPosX(PLAYER->getPosX() + 5.0f);
         if (PLAYER->getHitBox().right >= WINSIZE_X)
-            PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
+            PLAYER->setPosX(PLAYER->getPosX() - 5.0f);
     }
 
     if ((!_intro || _ending) && !_mainStage)
@@ -57,15 +57,15 @@ void BossStage::update(void)
         // Ä«¸Þ¶ó
         if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 2400)
         {
-            _bm->setPosX(_bm->getPosX() + 4);
-            PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
-            _bm->moveRect(4);
+            _bm->setPosX(_bm->getPosX() + 5);
+            PLAYER->setPosX(PLAYER->getPosX() - 5.0f);
+            _bm->moveRect(5);
         }
         if (PLAYER->getLeft() && PLAYER->getCenterX() < WINSIZE_X / 2 + 10 && (_bm->getPosX() > 0))
         {
-            _bm->setPosX(_bm->getPosX() - 4);
-            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
-            _bm->moveRect(-4);
+            _bm->setPosX(_bm->getPosX() - 5);
+            PLAYER->setPosX(PLAYER->getPosX() + 5.0f);
+            _bm->moveRect(-5);
         }
     }
 

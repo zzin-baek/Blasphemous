@@ -37,21 +37,21 @@ void BossStage2::update(void)
         cout << _bm->getPosX() << endl;
         if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 4000)
         {
-            _bm->setPosX(_bm->getPosX() + 4);
-            _bm->moveRect(4);
-            PLAYER->setPosX(PLAYER->getPosX() - 4.0f);
+            _bm->setPosX(_bm->getPosX() + 5);
+            _bm->moveRect(5);
+            PLAYER->setPosX(PLAYER->getPosX() - 5.0f);
 
-            _boss->setX(_boss->getX() - 4.0f);
-            _boss->setProjectilePos(-4);
+            _boss->setX(_boss->getX() - 5.0f);
+            _boss->setProjectilePos(-5);
         }
         if (PLAYER->getLeft() && PLAYER->getHitBox().left < WINSIZE_X / 2 + 10 && (_bm->getPosX() > 100))
         {
-            _bm->setPosX(_bm->getPosX() - 4);
-            _bm->moveRect(-4);
-            PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
+            _bm->setPosX(_bm->getPosX() - 5);
+            _bm->moveRect(-5);
+            PLAYER->setPosX(PLAYER->getPosX() + 5.0f);
 
-            _boss->setX(_boss->getX() + 4.0f);
-            _boss->setProjectilePos(4);
+            _boss->setX(_boss->getX() + 5.0f);
+            _boss->setProjectilePos(5);
         }
     }
 
@@ -79,6 +79,7 @@ void BossStage2::update(void)
         }
     }
 
+    // ÇÈ¼¿Ãæµ¹
     for (int i = PLAYER->getHitBox().left; i <= PLAYER->getHitBox().right; i++)
     {
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("Piedad_map_collision")->getMemDC(),
@@ -127,9 +128,8 @@ void BossStage2::update(void)
         }
     }
 
-    if (PLAYER->getPosX() > WINSIZE_X)
+    if (PLAYER->getCenterX() > WINSIZE_X)
         _nextStage = 1;
-    //_bm->update();
 }
 
 void BossStage2::render(void)
