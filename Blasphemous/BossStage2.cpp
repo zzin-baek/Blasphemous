@@ -35,7 +35,7 @@ void BossStage2::update(void)
         PLAYER->setPress(true);
 
         cout << _bm->getPosX() << endl;
-        if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 4000)
+        if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bm->getPosX() + 1280 < 3950)
         {
             _bm->setPosX(_bm->getPosX() + 5);
             _bm->moveRect(5);

@@ -67,7 +67,8 @@ private:
 	int _deathCnt, _alpha, _outroCnt;
 	float _isidoraAngle;
 
-	bool _isLeft, _finIntro, _isPhase2, _isPhase3, _isAttack, _doNothing, _hit;
+	bool _finIntro, _isPhase2, _isPhase3;
+	bool _isLeft, _isAttack, _doNothing, _hit, _block;
 	bool _once, _once2, _onceColumn, _onceFire;
 
 	char _strAction[128];
@@ -96,38 +97,42 @@ public:
 	void attack(void);
 
 	void render(HDC hdc);
+	void renderHP(HDC hdc);
 
 public:
-	inline float getX() { return _pos.x; }
-	inline float getY() { return _pos.y; }
-	inline void setX(float x) { _pos.x = x; }
-	inline void setY(float y) { _pos.y = y; }
+	float getX() { return _pos.x; }
+	float getY() { return _pos.y; }
+	void setX(float x) { _pos.x = x; }
+	void setY(float y) { _pos.y = y; }
 
-	inline void setIdxX(int x) { _idx.x = x; }
-	inline void setIdxY(int y) { _idx.y = y; }
+	void setIdxX(int x) { _idx.x = x; }
+	void setIdxY(int y) { _idx.y = y; }
 
-	inline bool getLeft() { return _isLeft; }
-	inline void setLeft(bool state) { _isLeft = state; }
-	inline bool getFin() { return _finIntro; }
-	inline bool getDo() { return _doNothing; }
-	inline void setDo(int state) { _doNothing = state; }
+	bool getLeft() { return _isLeft; }
+	void setLeft(bool state) { _isLeft = state; }
+	bool getFin() { return _finIntro; }
+	bool getDo() { return _doNothing; }
+	void setDo(bool state) { _doNothing = state; }
+	bool getBlock() { return _block; }
+	void setBlock(bool state) { _block = state; }
 
-	inline int getPhase() { return _phase; }
-	inline bool getIsPhase2() { return _isPhase2; }
-	inline bool getIsPhase3() { return _isPhase3; }
-	inline int getHP() { return _hp; }
-	inline void setHP(int hp) { _hp = hp; }
+	int getPhase() { return _phase; }
+	bool getIsPhase2() { return _isPhase2; }
+	bool getIsPhase3() { return _isPhase3; }
+	int getHP() { return _hp; }
+	void setHP(int hp) { _hp = hp; }
 
-	inline void setPattern(int pattern) { _patternNum = pattern; }
-	inline void addSeq(tagSequence seq) { _seq.push_back(seq); }
+	void setPattern(int pattern) { _patternNum = pattern; }
+	void addSeq(tagSequence seq) { _seq.push_back(seq); }
 
-	inline RECT getBoss() { return _isidora; }
-	inline RECT getHitBox() { return _hitBox; }
-	inline RECT getAttack() { return _attack; }
+	RECT getBoss() { return _isidora; }
+	RECT getHitBox() { return _hitBox; }
+	RECT getAttack() { return _attack; }
 
-	inline bitset<3> getState() { return _idState; }
-	inline void setState(int num, bool state) { _idState.set(num, state); }
-	inline bool isAttack() { return _isAttack; }
+	bitset<3> getState() { return _idState; }
+	void setState(int num, bool state) { _idState.set(num, state); }
+	bool isAttack() { return _isAttack; }
+	
 
 	void addPattern(char* action) { _pattern.push_back(action); }
 

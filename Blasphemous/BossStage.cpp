@@ -388,13 +388,9 @@ void BossStage::update(void)
                     _once = true;
                 }          
                 _boss->setLeft(true);
-
-                //_boss->addPattern("Isidora_outToCast");
                 _boss->addPattern("Isidora_cast");
 
-                //_boss->addSeq({ 1, {0, IMAGEMANAGER->findImage("Isidora_outToCast")->getMaxFrameX() } });
                 _boss->addSeq({ 0, { 11, 21 } });
-
                 _boss->setDo(false);
                 break;
             case 11:
@@ -451,7 +447,6 @@ void BossStage::update(void)
                 _boss->setDo(false);
                 break;
             }
-            cout << "패턴 넘버" << _pattern << endl;
         }        
     }
 
@@ -496,7 +491,11 @@ void BossStage::update(void)
     if (IntersectRect(&_rt, &_boss->getAttack(), &PLAYER->getRect())
         && PLAYER->getState()[PARRY] && _boss->isAttack())
     {
-        PLAYER->setParry(2);
+        if (!_boss->getBlock())
+        {
+            PLAYER->setParry(2);
+            _boss->setBlock(true);
+        }
     }
     else if (IntersectRect(&_rt, &_boss->getAttack(), &PLAYER->getHitBox())
         && !PLAYER->getState()[PARRY] && _boss->isAttack())
@@ -536,4 +535,7 @@ void BossStage::render(void)
     
     PLAYER->renderPlayer(getMemDC());
     PLAYER->renderProfile(getMemDC());
+    
+    if (_intro || _mainStage)
+        _boss->renderHP(getMemDC());
 }

@@ -15,7 +15,7 @@ private:
 	RECT _acolyte, _attack;
 	RECT _attackBoundary[2];
 	deque<char*> _acList;
-	bitset<4> _acState;
+	bitset<MAX_ENEMY_STATE> _acState;
 	map<string, acImageInfo> _sync;
 
 	bool _isLeft, _canAttack, _hit, _die;

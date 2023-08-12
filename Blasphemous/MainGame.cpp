@@ -5,8 +5,6 @@ HRESULT MainGame::init(void)
 {
 	GameNode::init(true);
 
-	//PLAYER->init(88, 484);
-
 	_mainMenu = new MainMenu;
 	_mainMenu->init();
 
@@ -105,7 +103,7 @@ void MainGame::update(void)
 		_currentScene = _tutorial;
 	}
 
-	if (_teleport->getNext() || KEYMANAGER->isOnceKeyDown(VK_F6))
+	if (_teleport->getNext())
 	{
 		if (!_initOnce[4])
 		{
@@ -116,7 +114,7 @@ void MainGame::update(void)
 		_currentScene = _bossStage2;
 	}
 
-	if (_bossStage2->getNext() || KEYMANAGER->isOnceKeyDown(VK_F3))
+	if (_bossStage2->getNext())
 	{
 		if (!_initOnce[5])
 		{

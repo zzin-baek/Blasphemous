@@ -27,6 +27,7 @@ HRESULT Player::init(void)
     return S_OK;
 }
 
+// 위치 초기화
 HRESULT Player::init(int startX, int startY)
 {
     _plPos.x = startX;
@@ -155,7 +156,7 @@ void Player::initTiming(void)
     _sync["ATTACK_COMBO_3"] = { 4, {-310 + 50, -8}, {60, -8} };
     _sync["PARRY"] = { 4, {-10 + 50, 0}, {0, 0} };
     _sync["PARRY_SUCCESS"] = { 4, {-85, -60}, {-15, -60} };
-    _sync["PARRY_SLIDE"] = { 3, {-42 + 50, -18}, {-29, -18} }; // -18
+    _sync["PARRY_SLIDE"] = { 3, {-42 + 50, -18}, {-29, -18} };
     _sync["COUNTER"] = { 3, {-180 + 50, -58}, {0, -58} };
     _sync["PUSHBACK"] = { 4, {-20 + 50, 10}, {-30, 10} };
     _sync["DODGE"] = { 2, {0 + 50, 0}, {0, 0} };
@@ -242,7 +243,7 @@ void Player::playerAction(void)
     {
         setState(HIT, true);
         setAction("PUSHBACK");
-
+        _press = false;
         if (!isEmpty())
             _actionList.clear();
 
@@ -289,7 +290,6 @@ void Player::playerAction(void)
         }
     }
 
-    //cout << "hold"<<_hold << endl;
     if (KEYMANAGER->isStayKeyDown('A') && !strstr("ATTACK", _strAction) 
         && !_plState[DODGE] && !_plState[PARRY] && _press && _respawn)
     {
@@ -522,14 +522,12 @@ void Player::playerAction(void)
     {
         setState(UP, true);
 
-
         if (_hold)
         {
             if (!isEmpty())
                 _actionList.pop_front();
 
             _isFixed = true;
-            //_hold = false;
             setState(JUMP, false);
             setState(LADDER, true);
             setAction("LADDER");
@@ -553,7 +551,6 @@ void Player::playerAction(void)
             EFFECT->addEffect({ "dodge_effect", 0, {_hitBox.left, _hitBox.bottom - 30},{ 0, 0} }, 1);
 
         SOUNDMANAGER->playEffectSoundWave("Resources/Sound/penitent/PENITENT_DASH.wav");
-        //_actionList.push_back("STOP");
         setAction("DODGE");
         if (_isLeft)
             _idx_x = IMAGEMANAGER->findImage("DODGE")->getMaxFrameX();
@@ -715,7 +712,7 @@ void Player::playerAction(void)
                            if (i != JUMP)
                                setState(i, false);
                        }
-                       //_plState.reset();
+                       _press = true;
                        _isFixed = _isAttack = _parrying = false;
                        setAction("IDLE");
                    }
@@ -759,7 +756,7 @@ void Player::playerAction(void)
                            if (i != JUMP)
                                setState(i, false);
                        }
-                       //_plState.reset();
+                       _press = true;
                        _isFixed = _isAttack = _parrying = false;
                        _respawn = true;
                        setAction("IDLE");
@@ -777,11 +774,8 @@ void Player::playerMove(void)
 {
     if (_plState[JUMP])
     {
-        
         _jumpPower -= _jumpHeight;
         _plPos.y -= _jumpPower;
-
-        //_jumpHeight += 0.4f;
     }
 
     if (_plState[DODGE])
@@ -872,7 +866,6 @@ void Player::comboAttack(void)
         {
             if (!strcmp(_strAction, "ATTACK"))
             {
-                //setState(ATTACK, true);
                 setAction("ATTACK_COMBO_2");
                 _actionList.push_back("ATTACK_COMBO_2");
 
@@ -881,8 +874,6 @@ void Player::comboAttack(void)
             }
             else if (!strcmp(_strAction, "ATTACK_COMBO_2"))
             {
-
-                //setState(ATTACK, true);
                 setAction("ATTACK_COMBO_3");
                 _actionList.push_back("ATTACK_COMBO_3");
 
@@ -890,7 +881,6 @@ void Player::comboAttack(void)
             }
             else
             {
-                //setState(ATTACK, true);
                 setAction("ATTACK");
                 _actionList.push_back("ATTACK");
                 if (_isLeft)
@@ -950,7 +940,6 @@ void Player::renderPlayer(HDC hdc)
                     _plPos.y + _sync.find(_actionList.front())->second.leftMove.y,
                     IMAGEMANAGER->findImage(_actionList.front())->getFrameWidth(),
                     IMAGEMANAGER->findImage(_actionList.front())->getFrameHeight());
-                //cout << _sync.find(_actionList.front().c_str())->second.leftMove.y << endl;
             }
             else
             {
@@ -962,7 +951,6 @@ void Player::renderPlayer(HDC hdc)
                     _plPos.y + _sync.find(_actionList.front())->second.rightMove.y,
                     IMAGEMANAGER->findImage(_actionList.front())->getFrameWidth(),
                     IMAGEMANAGER->findImage(_actionList.front())->getFrameHeight());
-                //cout << _sync.find(_actionList.front().c_str())->second.rightMove.y << endl;
             }
         }
     }

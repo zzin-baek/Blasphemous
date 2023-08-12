@@ -5,7 +5,8 @@ enum tagEnemy
 	IDLE_ENEMY = 0,
 	ATTACK_ENEMY,
 	HIT_ENEMY,
-	DIE_ENEMY
+	DIE_ENEMY,
+	MAX_ENEMY_STATE
 };
 
 class Enemy

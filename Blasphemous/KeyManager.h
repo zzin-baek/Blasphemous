@@ -1,8 +1,6 @@
 #pragma once
 #include "SingletonBase.h"
 
-// 객체지향 전환 -> 설계 방식 / 방법론
-
 #define KEY_MAX 256
 
 class KeyManager : public SingletonBase <KeyManager>

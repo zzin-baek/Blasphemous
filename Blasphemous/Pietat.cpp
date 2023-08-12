@@ -78,7 +78,7 @@ HRESULT Pietat::init(void)
 
 void Pietat::initSync(void)
 {
-	_sync.insert({ "Pietat_appear", {5, {0, 0}, {0, 0}} });
+	_sync.insert({ "Pietat_appear", {4, {0, 0}, {0, 0}} });
 	_sync.insert({ "Pietat_death", {7, {-100, 80}, {-70, 80}} });
 	_sync.insert({ "Pietat_idle", {5, {-100, 30}, {-100, 30}} });
 	_sync.insert({ "Pietat_walk", {5, {-100, 30}, {-100, 30}} });
@@ -112,8 +112,6 @@ void Pietat::initSound(void)
 	SOUNDMANAGER->addWaveFileWithKey("pietat_spit", "Resources/Sound/pietat/PIETAT_SPIT_VOICE.wav");
 	SOUNDMANAGER->addWaveFileWithKey("peitat_slash", "Resources/Sound/pietat/PIETAT_SLASH.wav");
 	SOUNDMANAGER->addWaveFileWithKey("pietat_death_voice", "Resources/Sound/pietat/PIETAT_DEATH_VOICE.wav");
-	SOUNDMANAGER->addWaveFileWithKey("", "");
-	SOUNDMANAGER->addWaveFileWithKey("", "");
 
 }
 
@@ -304,6 +302,7 @@ void Pietat::update(void)
 						if (!_pattern.empty())
 						{
 							_idx.x = IMAGEMANAGER->findImage(_pattern.front())->getMaxFrameX();
+							
 						}
 						else
 						{
@@ -311,6 +310,7 @@ void Pietat::update(void)
 								cout << "death" << endl;
 							_ptState.reset();
 							_doNothing = true;
+							_hit = false;
 							_patternNum = 0;
 							setAction("Pietat_idle");
 						}
@@ -341,6 +341,7 @@ void Pietat::update(void)
 							_ptState.reset();
 							_doNothing = true;
 							_patternNum = 0;
+							_hit = false;
 							setAction("Pietat_idle");
 						}
 					}
@@ -974,28 +975,6 @@ void Pietat::render(HDC hdc)
 			IMAGEMANAGER->findImage(_strAction)->getFrameWidth(),
 			IMAGEMANAGER->findImage(_strAction)->getFrameHeight());
 
-		/*if (!strcmp(_strAction, "Pietat_death"))
-		{
-			_deathCnt++;
-
-			if (_doNothing)
-			{
-				SOUNDMANAGER->playEffectSoundWave("Resources/Sound/Boss_Fight_Ending.wav");
-
-				_doNothing = false;
-			}
-
-			IMAGEMANAGER->alphaRender("Boss_death_logo", hdc, _alpha);
-			IMAGEMANAGER->alphaRender("Black_bg", hdc, _alpha / 2);
-
-			if (_deathCnt > 500)
-			{
-				_alpha -= 2;
-				if (_alpha <= 0)
-					_alpha = 0;
-			}
-		}*/
-
 		if (!strcmp(_strAction, "Pietat_appear"))
 			IMAGEMANAGER->frameRender(_strAction, hdc, _pos.x - IMAGEMANAGER->findImage(_strAction)->getFrameWidth() / 2,
 				_pos.y - IMAGEMANAGER->findImage(_strAction)->getFrameHeight() / 2, _introIdx.x, _introIdx.y);
@@ -1107,7 +1086,6 @@ void Pietat::renderHP(HDC hdc)
 
 			if (_doNothing)
 			{
-				//SOUNDMANAGER->playEffectSoundWave("Resources/Sound/Boss_Fight_Ending.wav");
 				SOUNDMANAGER->playSoundWithKey("Boss_defeat");
 				_doNothing = false;
 			}

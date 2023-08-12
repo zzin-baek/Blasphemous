@@ -88,7 +88,6 @@ void MainMenu::update(void)
         {
             if (_menuSelect % 2 == 0)
             {
-                //_select = 1;
                 _alpha = 3;
                 _opening = true;
                 SOUNDMANAGER->playEffectSoundWave("Resources/Sound/etc/SELECTION.wav");

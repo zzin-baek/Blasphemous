@@ -68,9 +68,9 @@ HRESULT Isidora::init(void)
 		507 * 2, 39 * 2, 13, 1, true, MAGENTA);
 
 	IMAGEMANAGER->addImage("Circle_Mask", "Resources/Image/Sheet/Circle_Mask.bmp",
-		130, 130, true, MAGENTA); //256  256
+		130, 130, true, MAGENTA); 
 	IMAGEMANAGER->addImage("Column_Mask", "Resources/Image/Sheet/Column_Mask.bmp", 
-		200, 680, true, MAGENTA); // 300, 1024
+		200, 680, true, MAGENTA);
 
 	// hp
 	IMAGEMANAGER->addImage("Isidora_HP_Bar", "Resources/Image/Sheet/boss_healthBar.bmp",
@@ -89,10 +89,10 @@ HRESULT Isidora::init(void)
 	_isidoraAngle = 45.0f;
 
 	_isLeft = _doNothing = true;
-	_finIntro = _isPhase2 = _isPhase3 = _once = _once2 = false;
-	_onceColumn = _onceFire = false;
+	_finIntro = _isPhase2 = _isPhase3 = _block = false;
+	_once = _once2 = _onceColumn = _onceFire = false;
 
-	// 5번 패턴 위치
+	// 5번 패턴 고정 위치
 	_risingSpot[0] = { 140, 500 };
 	_risingSpot[1] = { 1130, 500 };
 	_risingSpot[2] = { 600, 500 };
@@ -181,7 +181,6 @@ void Isidora::update(void)
 	{
 		cout << "실행" << endl;
 		setState(DIE_BOSS, true);
-		//_die = true;
 		SOUNDMANAGER->stopMp3WithKey("Isidora_MASTER");
 		SOUNDMANAGER->playSoundWithKey("Isidora_death");
 
@@ -273,7 +272,7 @@ void Isidora::update(void)
 									- _seq.begin()->_current.x;
 								_once = _once2 = false;
 
-								_hit = false;
+								_hit = _block = false;
 								_idState.reset();
 							}
 							else
@@ -281,7 +280,7 @@ void Isidora::update(void)
 								if (!_finIntro) _finIntro = true;
 								if (_patternNum != 3 && _patternNum != 5)
 									_doNothing = true;
-								_hit = _once = _once2 = false;
+								_hit = _block = _once = _once2 = false;
 								if (!_seq.empty())
 									_seq.clear();
 							}
@@ -305,11 +304,10 @@ void Isidora::update(void)
 							_seq.erase(_seq.begin());
 							if (!_pattern.empty())
 							{
-								//cout << _pattern.front() << endl;
 								_idx.x = _seq.begin()->_current.x;
 								_once = _once2 = false;
 
-								_hit = false;
+								_hit = _block = false;
 								_idState.reset();
 							}
 							else
@@ -317,7 +315,7 @@ void Isidora::update(void)
 								if (!_finIntro) _finIntro = true;
 								if (_patternNum != 3 && _patternNum != 5)
 									_doNothing = true;
-								_once = _once2 = _hit = false;
+								_once = _once2 = _hit = _block = false;
 
 								if (!_seq.empty())
 									_seq.clear();
@@ -460,24 +458,6 @@ void Isidora::useSkill(void)
 					_pos.x += 10.0f;
 
 				_temp.x = _pos.x;
-				//if (_pos.x > 500 )
-				//{
-				//	_seq.insert(_seq.begin() + 1, 1, { 0, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
-				//	//_seq.erase(_seq.begin());
-				//}
-				//else // 한 번만 되게
-				//{
-				//	if (!_once2)
-				//	{
-				//		_once2 = true;
-				//		_seq.insert(_seq.begin() + 1, 1, { 1, {0, IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX()} });
-				//		//_seq.erase(_seq.begin() + 1);
-				//		if (_isLeft)
-				//			setIdxX(IMAGEMANAGER->findImage("Isidora_sparkLoop")->getMaxFrameX());
-				//		else
-				//			setIdxX(0);
-				//	}
-				//}
 			}
 
 			if (!strcmp(_pattern.front(), "Isidora_scy2"))
@@ -883,11 +863,6 @@ void Isidora::useSkill(void)
 
 		if (!_onceFire)
 		{
-			for (int i = 0; i < MAX_FIREBALL; i++)
-			{
-				_fb[i]._fire = false;
-				_fb->_create = false;
-			}
 			_intervalF = 10;
 			for (int i = 0; i < MAX_FIREBALL; i++)
 			{
@@ -1255,7 +1230,12 @@ void Isidora::fireBallCycle(void)
 					_fb[i]._center = { WINSIZE_X / 2, WINSIZE_Y / 2 };
 					_fb[i]._visible = true;
 
-					if (i >= 3)
+					if (i >= 3 && _patternNum != 14)
+					{
+						_onceFire = false;
+						_doNothing = true;
+					}
+					else if (i >= 2 && _patternNum == 14)
 					{
 						_onceFire = false;
 						_doNothing = true;
@@ -1320,7 +1300,6 @@ void Isidora::attack(void)
 		}
 		if (!strcmp(_pattern.front(), "Isidora_scy2"))
 		{
-			//_attack = RectMakeCenter(_pos.x, _pos.y - 40, 330, 160);
 			if (!_isLeft)
 			{
 				if (_idx.x > 8 && _idx.x < 25)
@@ -1362,7 +1341,7 @@ void Isidora::attack(void)
 					&& _idx.x > IMAGEMANAGER->findImage("Isidora_slash")->getMaxFrameX() - 30)
 					_isAttack = true;
 
-				if (_idx.x == 0)
+				if (_idx.x == 1)
 					SOUNDMANAGER->playSoundWithKey("Isidora_slash");
 			}
 		}
@@ -1379,7 +1358,7 @@ void Isidora::attack(void)
 			}
 			else
 			{
-				if (_idx.x == 0)
+				if (_idx.x == 1)
 					SOUNDMANAGER->playSoundWithKey("Isidora_twirl");
 			}
 		}
@@ -1405,7 +1384,7 @@ void Isidora::attack(void)
 			}
 			else
 			{
-				if (_idx.x == 0)
+				if (_idx.x == 1)
 					SOUNDMANAGER->playSoundWithKey("Isidora_tp_in");
 			}
 		}
@@ -1490,31 +1469,6 @@ void Isidora::render(HDC hdc)
 		}
 	}
 
-	if (_hp > 0)
-	{
-		IMAGEMANAGER->render("Isidora_HP", hdc, 348, 680, 0, 0, 
-			IMAGEMANAGER->findImage("Isidora_HP")->getWidth() * _hp / 300, IMAGEMANAGER->findImage("Isidora_HP")->getHeight());
-		IMAGEMANAGER->render("Isidora_HP_Bar", hdc, 290, 654);
-		FONTMANAGER->drawText(hdc, 360, 632, "Neo둥근모 Pro", 30, 1, L"죽은 자들을 위해 노래하는 성녀 이시도라",
-			0, RGB(171, 154, 63));
-	}
-	else
-	{
-		if (_outroCnt >= 118 && !strcmp(_strAction, "Isidora_death"))
-		{
-			_deathCnt++;
-
-			if (_doNothing)
-			{
-				SOUNDMANAGER->playSoundWithKey("Boss_defeat");
-				_doNothing = false;
-			}
-
-			IMAGEMANAGER->alphaRender("Black_bg", hdc, _alpha / 2);
-			IMAGEMANAGER->alphaRender("Boss_death_logo", hdc, _alpha);
-		}
-	}
-
 	if (KEYMANAGER->isToggleKey(VK_TAB))
 	{
 		HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
@@ -1551,5 +1505,33 @@ void Isidora::render(HDC hdc)
 		DeleteObject(myBrush);
 		SelectObject(hdc, oldPen);
 		DeleteObject(myPen);
+	}
+}
+
+void Isidora::renderHP(HDC hdc)
+{
+	if (_hp > 0)
+	{
+		IMAGEMANAGER->render("Isidora_HP", hdc, 348, 680, 0, 0,
+			IMAGEMANAGER->findImage("Isidora_HP")->getWidth() * _hp / 300, IMAGEMANAGER->findImage("Isidora_HP")->getHeight());
+		IMAGEMANAGER->render("Isidora_HP_Bar", hdc, 290, 654);
+		FONTMANAGER->drawText(hdc, 360, 632, "Neo둥근모 Pro", 30, 1, L"죽은 자들을 위해 노래하는 성녀 이시도라",
+			0, RGB(171, 154, 63));
+	}
+	else
+	{
+		if (_outroCnt >= 118 && !strcmp(_strAction, "Isidora_death"))
+		{
+			_deathCnt++;
+
+			if (_doNothing)
+			{
+				SOUNDMANAGER->playSoundWithKey("Boss_defeat");
+				_doNothing = false;
+			}
+
+			IMAGEMANAGER->alphaRender("Black_bg", hdc, _alpha / 2);
+			IMAGEMANAGER->alphaRender("Boss_death_logo", hdc, _alpha);
+		}
 	}
 }

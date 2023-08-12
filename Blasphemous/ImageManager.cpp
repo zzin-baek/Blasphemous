@@ -16,12 +16,10 @@ void ImageManager::release(void)
 
 GImage* ImageManager::addImage(string strKey, int width, int height)
 {
-	// 추가하려는 이미지가 존재하는지 키값으로 확인
 	GImage* img = findImage(strKey);
 
 	if (img) return img;
 
-	// 이미지가 없다
 	img = new GImage;
 
 	if (FAILED(img->init(width, height)))
@@ -30,8 +28,6 @@ GImage* ImageManager::addImage(string strKey, int width, int height)
 
 		return NULL;
 	}
-
-	//_mImageList.insert(pair<string, GImage*>(strKey, img));
 	_mImageList.insert(make_pair(strKey, img));
 	return img;
 }
@@ -42,7 +38,6 @@ GImage* ImageManager::addImage(string strKey, const char* fileName, int width, i
 
 	if (img) return img;
 
-	// 이미지가 없다
 	img = new GImage;
 
 	if (FAILED(img->init(fileName, width, height, isTrans, transColor)))
@@ -52,7 +47,6 @@ GImage* ImageManager::addImage(string strKey, const char* fileName, int width, i
 		return NULL;
 	}
 
-	//_mImageList.insert(pair<string, GImage*>(strKey, img));
 	_mImageList.insert(make_pair(strKey, img));
 	return img;
 }
@@ -63,7 +57,6 @@ GImage* ImageManager::addImage(string strKey, const char* fileName, float x, flo
 
 	if (img) return img;
 
-	// 이미지가 없다
 	img = new GImage;
 
 	if (FAILED(img->init(fileName, x, y, width, height, isTrans, transColor)))
@@ -73,7 +66,6 @@ GImage* ImageManager::addImage(string strKey, const char* fileName, float x, flo
 		return NULL;
 	}
 
-	//_mImageList.insert(pair<string, GImage*>(strKey, img));
 	_mImageList.insert(make_pair(strKey, img));
 	return img;
 }
@@ -84,7 +76,6 @@ GImage* ImageManager::addFrameImage(string strKey, const char* fileName, int wid
 
 	if (img) return img;
 
-	// 이미지가 없다
 	img = new GImage;
 
 	if (FAILED(img->init(fileName, width, height, maxFrameX, maxFrameY, isTrans, transColor)))
@@ -94,7 +85,6 @@ GImage* ImageManager::addFrameImage(string strKey, const char* fileName, int wid
 		return NULL;
 	}
 
-	//_mImageList.insert(pair<string, GImage*>(strKey, img));
 	_mImageList.insert(make_pair(strKey, img));
 	return img;
 }
@@ -105,7 +95,6 @@ GImage* ImageManager::addFrameImage(string strKey, const char* fileName, float x
 
 	if (img) return img;
 
-	// 이미지가 없다
 	img = new GImage;
 
 	if (FAILED(img->init(fileName, x, y, width, height, maxFrameX, maxFrameY, isTrans, transColor)))
@@ -115,7 +104,6 @@ GImage* ImageManager::addFrameImage(string strKey, const char* fileName, float x
 		return NULL;
 	}
 
-	//_mImageList.insert(pair<string, GImage*>(strKey, img));
 	_mImageList.insert(make_pair(strKey, img));
 	return img;
 }

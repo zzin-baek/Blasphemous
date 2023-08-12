@@ -7,7 +7,8 @@ enum ePietat
 {
 	ATTACK_PIETAT = 0,
 	HIT_PIETAT,
-	DIE_PIETAT
+	DIE_PIETAT,
+	MAX_PIETAT_STATE
 };
 
 struct tagThorn
@@ -48,7 +49,7 @@ private:
 
 	deque<char*> _pattern;
 	map<string, tagPietat> _sync;
-	bitset<3> _ptState;
+	bitset<MAX_PIETAT_STATE> _ptState;
 
 	tagThorn _thorn[MAX_THORN];
 	tagSpit _spit[MAX_SPIT];

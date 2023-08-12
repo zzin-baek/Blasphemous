@@ -3,7 +3,6 @@
 
 HRESULT BaseMap::init(void)
 {
-    //PLAYER = new Player;
     PLAYER->init(120, 315);
 
     _bf = new BattleField;
@@ -27,10 +26,8 @@ HRESULT BaseMap::init(void)
 
     _itemList.push_back(_item);
 
-    // stoner위치 초기화
+    // 적 위치 초기화
     _stonerList[0]->init(2626, WINSIZE_Y / 2 - 138);
-
-    //_shielderList[0]->init(100, 410);
     _shielderList[0]->init(WINSIZE_X - 300, WINSIZE_Y / 2 + 153);
 
     _nextStage = _preStage = _cnt = _term = 0;
@@ -67,7 +64,7 @@ void BaseMap::update(void)
         if (!_shielderList.empty())
             _shielderList[0]->move();
     }
-    
+    // 아이템
     if (!_itemList.empty())
     {
         _itemList[0]->update();
@@ -107,7 +104,7 @@ void BaseMap::update(void)
     }
 
     // 카메라 이동
-    if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bf->getX() + 1280 < 3760) //2000
+    if (PLAYER->getHitBox().right > WINSIZE_X / 2 && _bf->getX() + 1280 < 3760)
     {
         _bf->setX(_bf->getX() + 5.0f);
         PLAYER->setPosX(PLAYER->getPosX() - 5.0f);
@@ -476,7 +473,7 @@ void BaseMap::update(void)
         }
 
         color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
-            _bf->getX() + _shielderList[0]->getPosX() + 50, _bf->getY() + _shielderList[0]->getPosY() - 20);
+            _bf->getX() + _shielderList[0]->getPosX() - 30, _bf->getY() + _shielderList[0]->getPosY() - 20);
 
         r = GetRValue(color);
         g = GetGValue(color);

@@ -34,7 +34,6 @@ HRESULT Inventory::init(void)
     _idx = { 0, 0 };
     _out = false;
 
-    // 가로간격 72, 세로간격 72
     for (int i = 0; i < 2; i++)
     {
         for (int j = 0; j < 7; j++)
@@ -64,7 +63,7 @@ HRESULT Inventory::init(void)
     }
 
 
-    // 미리 넣어 놓는 아이템
+    // 보여주기 위한 미리 넣어 놓은 아이템
     _quest.push_back({ "Item3", "신성한 회개의 상처", 
         {"참회자의 영혼 속 회개의", "순수함을 드러내는 황금", "얼굴이 남긴 징표."}, false });
     _mea.push_back({ "Item4", "끓는 피로 녹아내린 심장", 

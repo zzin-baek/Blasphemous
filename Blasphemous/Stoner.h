@@ -29,7 +29,7 @@ private:
 	RECT _stoner, _attackBoundary;
 	deque<char*> _stList;
 	tagRock _rock[MAX_ROCK];
-	bitset<4> _stState;
+	bitset<MAX_ENEMY_STATE> _stState;
 	map<string, stImageInfo> _sync;
 
 	int _cnt, _hp;
@@ -53,6 +53,7 @@ public:
 
 	void render(HDC hdc);
 
+public:
 	inline float getPosX() { return _stonerPos.x; }
 	inline float getPosY() { return _stonerPos.y; }
 	inline void setPosX(float x) { _stonerPos.x = x; }

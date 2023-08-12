@@ -43,6 +43,9 @@
     <Filter Include="Battle">
       <UniqueIdentifier>{babd6a8c-c96d-4e30-b9be-0a7d273534e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Battle\Enemy">
+      <UniqueIdentifier>{f4a34e52-1a99-4d50-864c-a4340ead6d3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -76,10 +79,6 @@
     <ClInclude Include="FontManager.h">
       <Filter>2D FrameWork\FrameWorkManager</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Acolyte.h">
-      <Filter>Battle</Filter>
-    </ClInclude>
     <ClInclude Include="BaseMap.h">
       <Filter>Battle</Filter>
     </ClInclude>
@@ -95,9 +94,6 @@
     <ClInclude Include="Tutorial.h">
       <Filter>Tutorial</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Battle</Filter>
-    </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -106,12 +102,6 @@
     </ClInclude>
     <ClInclude Include="Item.h">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Stoner.h">
-      <Filter>Battle</Filter>
-    </ClInclude>
-    <ClInclude Include="Shielder.h">
-      <Filter>Battle</Filter>
     </ClInclude>
     <ClInclude Include="Isidora.h">
       <Filter>Boss\Isidora</Filter>
@@ -131,7 +121,24 @@
     <ClInclude Include="Pietat.h">
       <Filter>Boss\Pietat</Filter>
     </ClInclude>
-    <ClInclude Include="Teleport.h" />
+    <ClInclude Include="Acolyte.h">
+      <Filter>Battle\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Battle\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Shielder.h">
+      <Filter>Battle\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Stoner.h">
+      <Filter>Battle\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Teleport.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
@@ -157,10 +164,6 @@
     <ClCompile Include="FontManager.cpp">
       <Filter>2D FrameWork\FrameWorkManager</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Acolyte.cpp">
-      <Filter>Battle</Filter>
-    </ClCompile>
     <ClCompile Include="BaseMap.cpp">
       <Filter>Battle</Filter>
     </ClCompile>
@@ -176,9 +179,6 @@
     <ClCompile Include="Tutorial.cpp">
       <Filter>Tutorial</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Battle</Filter>
-    </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -187,12 +187,6 @@
     </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Stoner.cpp">
-      <Filter>Battle</Filter>
-    </ClCompile>
-    <ClCompile Include="Shielder.cpp">
-      <Filter>Battle</Filter>
     </ClCompile>
     <ClCompile Include="BossMap.cpp">
       <Filter>Boss\Isidora</Filter>
@@ -212,6 +206,23 @@
     <ClCompile Include="Pietat.cpp">
       <Filter>Boss\Pietat</Filter>
     </ClCompile>
-    <ClCompile Include="Teleport.cpp" />
+    <ClCompile Include="Acolyte.cpp">
+      <Filter>Battle\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Battle\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Shielder.cpp">
+      <Filter>Battle\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Stoner.cpp">
+      <Filter>Battle\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Teleport.cpp">
+      <Filter>Boss</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

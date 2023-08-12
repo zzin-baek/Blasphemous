@@ -6,7 +6,6 @@
 class Tutorial : public GameNode
 {
 private:
-	//Player* _pl;
 	TutorialField* _tf;
 	Item* _item;
 

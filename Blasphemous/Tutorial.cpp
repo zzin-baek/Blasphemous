@@ -35,6 +35,7 @@ void Tutorial::update(void)
         PLAYER->playerMove();
     }
 
+    // 아이템
     if (!_itemList.empty())
     {
         _itemList[0]->update();
@@ -62,18 +63,11 @@ void Tutorial::update(void)
         PLAYER->setCollect(false);
 
     _tf->update();
-    // 중력
-    //if (!PLAYER->getFixed())
-    
-    //if (!PLAYER->getState()[JUMP])
-    //    PLAYER->setPosY(PLAYER->getPosY() + 8.0f);
 
     if (PLAYER->getHitBox().left <= 0)
     {
         PLAYER->setPosX(PLAYER->getPosX() + 4.0f);
     }
-
-    //if (PLAYER->getJumpPower() 
 
     cout << PLAYER->getJumpPower() << endl;
     cout << "isGround? " << PLAYER->getGround() << endl;
@@ -91,12 +85,10 @@ void Tutorial::update(void)
         {
             PLAYER->setState(JUMP, false);
             PLAYER->setGround(true);
-            //PLAYER->setPosYPush(1);
             
             break;
         }
         PLAYER->setGround(false);
-        //PLAYER->setPosY(PLAYER->getPosY() + 1.0);
 
     }
     if (PLAYER->getCenterX() > WINSIZE_X)
