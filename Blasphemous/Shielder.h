@@ -1,13 +1,6 @@
 #pragma once
 #include "Enemy.h"
 
-struct shImageInfo
-{
-	int timing;
-	POINT leftMove;
-	POINT rightMove;
-};
-
 class Shielder : public Enemy
 {
 private:
@@ -16,7 +9,7 @@ private:
 	RECT _attackBoundary[2];
 	deque<char*> _shList;
 	bitset<4> _shState;
-	map<string, shImageInfo> _sync;
+	map<string, emImageInfo> _sync;
 
 	int _cnt, _hp;
 	bool _isLeft, _die, _hit, _isAttack;

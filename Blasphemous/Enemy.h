@@ -9,6 +9,13 @@ enum tagEnemy
 	MAX_ENEMY_STATE
 };
 
+struct emImageInfo
+{
+	int timing;
+	POINT leftMove;
+	POINT rightMove;
+};
+
 class Enemy
 {
 public:

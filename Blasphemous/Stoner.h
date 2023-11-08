@@ -15,13 +15,6 @@ struct tagRock
 	deque<char*> cycle;
 };
 
-struct stImageInfo
-{
-	int timing;
-	POINT leftMove;
-	POINT rightMove;
-};
-
 class Stoner : public Enemy
 {
 private:
@@ -30,7 +23,7 @@ private:
 	deque<char*> _stList;
 	tagRock _rock[MAX_ROCK];
 	bitset<MAX_ENEMY_STATE> _stState;
-	map<string, stImageInfo> _sync;
+	map<string, emImageInfo> _sync;
 
 	int _cnt, _hp;
 	bool _isLeft, _isRising, _die, _hit, _isAttack;

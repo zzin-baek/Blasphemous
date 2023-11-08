@@ -1,13 +1,6 @@
 #pragma once
 #include "Enemy.h"
 
-struct acImageInfo
-{
-	int timing;
-	POINT leftMove;
-	POINT rightMove;
-};
-
 class Acolyte : public Enemy
 {
 private:
@@ -16,7 +9,7 @@ private:
 	RECT _attackBoundary[2];
 	deque<char*> _acList;
 	bitset<MAX_ENEMY_STATE> _acState;
-	map<string, acImageInfo> _sync;
+	map<string, emImageInfo> _sync;
 
 	bool _isLeft, _canAttack, _hit, _die;
 	int _cnt, _idx_x, _idx_y;
