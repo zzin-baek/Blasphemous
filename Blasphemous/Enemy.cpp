@@ -6,6 +6,10 @@ HRESULT Enemy::init(void)
     return S_OK;
 }
 
+void Enemy::initSync(void)
+{
+}
+
 void Enemy::move(void)
 {
 }

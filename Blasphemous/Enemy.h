@@ -20,6 +20,7 @@ class Enemy
 {
 public:
 	virtual HRESULT init(void);
+	virtual void initSync(void);
 	virtual void move(void);
 	virtual void render(HDC hdc);
 

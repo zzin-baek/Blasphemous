@@ -16,9 +16,6 @@
     <Filter Include="2D FrameWork\GameCore">
       <UniqueIdentifier>{241f99a7-149b-4c44-9503-f02f98c35ce4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2D FrameWork\Utility">
-      <UniqueIdentifier>{f262a28a-e267-4fc8-8728-3a3c88f96371}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2D FrameWork\PCH">
       <UniqueIdentifier>{38668fcf-e892-49a8-b564-dc2c4793fcb8}</UniqueIdentifier>
     </Filter>
@@ -46,6 +43,9 @@
     <Filter Include="Battle\Enemy">
       <UniqueIdentifier>{f4a34e52-1a99-4d50-864c-a4340ead6d3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Battle\Utility">
+      <UniqueIdentifier>{f262a28a-e267-4fc8-8728-3a3c88f96371}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -53,10 +53,10 @@
       <Filter>2D FrameWork\GameCore</Filter>
     </ClInclude>
     <ClInclude Include="RandomFunction.h">
-      <Filter>2D FrameWork\Utility</Filter>
+      <Filter>Battle\Utility</Filter>
     </ClInclude>
     <ClInclude Include="CommonMacroFucntion.h">
-      <Filter>2D FrameWork\Utility</Filter>
+      <Filter>Battle\Utility</Filter>
     </ClInclude>
     <ClInclude Include="KeyManager.h">
       <Filter>2D FrameWork\FrameWorkManager</Filter>

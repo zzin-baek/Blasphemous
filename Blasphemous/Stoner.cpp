@@ -321,7 +321,7 @@ void Stoner::rockMove(void)
     for (int i = 0; i < MAX_ROCK; i++)
     {
         if (_rock[i].shoot)
-        {   // 픽셀충돌로 바꾸기
+        {
             if (_rock[i].pos.y > 600 || _rock[i].pos.y < -30)
                 _rock[i].broke = true;
         }

@@ -52,13 +52,13 @@ public:
 	inline void setPosX(float x) { _stonerPos.x = x; }
 	inline void setPosY(float y) { _stonerPos.y = y; }
 
-	bitset<4> getState() { return _stState; }
+	bitset<MAX_ENEMY_STATE> getState() { return _stState; }
 	void setState(int num, bool state) { _stState.set(num, state); }
 	void setAction(char* _action) { wsprintf(_strAction, _action); }
 	void addAction(char* _action) { _stList.push_back(_action); }
 
-	RECT getBoundary() { return _attackBoundary; }
 	RECT getRect() { return _stoner; }
+	RECT getBoundary() { return _attackBoundary; }
 	void setRising(bool state) { _isRising = state; }
 
 	void setHP(int hp) { _hp = hp; }

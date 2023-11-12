@@ -114,7 +114,7 @@ void MainGame::update(void)
 		_currentScene = _bossStage2;
 	}
 
-	if (_bossStage2->getNext())
+	if (_bossStage2->getNext() || KEYMANAGER->isOnceKeyDown(VK_F3))
 	{
 		if (!_initOnce[5])
 		{

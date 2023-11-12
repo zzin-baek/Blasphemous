@@ -283,7 +283,6 @@ void BaseMap::update(void)
 
     if (!_acolyteList.empty()) // acolyte전투
     {
-        // acolyte 픽셀충돌
         COLORREF color = GetPixel(IMAGEMANAGER->findImage("bg_collision")->getMemDC(),
             _bf->getX() + _acolyteList[0]->getPosX() + 80, _bf->getY() + _acolyteList[0]->getPosY());
 
@@ -359,7 +358,6 @@ void BaseMap::update(void)
         {
             if (!PLAYER->getState()[HIT] && !PLAYER->getHit() && _acolyteList[0]->canAttack())
             {
-                //PLAYER->setState(HIT, true);
                 PLAYER->setHit(true);                
                 _bf->cameraShake();
                 PLAYER->setHP(PLAYER->getHP() - 5);
